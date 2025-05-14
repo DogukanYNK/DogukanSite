@@ -1,0 +1,12 @@
+﻿@page
+@model DogukanSite.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+<h2>Giriş Yap</h2>
+<form method="post">
+    <input asp-for="Email" placeholder="Email" class="form-control" />
+    <input asp-for="Password" type="password" placeholder="Şifre" class="form-control" />
+    <button type="submit" class="btn btn-primary">Giriş Yap</button>
+</form>
+

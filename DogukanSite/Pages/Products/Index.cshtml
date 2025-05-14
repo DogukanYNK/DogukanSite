@@ -1,0 +1,45 @@
+﻿@page
+@model DogukanSite.Pages.Products.IndexModel
+@{
+}
+
+<form method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-4">
+            <input type="text" name="searchTerm" class="form-control" placeholder="Ürün adı ara..." value="@Model.SearchTerm" />
+        </div>
+        <div class="col-md-4">
+            <select name="category" class="form-control">
+                <option value="">Tüm Kategoriler</option>
+                @foreach (var cat in Model.AllCategories)
+                {
+                    <option value="@cat" selected="@(cat == Model.Category ? "selected" : null)">@cat</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">Filtrele</button>
+        </div>
+    </div>
+</form>
+
+<h2>Ürünler</h2>
+<div class="row">
+@foreach (var item in Model.Products)
+{
+    <div class="col-md-3">
+        <div class="card">
+            <img src="@item.ImageUrl" class="card-img-top" />
+            <div class="card-body">
+                <h5>@item.Name</h5>
+                <p>@item.Description</p>
+                <p>@item.Price.ToString("C")</p>
+                <form method="post" asp-page-handler="AddToCart">
+                    <input type="hidden" name="productId" value="@item.Id" />
+                    <button class="btn btn-primary">Sepete Ekle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+</div>
