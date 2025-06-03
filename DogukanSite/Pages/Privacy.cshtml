@@ -1,0 +1,58 @@
+﻿@page
+@model PrivacyModel
+@{
+    // ViewData["Title"] PageModel'da set edildi.
+}
+
+@* Ana sayfa başlığı _Layout.cshtml içindeki content-container'ın padding'i ile hizalanır.
+   Eğer bu başlığın da .text-content-page'in max-width'ine uymasını isterseniz,
+   .page-header'ı .text-content-page içine alabilirsiniz veya .page-header'a da benzer bir max-width verebilirsiniz.
+   Şimdilik ayrı tutuyorum, başlık tam genişlikte ortalı olabilir. *@
+<div class="page-header text-center mb-4 pt-4 pt-md-0">
+    @* pt-4 pt-md-0: _Layout'taki content-container py-4 ile çakışmaması için eklendi, kontrol edin *@
+    <h1 class="page-title display-5">@ViewData["Title"]</h1>
+</div>
+
+<div class="text-content-page">
+    @* Gerçek gizlilik politikası metinleriniz buraya gelecek. *@
+    <p>DogukanStore olarak gizliliğinize ve kişisel verilerinizin korunmasına büyük önem veriyoruz. Bu gizlilik politikası, web sitemizi ziyaret ettiğinizde veya hizmetlerimizi kullandığınızda hangi bilgileri topladığımızı, bu bilgileri nasıl kullandığımızı, kimlerle paylaştığımızı ve verilerinizle ilgili haklarınızı açıklamaktadır.</p>
+
+    <h2>Topladığımız Bilgiler</h2>
+    <p>Sizden aşağıdaki türde bilgiler toplayabiliriz:</p>
+    <ul>
+        <li><strong>Kimlik Bilgileri:</strong> Adınız, soyadınız, e-posta adresiniz, telefon numaranız gibi doğrudan sizi tanımlayan bilgiler.</li>
+        <li><strong>İletişim Bilgileri:</strong> Teslimat adresiniz, fatura adresiniz.</li>
+        <li><strong>İşlem Bilgileri:</strong> Satın aldığınız ürünler, siparişlerinizin detayları, ödeme bilgileriniz (kredi kartı numaralarınız tarafımızca saklanmaz, güvenli ödeme işlemcileri aracılığıyla işlenir).</li>
+        <li><strong>Teknik Veriler:</strong> IP adresiniz, tarayıcı türünüz ve sürümünüz, saat dilimi ayarınız ve konumunuz, işletim sisteminiz ve platformunuz ve cihazlarınızda web sitemize erişirken kullandığınız diğer teknolojiye ilişkin bilgiler.</li>
+        <li><strong>Kullanım Verileri:</strong> Web sitemizi nasıl kullandığınıza, hangi sayfaları ziyaret ettiğinize ve hangi ürünlerle ilgilendiğinize dair bilgiler.</li>
+        <li><strong>Pazarlama ve İletişim Tercihleri:</strong> Bizden ve üçüncü taraflarımızdan pazarlama materyalleri alıp almama tercihlerinizi ve iletişim tercihlerinizi içerir.</li>
+    </ul>
+
+    <h2>Bilgilerinizi Nasıl Kullanıyoruz?</h2>
+    <p>Topladığımız kişisel bilgilerinizi aşağıdaki amaçlarla kullanabiliriz:</p>
+    <ul>
+        <li>Siparişlerinizi işleme almak, ürünleri teslim etmek ve satış sonrası hizmetleri sağlamak.</li>
+        <li>Hesabınızı yönetmek ve size müşteri desteği sunmak.</li>
+        <li>Hizmetlerimizi iyileştirmek, kişiselleştirmek ve web sitemizin performansını analiz etmek.</li>
+        <li>İzniniz olması halinde, size yeni ürünler, özel teklifler ve ilginizi çekebilecek diğer bilgiler hakkında pazarlama iletişimleri göndermek.</li>
+        <li>Yasal yükümlülüklerimizi yerine getirmek ve dolandırıcılığı önlemek.</li>
+    </ul>
+
+    <h2>Çerez (Cookie) Politikası</h2>
+    <p>Web sitemizde kullanıcı deneyimini geliştirmek, tercihlerinizi hatırlamak ve sitemizin nasıl kullanıldığını analiz etmek amacıyla çerezler ve benzeri teknolojiler kullanmaktayız. Çerez politikamız hakkında daha detaylı bilgi için lütfen [Çerez Politikası Sayfası Linki] sayfamızı ziyaret edin.</p>
+
+    <h2>Veri Güvenliği</h2>
+    <p>Kişisel verilerinizin güvenliğini sağlamak için uygun teknik ve idari önlemler almaktayız. Verilerinize yetkisiz erişimi, değiştirilmesini veya ifşa edilmesini önlemek için çeşitli güvenlik teknolojileri ve prosedürleri kullanıyoruz.</p>
+
+    <h2>Haklarınız</h2>
+    <p>Kişisel verilerinizle ilgili olarak aşağıdaki haklara sahipsiniz:</p>
+    <ul>
+        <li>Verilerinize erişme hakkı.</li>
+        <li>Yanlış veya eksik verilerinizin düzeltilmesini isteme hakkı.</li>
+        <li>Belirli koşullar altında verilerinizin silinmesini isteme hakkı.</li>
+        <li>Veri işlemeye itiraz etme hakkı.</li>
+    </ul>
+    <p>Bu haklarınızı kullanmak veya gizlilik politikamızla ilgili herhangi bir sorunuz olursa, lütfen bizimle [İletişim Sayfası Linki veya E-posta Adresi] üzerinden iletişime geçin.</p>
+
+    <p class="mt-4 text-muted"><small>Bu gizlilik politikası en son [Tarih] tarihinde güncellenmiştir.</small></p>
+</div>

@@ -1,0 +1,223 @@
+﻿@page "{currentPage:int?}"
+@model DogukanSite.Pages.Admin.ManageOrdersModel
+@{
+    ViewData["Title"] = "Siparişleri Yönet";
+    // Sipariş durumları için renk haritası (CSS'te de tanımlanabilir)
+    var statusColors = new Dictionary<string, string>
+    {
+        { "Pending", "bg-warning text-dark" },
+        { "Processing", "bg-info text-dark" }, // Örnek: Hazırlanıyor
+        { "Shipped", "bg-primary" },           // Kargolandı
+        { "Delivered", "bg-success" },         // Teslim Edildi
+        { "Cancelled", "bg-danger" },          // İptal Edildi
+        { "Refunded", "bg-secondary" }         // İade Edildi
+    };
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3">
+    <h1 class="page-title display-6 mb-2 mb-md-0">@ViewData["Title"]</h1>
+    @* Yeni sipariş ekleme genellikle olmaz, kullanıcı tarafından oluşturulur *@
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label asp-for="SearchTerm" class="form-label small fw-semibold">Ara (Sipariş No, Müşteri)</label>
+                <input asp-for="SearchTerm" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="StatusFilter" class="form-label small fw-semibold">Duruma Göre Filtrele</label>
+                <select asp-for="StatusFilter" asp-items="Model.AllOrderStatuses" class="form-select form-select-sm">
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="DateFilter" class="form-label small fw-semibold">Tarihe Göre Filtrele</label>
+                <select asp-for="DateFilter" class="form-select form-select-sm">
+                    <option value="">Tüm Zamanlar</option>
+                    <option value="today">Bugün</option>
+                    <option value="last7days">Son 7 Gün</option>
+                    <option value="last30days">Son 30 Gün</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="fas fa-filter me-1"></i>Filtrele
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (Model.OrdersVM != null && Model.OrdersVM.Any())
+{
+    <p class="text-muted small">Toplam @Model.TotalOrderCount sipariş bulundu. Mevcut sayfa: @Model.CurrentPage / @Model.TotalPages</p>
+    <div class="table-responsive shadow-sm rounded-3 bg-white">
+        <table class="table table-hover align-middle mb-0 admin-table">
+            <thead class="table-light">
+                <tr>
+                    <th>Sipariş No</th>
+                    <th>Müşteri</th>
+                    <th>Tarih</th>
+                    <th class="text-end">Tutar</th>
+                    <th class="text-center">Durum</th>
+                    <th class="text-end" style="width: 200px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.OrdersVM)
+                {
+                    <tr>
+                        <td><strong class="text-primary">#@order.Id</strong></td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(order.UserId))
+                            {
+                                <a href="#" title="Kullanıcı Detayı (henüz yok)">@order.CustomerName</a> <br />
+                                <small class="text-muted">@order.UserEmail</small>
+                            }
+                            else
+                            {
+                                @order.CustomerName <br />
+                                <small class="text-muted">(Misafir)</small>
+                            }
+                        </td>
+                        <td>@order.OrderDate.ToString("dd MMM yyyy, HH:mm")</td>
+                        <td class="text-end fw-semibold">@order.OrderTotal.ToString("C")</td>
+                        <td class="text-center">
+                            @{
+                                var statusClass = "bg-secondary"; // Varsayılan
+                                if (!string.IsNullOrEmpty(order.OrderStatus) && statusColors.ContainsKey(order.OrderStatus))
+                                {
+                                    statusClass = statusColors[order.OrderStatus];
+                                }
+                                else if (!string.IsNullOrEmpty(order.OrderStatus) && statusColors.ContainsKey(order.OrderStatus.ToLower()))
+                                {
+                                    statusClass = statusColors[order.OrderStatus.ToLower()];
+                                }
+                            }
+                            <span class="badge rounded-pill @statusClass">
+                                @order.OrderStatus
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a asp-page="/Admin/OrderDetails" asp-route-orderId="@order.Id" class="btn btn-sm btn-outline-info me-1" title="Sipariş Detayı">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            @* Durum Güncelleme için bir modal veya ayrı bir sayfa daha iyi olabilir *@
+                            <div class="dropdown d-inline">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownStatus_@order.Id" data-bs-toggle="dropdown" aria-expanded="false" title="Durumu Değiştir">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownStatus_@order.Id">
+                                    <li><button class="dropdown-item" type="submit" form="formStatus_@order.Id" name="newStatus" value="Pending">Beklemede</button></li>
+                                    <li><button class="dropdown-item" type="submit" form="formStatus_@order.Id" name="newStatus" value="Processing">Hazırlanıyor</button></li>
+                                    <li><button class="dropdown-item" type="submit" form="formStatus_@order.Id" name="newStatus" value="Shipped">Kargolandı</button></li>
+                                    <li><button class="dropdown-item" type="submit" form="formStatus_@order.Id" name="newStatus" value="Delivered">Teslim Edildi</button></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><button class="dropdown-item text-danger" type="submit" form="formStatus_@order.Id" name="newStatus" value="Cancelled">İptal Edildi</button></li>
+                                </ul>
+                                <form method="post" asp-page-handler="UpdateStatus" asp-route-orderId="@order.Id"
+                                      asp-route-currentPage="@Model.CurrentPage"
+                                      asp-route-searchTerm="@Model.SearchTerm"
+                                      asp-route-statusFilter="@Model.StatusFilter"
+                                      asp-route-dateFilter="@Model.DateFilter"
+                                      id="formStatus_@order.Id" class="d-none"></form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Sipariş Sayfaları" class="mt-4 d-flex justify-content-center">
+            <ul class="pagination pagination-sm">
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item"><a class="page-link" asp-page="/Admin/ManageOrders" asp-route-currentPage="@(Model.CurrentPage - 1)" asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter" asp-route-dateFilter="@Model.DateFilter">&laquo;</a></li>
+                }
+                else
+                {
+                    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                }
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    int startPage = Math.Max(1, Model.CurrentPage - 2);
+                    int endPage = Math.Min(Model.TotalPages, Model.CurrentPage + 2);
+                    if (i == 1 || i == Model.TotalPages || (i >= startPage && i <= endPage))
+                    {
+                        if ((i == 1 && startPage > 2 && Model.CurrentPage > 3) || (i == Model.TotalPages && endPage < Model.TotalPages - 1 && Model.CurrentPage < Model.TotalPages - 3))
+                        {
+                            if (i == 1 && startPage > 2 && Model.CurrentPage > 3)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")"><a class="page-link" asp-page="/Admin/ManageOrders" asp-route-currentPage="@i" asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter" asp-route-dateFilter="@Model.DateFilter">@i</a></li>
+                                if (startPage > 2)
+                                {
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                }
+                            }
+                            else if (i == Model.TotalPages && endPage < Model.TotalPages - 1 && Model.CurrentPage < Model.TotalPages - 3)
+                            {
+                                if (endPage < Model.TotalPages - 1)
+                                {
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                }
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")"><a class="page-link" asp-page="/Admin/ManageOrders" asp-route-currentPage="@i" asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter" asp-route-dateFilter="@Model.DateFilter">@i</a></li>
+                            }
+                            else
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")"><a class="page-link" asp-page="/Admin/ManageOrders" asp-route-currentPage="@i" asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter" asp-route-dateFilter="@Model.DateFilter">@i</a></li>
+                            }
+                        }
+                        else if (i >= startPage && i <= endPage)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")"><a class="page-link" asp-page="/Admin/ManageOrders" asp-route-currentPage="@i" asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter" asp-route-dateFilter="@Model.DateFilter">@i</a></li>
+                        }
+                    }
+                }
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <li class="page-item"><a class="page-link" asp-page="/Admin/ManageOrders" asp-route-currentPage="@(Model.CurrentPage + 1)" asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter" asp-route-dateFilter="@Model.DateFilter">&raquo;</a></li>
+                }
+                else
+                {
+                    <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                }
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <div class="alert alert-light text-center py-4 mt-4">
+        <i class="fas fa-receipt fa-2x text-muted mb-3"></i>
+        @if (!string.IsNullOrEmpty(Model.SearchTerm) || !string.IsNullOrEmpty(Model.StatusFilter) || !string.IsNullOrEmpty(Model.DateFilter))
+        {
+            <p class="mb-2">Filtre kriterlerinize uygun sipariş bulunamadı.</p>
+            <a asp-page="/Admin/ManageOrders" class="btn btn-sm btn-outline-secondary">Tüm Siparişleri Göster</a>
+        }
+        else
+        {
+            <p class="mb-0">Gösterilecek sipariş bulunamadı.</p>
+        }
+    </div>
+}

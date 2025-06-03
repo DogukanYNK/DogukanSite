@@ -1,0 +1,97 @@
+﻿@page
+@model DogukanSite.Pages.Account.PersonalDataPageModel
+@{
+    ViewData["Title"] = "Kişisel Verilerim";
+    Layout = "_AuthLayout";
+}
+
+<div class="container my-lg-5 my-4">
+    <div class="page-header text-center mb-4">
+        <h1 class="page-title display-6">@ViewData["Title"]</h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-xl-8">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body p-4 p-md-5">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="list-group dashboard-nav">
+                                <a asp-page="/Account/Dashboard" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-arrow-left me-2"></i>Hesabıma Dön
+                                </a>
+                                <a asp-page="/Account/EditProfile" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-user-edit me-2"></i>Profilimi Düzenle
+                                </a>
+                                <a asp-page="/Account/ChangePasswordPage" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-key me-2"></i>Şifre Değiştir
+                                </a>
+                                <a asp-page="/Account/EmailManagementPage" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-envelope me-2"></i>E-posta Yönetimi
+                                </a>
+                                <a asp-page="/Account/TwoFactorAuthenticationPage" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-shield-alt me-2"></i>İki Aşamalı Doğrulama
+                                </a>
+                                <a asp-page="/Account/PersonalDataPage" class="list-group-item list-group-item-action active">
+                                    @* Bu sayfa aktif *@
+                                    <i class="fas fa-database me-2"></i>Kişisel Verilerim
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            @if (!string.IsNullOrEmpty(Model.StatusMessage))
+                            {
+                                var statusMessageClass = Model.StatusMessage.StartsWith("Hata:") ? "danger" : "success";
+                                <div class="alert alert-@statusMessageClass alert-dismissible fade show" role="alert">
+                                    @Model.StatusMessage
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            }
+
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger text-start @(ViewData.ModelState.IsValid ? "d-none" : "")" role="alert"></div>
+
+
+                            <div class="mb-5">
+                                <h4 class="mb-3">Verilerinizi İndirin</h4>
+                                <hr class="my-3">
+                                <p class="text-muted">Hesabınızla ilişkili olarak sakladığımız verilerin bir kopyasını indirebilirsiniz.</p>
+                                <form method="post" asp-page-handler="Download">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-download me-2"></i>Verilerimi İndir
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div>
+                                <h4 class="mb-3 text-danger">Hesabınızı Silin</h4>
+                                <hr class="my-3">
+                                <div class="alert alert-danger">
+                                    <p class="fw-bold"><i class="fas fa-exclamation-triangle me-2"></i>Dikkat!</p>
+                                    <p class="mb-0">Bu işlem hesabınızı kalıcı olarak silecektir ve bu işlem geri alınamaz. Hesabınızı silmek istediğinizden eminseniz, lütfen mevcut şifrenizi girerek onaylayın.</p>
+                                </div>
+                                <form id="delete-user-form" method="post" asp-page-handler="Delete">
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="DeleteInput.Password" class="form-control" placeholder="Mevcut Şifreniz" autocomplete="current-password" aria-required="true" />
+                                        <label asp-for="DeleteInput.Password"><i class="fas fa-lock me-2"></i></label>
+                                        <span asp-validation-for="DeleteInput.Password" class="text-danger small"></span>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button class="btn btn-danger" type="submit" onclick="return confirm('Hesabınızı kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!');">
+                                            <i class="fas fa-trash-alt me-2"></i>Hesabımı Kalıcı Olarak Sil
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

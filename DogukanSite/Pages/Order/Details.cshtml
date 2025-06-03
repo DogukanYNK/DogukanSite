@@ -1,0 +1,135 @@
+﻿@page "{orderId:int}"
+@model DogukanSite.Pages.Order.DetailsModel
+@{
+    // ViewData["Title"] PageModel'da set edildi
+    Layout = "_CheckoutLayout"; // YENİ LAYOUT
+}
+
+@if (Model.Order != null)
+{
+    <div class="checkout-steps-container py-3 mb-4">
+        <div class="container">
+            <ul class="nav nav-pills checkout-steps">
+                <li class="nav-item flex-fill text-center">
+                    <a class="nav-link disabled" asp-page="/Cart/Index"><i class="fas fa-shopping-cart me-2 d-block d-md-inline"></i>Sepetim</a>
+                </li>
+                <li class="nav-item flex-fill text-center">
+                    <a class="nav-link disabled" asp-page="/Order/Create"><i class="fas fa-map-marker-alt me-2 d-block d-md-inline"></i>Teslimat</a>
+                </li>
+                <li class="nav-item flex-fill text-center">
+                    <a class="nav-link disabled" href="#"><i class="fas fa-credit-card me-2 d-block d-md-inline"></i>Ödeme</a>
+                </li>
+                <li class="nav-item flex-fill text-center">
+                    <a class="nav-link active" aria-current="page"><i class="fas fa-check-circle me-2 d-block d-md-inline"></i>Onay & Detay</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="page-header text-center mb-4">
+        <h1 class="page-title display-6">Sipariş Detayı <span class="text-primary">#@Model.Order.Id</span></h1>
+    </div>
+
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light py-3">
+                        <h5 class="mb-0"><i class="fas fa-box-open me-2 text-primary"></i>Sipariş Edilen Ürünler</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        @* Tablo için padding'i sıfırla *@
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 100px;">Ürün</th>
+                                        <th>Açıklama</th>
+                                        <th class="text-center">Adet</th>
+                                        <th class="text-end">Birim Fiyat</th>
+                                        <th class="text-end">Toplam</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Order.Items)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <img src="@(string.IsNullOrEmpty(item.Product?.ImageUrl) ? "/images/placeholder-product-thumb.png" : item.Product?.ImageUrl)"
+                                                     alt="@item.Product?.Name" class="img-fluid rounded order-item-thumbnail"> 
+                                            </td>
+                                            <td>
+                                                <a asp-page="/Products/Index" asp-route-id="@item.ProductId" class="fw-semibold text-dark text-decoration-none">@item.Product?.Name</a>
+                                                @if (!string.IsNullOrEmpty(item.Product?.Category))
+                                                {
+                                                    <small class="d-block text-muted">Kategori: @item.Product.Category</small>
+                                                }
+                                            </td>
+                                            <td class="text-center">@item.Quantity</td>
+                                            <td class="text-end">@item.UnitPrice.ToString("C")</td>
+                                            <td class="text-end fw-semibold">@((item.UnitPrice * item.Quantity).ToString("C"))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light py-3">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2 text-primary"></i>Sipariş Bilgileri</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-5">Sipariş No:</dt>
+                            <dd class="col-7 fw-semibold text-primary">#@Model.Order.Id</dd>
+
+                            <dt class="col-5">Sipariş Tarihi:</dt>
+                            <dd class="col-7">@Model.Order.OrderDate.ToString("dd MMM yyyy, HH:mm")</dd>
+
+                            <dt class="col-5">Durum:</dt>
+                            <dd class="col-7">
+                                <span class="badge rounded-pill @(Model.Order.OrderStatus?.ToLower() == "pending" ? "bg-warning text-dark" : Model.Order.OrderStatus?.ToLower() == "shipped" ? "bg-info text-dark" : Model.Order.OrderStatus?.ToLower() == "delivered" ? "bg-success" : Model.Order.OrderStatus?.ToLower() == "cancelled" ? "bg-danger" : "bg-secondary")">
+                                    @Model.Order.OrderStatus
+                                </span>
+                            </dd>
+
+                            <dt class="col-5">Toplam Tutar:</dt>
+                            <dd class="col-7 fw-bold fs-5 text-primary">@Model.Order.OrderTotal.ToString("C")</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light py-3">
+                        <h5 class="mb-0"><i class="fas fa-truck me-2 text-primary"></i>Teslimat Adresi</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-1 fw-semibold">@Model.Order.CustomerName</p>
+                        <p class="mb-1">@Model.Order.ShippingAddress?.Replace("\n", "<br />")</p>
+                        @if (!string.IsNullOrEmpty(Model.Order.PhoneNumber))
+                        {
+                            <p class="mb-1"><i class="fas fa-phone-alt me-1 text-muted"></i> @Model.Order.PhoneNumber</p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Order.Email))
+                        {
+                            <p class="mb-0"><i class="fas fa-envelope me-1 text-muted"></i> @Model.Order.Email</p>
+                        }
+                    </div>
+                </div>
+                <div class="mt-4 d-grid">
+                    <a asp-page="/Order/History" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Sipariş Geçmişine Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-danger text-center">Sipariş detayları yüklenemedi veya bu siparişi görüntüleme yetkiniz yok.</div>
+}

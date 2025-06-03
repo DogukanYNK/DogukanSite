@@ -1,5 +1,82 @@
-﻿@page "{id:int}"
+﻿@page "{orderId:int}"
 @model DogukanSite.Pages.Order.SuccessModel
-<h2>Sipariş Başarıyla Oluşturuldu</h2>
-<p>Sipariş Numaranız: @Model.OrderId</p>
+@{
+    ViewData["Title"] = $"Sipariş #{Model.OrderId} Başarıyla Alındı"; // OrderId'yi başlıkta kullanabiliriz
+    Layout = "_CheckoutLayout";
+    // ViewData["HideLayoutHeaderFooter"] = false; // Bu satırı eklemeyerek header/footer'ın görünmesini sağlıyoruz.
+}
 
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+
+            <div class="success-icon-container mb-4">
+                @* Bu sınıfın stili site.css'te olacak *@
+                <i class="fas fa-check-circle fa-5x text-success"></i>
+            </div>
+
+            <h1 class="display-5 fw-bold text-success mb-3">Teşekkür Ederiz!</h1>
+            <p class="lead text-muted mb-2">Siparişiniz başarıyla alındı ve en kısa sürede hazırlanacaktır.</p>
+
+            @if (Model.CurrentOrder != null)
+            {
+                <p class="fs-5 mb-4">
+                    Sipariş Numaranız: <strong class="text-primary">#@Model.CurrentOrder.Id</strong>
+                </p>
+
+                <div class="card shadow-sm mb-4 order-success-summary">
+                    @* Özel sınıf eklendi *@
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Sipariş Onayı</h5> @* Bu başlığın stili site.css'te olacak *@
+                        <p class="card-text text-start">
+                            Siparişinizin detayları ve kargo takip bilgileriniz (hazır olduğunda)
+                            @if (!string.IsNullOrEmpty(Model.CustomerEmail))
+                            {
+                                <strong class="text-primary">@Model.CustomerEmail</strong> <span>e-posta adresinize</span>
+                            }
+                            else
+                            {
+                                <span>kayıtlı e-posta adresinize</span>
+                            }
+                            gönderilecektir.
+                        </p>
+                        <ul class="list-unstyled text-start small text-muted mt-3">
+                            <li><strong>Sipariş Tarihi:</strong> @Model.CurrentOrder.OrderDate.ToString("dd MMMM yyyy, HH:mm")</li>
+                            @if (!string.IsNullOrEmpty(Model.CurrentOrder.ShippingAddress))
+                            {
+                                <li><strong>Teslimat Adresi:</strong> @Model.CurrentOrder.ShippingAddress</li>
+                            }
+                            <li><strong>Toplam Tutar:</strong> @Model.CurrentOrder.OrderTotal.ToString("C")</li>
+                        </ul>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p class="fs-5 mb-4">
+                    Sipariş Numaranız: <strong class="text-primary">#@Model.OrderId</strong>
+                </p>
+                <p class="text-muted small">Sipariş detayları kayıtlı e-posta adresinize gönderilecektir.</p>
+            }
+
+            <div class="mt-5 d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a asp-page="/Products/Index" class="btn btn-primary btn-lg px-4 gap-3">
+                    <i class="fas fa-shopping-bag me-2"></i>Alışverişe Devam Et
+                </a>
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <a asp-page="/Order/History" class="btn btn-outline-secondary btn-lg px-4">
+                        <i class="fas fa-receipt me-2"></i>Siparişlerimi Gör
+                    </a>
+                }
+                else
+                {
+                    <a asp-page="/Index" class="btn btn-outline-secondary btn-lg px-4">
+                        <i class="fas fa-home me-2"></i>Ana Sayfaya Dön
+                    </a>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>

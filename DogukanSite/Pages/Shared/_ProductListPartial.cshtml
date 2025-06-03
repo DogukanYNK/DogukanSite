@@ -1,0 +1,75 @@
+﻿@model DogukanSite.Pages.Products.IndexModel
+@* Bu partial view, Products.IndexModel tipinde bir model bekliyor *@
+
+@if (Model.Products != null && Model.Products.Any())
+{
+    @* Ürün sayısı bilgisini data attribute olarak ekleyelim (JS ile okumak için) *@
+    <div class="row product-grid row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-4" data-total-products="@Model.TotalCount">
+        @foreach (var product in Model.Products)
+        {
+            <div class="col d-flex align-items-stretch">
+                <partial name="Shared/_ProductCard"
+                         model="product"
+                         view-data="ViewData" /> @* ViewData'yı _ProductCard'a aktar *@
+            </div>
+        }
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Sayfalar" class="mt-5 d-flex justify-content-center product-pagination">
+            <ul class="pagination">
+                <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <a class="page-link" href="#" data-page="@(Model.CurrentPage - 1)" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    int maxVisiblePages = 5;
+                    int halfMaxVisible = maxVisiblePages / 2;
+                    bool showPage = false;
+                    if (Model.TotalPages <= maxVisiblePages) { showPage = true; }
+                    else if (i == 1 || i == Model.TotalPages) { showPage = true; }
+                    else if (i >= Model.CurrentPage - halfMaxVisible && i <= Model.CurrentPage + halfMaxVisible) { showPage = true; }
+                    else if ((i == Model.CurrentPage - halfMaxVisible - 1 && i > 1) || (i == Model.CurrentPage + halfMaxVisible + 1 && i < Model.TotalPages))
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        if (i == Model.CurrentPage - halfMaxVisible - 1) { i = Model.CurrentPage - halfMaxVisible - 1; }
+                        else if (i == Model.CurrentPage + halfMaxVisible + 1) { i = Model.TotalPages - 1; }
+                        continue;
+                    }
+                    if (showPage)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="#" data-page="@i">@i</a>
+                        </li>
+                    }
+                }
+                <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                    <a class="page-link" href="#" data-page="@(Model.CurrentPage + 1)" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+}
+else if (!string.IsNullOrEmpty(Model.SearchTerm) || !string.IsNullOrEmpty(Model.Category))
+{
+    <div class="col-12">
+        <div class="alert alert-light text-center py-5" role="alert">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4 class="alert-heading">Üzgünüz!</h4>
+            <p class="mb-0">Aradığınız kriterlere uygun ürün bulunamadı.</p>
+            <hr>
+            <a asp-page="/Index" class="btn btn-outline-primary mt-2">Ana Sayfaya Dön</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="col-12">
+        <p class="text-center text-muted py-5">Listelenecek ürün bulunmamaktadır.</p>
+    </div>
+}

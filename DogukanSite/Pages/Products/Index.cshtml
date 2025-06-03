@@ -1,45 +1,87 @@
-﻿@page
+﻿@page "{currentPage:int?}"
 @model DogukanSite.Pages.Products.IndexModel
 @{
+    string pageTitle = "Tüm Ürünler";
+    string pageSubTitle = string.Empty;
+    if (!string.IsNullOrEmpty(Model.Category)) { pageTitle = Model.Category; pageSubTitle = "kategorisindeki ürünler listeleniyor."; }
+    else if (!string.IsNullOrEmpty(Model.SearchTerm)) { pageTitle = $"\"{Model.SearchTerm}\""; pageSubTitle = "için arama sonuçları."; }
+    ViewData["Title"] = pageTitle;
 }
 
-<form method="get" class="mb-4">
-    <div class="row">
-        <div class="col-md-4">
-            <input type="text" name="searchTerm" class="form-control" placeholder="Ürün adı ara..." value="@Model.SearchTerm" />
-        </div>
-        <div class="col-md-4">
-            <select name="category" class="form-control">
-                <option value="">Tüm Kategoriler</option>
-                @foreach (var cat in Model.AllCategories)
-                {
-                    <option value="@cat" selected="@(cat == Model.Category ? "selected" : null)">@cat</option>
-                }
-            </select>
-        </div>
-        <div class="col-md-4">
-            <button type="submit" class="btn btn-primary">Filtrele</button>
-        </div>
+<div class="container py-4 py-md-5">
+    <div class="page-header text-center mb-4">
+        <h1 class="page-title display-5">@pageTitle</h1>
+        @if (!string.IsNullOrEmpty(pageSubTitle))
+        {
+            <p class="lead text-muted">@pageSubTitle</p>
+        }
     </div>
-</form>
 
-<h2>Ürünler</h2>
-<div class="row">
-@foreach (var item in Model.Products)
-{
-    <div class="col-md-3">
-        <div class="card">
-            <img src="@item.ImageUrl" class="card-img-top" />
-            <div class="card-body">
-                <h5>@item.Name</h5>
-                <p>@item.Description</p>
-                <p>@item.Price.ToString("C")</p>
-                <form method="post" asp-page-handler="AddToCart">
-                    <input type="hidden" name="productId" value="@item.Id" />
-                    <button class="btn btn-primary">Sepete Ekle</button>
-                </form>
+    <div class="row">
+        <div class="col-12 d-lg-none mb-3 text-center">
+            <button class="btn btn-outline-primary w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#productFiltersOffcanvas" aria-controls="productFiltersOffcanvas">
+                <i class="fas fa-filter me-2"></i>Filtrele & Sırala
+            </button>
+        </div>
+
+        <div class="col-lg-3 d-none d-lg-block">
+            @* Inline stil kaldırıldı, CSS ile yönetilecek *@
+            <div class="products-sidebar sticky-top">
+                @await Html.PartialAsync("Shared/_ProductFiltersPartial", Model, new ViewDataDictionary(ViewData) { { "DisplayMode", "full" } })
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="product-list-controls d-none d-lg-flex flex-wrap justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded-3">
+                <div id="productCountInfoDesktop" class="mb-2 mb-md-0">
+                    @if (Model.Products != null && Model.Products.Any())
+                    {
+                        <span class="text-muted">@Model.TotalCount ürün bulundu</span>
+                    }
+                    else if (!string.IsNullOrEmpty(Model.SearchTerm) || !string.IsNullOrEmpty(Model.Category))
+                    {
+                        <span class="text-muted">Ürün bulunamadı</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Listelenecek ürün yok</span>
+                    }
+                </div>
+                @* === MASAÜSTÜ İÇİN SIRALAMA KONTROLÜ EKLENDİ === *@
+                <div class="product-sort-control">
+                    @await Html.PartialAsync("Shared/_ProductFiltersPartial", Model, new ViewDataDictionary(ViewData) { { "DisplayMode", "sortOnly" } })
+                </div>
+            </div>
+
+            @* Mobilde ürün sayısı için ayrı bir alan (JS ile güncellenecek) *@
+            <div class="d-lg-none text-center mb-3" id="productCountInfoMobile">
+                @if (Model.Products != null && Model.Products.Any())
+                {
+                    <small class="text-muted">@Model.TotalCount ürün bulundu</small>
+                }
+                else if (!string.IsNullOrEmpty(Model.SearchTerm) || !string.IsNullOrEmpty(Model.Category))
+                {
+                    <small class="text-muted">Ürün bulunamadı</small>
+                }
+                else
+                {
+                    <small class="text-muted">Listelenecek ürün yok</small>
+                }
+            </div>
+
+            <div id="productListContainer">
+                @await Html.PartialAsync("Shared/_ProductListPartial", Model)
             </div>
         </div>
     </div>
-}
+</div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="productFiltersOffcanvas" aria-labelledby="productFiltersOffcanvasLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="productFiltersOffcanvasLabel"><i class="fas fa-filter me-2"></i>Filtrele & Sırala</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Kapat"></button>
+    </div>
+    <div class="offcanvas-body">
+        @await Html.PartialAsync("Shared/_ProductFiltersPartial", Model, new ViewDataDictionary(ViewData) { { "DisplayMode", "full" } })
+    </div>
 </div>

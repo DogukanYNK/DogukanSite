@@ -1,12 +1,93 @@
 ﻿@page
 @model DogukanSite.Pages.Account.LoginModel
 @{
-    ViewData["Title"] = "Giriş Yap";
+    ViewData["Title"] = "Kullanıcı Girişi";
+    Layout = "_AuthLayout"; // YENİ EKLENEN SATIR
 }
-<h2>Giriş Yap</h2>
-<form method="post">
-    <input asp-for="Email" placeholder="Email" class="form-control" />
-    <input asp-for="Password" type="password" placeholder="Şifre" class="form-control" />
-    <button type="submit" class="btn btn-primary">Giriş Yap</button>
-</form>
 
+<div class="container my-5">
+    @* Bu container artık auth-container-wrapper içinde ortalanacak *@
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 col-xl-5">
+            <div class="card shadow-lg border-0 rounded-lg">
+                @* Önceki önerideki gibi başlık card-body içine entegre edilmişti. *@
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4 pt-2">
+                        <h3 class="fw-bold text-primary mb-2">@ViewData["Title"]</h3>
+                        <p class="text-muted small">Hesabınıza erişmek için giriş yapın.</p>
+                    </div>
+
+                    <form id="account" method="post">
+                        @* ... formun geri kalan içeriği ... *@
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3" role="alert"></div>
+                        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                        {
+                            <div class="alert alert-danger mb-3" role="alert">@Model.ErrorMessage</div>
+                        }
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Email" class="form-control" placeholder="ornek@eposta.com" autocomplete="username" aria-required="true" />
+                            <label asp-for="Input.Email"><i class="fas fa-envelope me-2"></i>E-posta</label>
+                            <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Password" class="form-control" placeholder="Şifreniz" autocomplete="current-password" aria-required="true" />
+                            <label asp-for="Input.Password"><i class="fas fa-lock me-2"></i>Şifre</label>
+                            <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="form-check">
+                                <input asp-for="Input.RememberMe" class="form-check-input" />
+                                <label asp-for="Input.RememberMe" class="form-check-label small">
+                                    @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                </label>
+                            </div>
+                            <div>
+                                <a asp-page="./ForgotPassword" class="small text-decoration-none">Şifremi Unuttum?</a>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button id="login-submit" type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+                            </button>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <small class="text-muted">veya</small>
+                        </div>
+
+                        @if (Model.ExternalLogins?.Count > 0)
+                        {
+                            <div class="d-grid gap-2 external-login-buttons">
+                                @foreach (var provider in Model.ExternalLogins)
+                                {
+                                    <button type="submit" class="btn btn-outline-secondary" name="provider" value="@provider.Name" title="@provider.DisplayName ile giriş yap">
+                                        <i class="fab fa-@(provider.Name.ToLower()) me-2"></i> @provider.DisplayName ile Giriş Yap
+                                    </button>
+                                }
+                            </div>
+                            <hr class="my-4">
+                        }
+
+                        <div class="text-center">
+                            <p class="mb-0 small">
+                                Hesabınız yok mu?
+                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="fw-semibold text-decoration-none">Hemen Kayıt Olun!</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3 bg-light border-top-0">
+                    <a asp-page="/Index" class="small text-decoration-none"><i class="fas fa-arrow-left me-1"></i> Ana Sayfaya Dön</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

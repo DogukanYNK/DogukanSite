@@ -1,0 +1,68 @@
+﻿@page "/returns-policy"
+@* @model ReturnsPolicyModel // Eğer PageModel'dan dinamik veri almayacaksanız basit bir PageModel yeterli *@
+@{
+    ViewData["Title"] = "İade ve Değişim Politikası";
+    Layout = "_Layout"; // Ana sitenizin layout'unu kullanır
+}
+
+<div class="page-header text-center mb-4">
+    <h1 class="page-title display-5">@ViewData["Title"]</h1>
+    <p class="lead text-muted">Satın aldığınız ürünlerle ilgili iade ve değişim süreçlerimiz hakkında bilmeniz gerekenler.</p>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-xl-8"> @* İçerik genişliği için daha önce kullandığımız sütun yapısı *@
+            <div class="text-content-page"> @* Metin okunurluğunu artıran sınıfımız *@
+
+                <p class="fw-medium">DogukanStore olarak müşteri memnuniyetini en üst düzeyde tutmayı hedefliyoruz. Satın almış olduğunuz ürünlerle ilgili iade veya değişim taleplerinizde size en iyi şekilde yardımcı olabilmek için lütfen aşağıdaki politikamızı dikkatlice okuyunuz.</p>
+
+                <h2>Genel İade Şartları</h2>
+                <p>Satın aldığınız ürünleri, aşağıdaki koşullar sağlandığı takdirde, ürünü teslim aldığınız tarihten itibaren <strong>14 (ondört) gün</strong> içerisinde herhangi bir gerekçe göstermeksizin iade edebilir veya değişimini talep edebilirsiniz:</p>
+                <ul>
+                    <li>Ürünün orijinal ambalajının bozulmamış, ürünün kendisinin kullanılmamış, yıkanmamış, giyilmemiş ve herhangi bir şekilde zarar görmemiş olması gerekmektedir.</li>
+                    <li>Ürüne ait tüm etiketler, logolar ve diğer tanıtıcı işaretler ürünün üzerinde ve zarar görmemiş olmalıdır.</li>
+                    <li>Ürünle birlikte gönderilen tüm aksesuarlar (kullanım kılavuzu, ek parçalar vb.) ve varsa hediyeler eksiksiz olarak iade edilmelidir.</li>
+                    <li>İade veya değişim talebinizi desteklemek için ürün faturasının veya sipariş numarasının ibraz edilmesi gerekmektedir.</li>
+                </ul>
+                <p class="text-muted"><small>Belirli ürün kategorilerinde (örneğin, kişiye özel üretilen ürünler, hijyenik ürünler) iade ve değişim koşulları farklılık gösterebilir. Lütfen aşağıdaki "İade Edilemeyecek Ürünler" bölümünü inceleyiniz.</small></p>
+
+                <h2>İade Edilemeyecek Ürünler</h2>
+                <p>Aşağıdaki ürün grupları için iade ve değişim kabul edilmemektedir (ilgili yasal düzenlemeler saklı kalmak kaydıyla):</p>
+                <ul>
+                    <li>Ambalajı açılmış, kullanılmış veya deneme dışı bir şekilde yıpranmış hijyenik ürünler (iç giyim, mayo, bikini, kulaklık, küpe vb.).</li>
+                    <li>Kişiye özel olarak üretilmiş, üzerinde değişiklik yapılmış veya müşterinin özel istekleri doğrultusunda kişiselleştirilmiş ürünler.</li>
+                    <li>Niteliği itibarıyla iade edilemeyecek ürünler (örneğin, çabuk bozulabilen veya son kullanma tarihi geçme ihtimali olan ürünler).</li>
+                    <li>Yazılım, dijital içerik ve hediye kartları gibi ürünler.</li>
+                    <li>Koruyucu bandı çıkarılmış kozmetik ve kişisel bakım ürünleri.</li>
+                </ul>
+
+                <h2>İade Süreci</h2>
+                <p>İade işlemini başlatmak için lütfen aşağıdaki adımları takip ediniz:</p>
+                <ol>
+                    <li>Web sitemizdeki hesabınıza giriş yaparak "Siparişlerim" bölümüne gidin.</li>
+                    <li>İade etmek istediğiniz siparişi ve ürünü/ürünleri seçerek "İade Talebi Oluştur" butonuna tıklayın.</li>
+                    <li>İade nedeninizi ve gerekli diğer bilgileri formda belirtin.</li>
+                    <li>Talebiniz incelendikten sonra size e-posta ile bir iade onay kodu ve anlaşmalı kargo bilgilerimiz iletilecektir.</li>
+                    <li>Ürünü/ürünleri, faturası ve tüm aksesuarlarıyla birlikte orijinal ambalajında, size iletilen iade kargo koduyla anlaşmalı kargo firmamıza ücretsiz olarak gönderin. Anlaşmalı kargo kodu kullanılmayan veya farklı kargo firmalarıyla yapılan gönderilerin ücreti müşteriye ait olacaktır.</li>
+                    <li>İade ettiğiniz ürünler tarafımıza ulaştığında, iade şartlarına uygunluğu kontrol edilecek ve iade onayınız SMS ve e-posta ile size bildirilecektir.</li>
+                    <li>Onaylanan iadelerde, ürün bedeli ödeme yaptığınız yönteme bağlı olarak yasal süre olan 10 iş günü içerisinde hesabınıza iade edilecektir. Kredi kartı iadelerinin ekstrenize yansıması bankanızın süreçlerine göre değişiklik gösterebilir.</li>
+                </ol>
+
+                <h2>Değişim Süreci</h2>
+                <p>Satın aldığınız bir ürünün farklı bir bedenini veya rengini talep etmek isterseniz (eğer stoklarımızda mevcutsa), yukarıdaki iade sürecini takip ederek ürünü iade edebilir ve ardından istediğiniz yeni ürün için sitemizden yeni bir sipariş oluşturabilirsiniz. Bu, en hızlı değişim yöntemidir.</p>
+                <p>Alternatif olarak, değişim talebinizi <a asp-page="/Contact">Müşteri Hizmetlerimizle</a> iletişime geçerek iletebilirsiniz. İstediğiniz ürünün stok durumu kontrol edilerek size yardımcı olunacaktır. Değişim işlemlerinde oluşabilecek kargo ücretleri hakkında müşteri hizmetlerimizden bilgi alabilirsiniz.</p>
+                
+                <h2>Kusurlu, Hasarlı veya Yanlış Ürün Gönderimi</h2>
+                <p>Eğer size teslim edilen ürün kusurlu, taşıma sırasında hasar görmüş veya siparişinizden farklı bir ürün ise, lütfen ürünü teslim aldıktan sonra en geç <strong>48 saat</strong> içerisinde durumu fotoğraflarıyla birlikte <a asp-page="/Contact">Müşteri Hizmetlerimize</a> bildirin. Bu tür durumlarda ürünün iadesi veya değişimi için tüm kargo masrafları tarafımızca karşılanacaktır ve süreç hızla işletilecektir.</p>
+
+                <h2>İletişim</h2>
+                <p>İade ve değişim süreçleriyle ilgili her türlü sorunuz, öneriniz veya talebiniz için lütfen çekinmeden <a asp-page="/Contact">İletişim Sayfamız</a> üzerinden veya <a href="mailto:destek@dogukanstore.com">destek@dogukanstore.com</a> e-posta adresimizden bize ulaşın. Size yardımcı olmaktan memnuniyet duyarız.</p>
+
+                <hr class="my-4">
+                <p class="text-muted"><small>Bu iade ve değişim politikası en son @DateTime.Now.ToString("dd MMMM yyyy") tarihinde güncellenmiştir.</small></p>
+
+            </div>
+        </div>
+    </div>
+</div>

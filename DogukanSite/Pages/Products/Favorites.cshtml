@@ -1,0 +1,95 @@
+﻿@page
+@model DogukanSite.Pages.Products.FavoritesModel
+@{
+    ViewData["Title"] = "Favorilerim";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4 py-md-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1 class="display-6 fw-bold">@ViewData["Title"]</h1>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(TempData["StatusMessage"] as string))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["StatusMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.HasFavorites)
+    {
+        <div class="row product-grid row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            @foreach (var product in Model.FavoriteProducts)
+            {
+                <div class="col d-flex align-items-stretch">
+                    @* ViewData'yı olduğu gibi partial'a aktar. 
+                       _ProductCard.cshtml, ViewData["IsFavoritePageContext"]'i kullanacak. *@
+                    <partial name="Shared/_ProductCard"
+                             model="product"
+                             view-data="ViewData" />
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-heart-broken fa-3x text-muted mb-3"></i>
+            <p class="lead">Favori listenizde henüz ürün bulunmuyor.</p>
+            <p>Beğendiğiniz ürünleri kalp ikonuna tıklayarak favorilerinize ekleyebilirsiniz.</p>
+            <a asp-page="/Index" class="btn btn-primary mt-3">Alışverişe Başla</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // site.js'deki global '.favorite-icon' tıklama olayı burada da geçerli olacak.
+            // Olay, sunucudan gelen 'isFavorite' durumuna göre ikonu güncelliyor.
+            // Favorilerim sayfasında bir üründen favori kaldırıldığında,
+            // PageModel'daki OnPostRemoveFromFavoritesOnPageAsync metodu RedirectToPage() yaptığı için
+            // sayfa yenilenecek ve ürün listeden kalkacaktır. Bu, en basit ve etkili yoldur.
+
+            // Eğer AJAX ile anlık olarak kartı kaldırmak isterseniz (sayfa yenilemeden),
+            // o zaman site.js'deki success callback'ini bu sayfaya özel olarak override etmek
+            // veya global AJAX success event'ini dinleyip, eğer favoriden çıkarma başarılıysa
+            // ve bu sayfa Favorites sayfasıysa, ilgili kartı DOM'dan kaldırmak gerekir.
+            // Örnek:
+            /*
+            $(document).on('favoriteToggled', function(event, productId, isNowFavorite, buttonElement) {
+                // Bu event'i site.js'deki ToggleFavorite AJAX success'inde tetikleyebilirsiniz.
+                var currentPagePath = window.location.pathname;
+                if (currentPagePath.toLowerCase().includes('/account/favorites') && !isNowFavorite) {
+                    // Eğer favoriler sayfasındaysak ve ürün favorilerden çıkarıldıysa
+                    $(buttonElement).closest('.col').fadeOut(function() { $(this).remove(); });
+
+                    if ($('.product-grid .col').length === 0) {
+                        // Ekranda hiç ürün kalmadıysa "Favori listeniz boş" mesajını göster
+                        // (Bu mesajı dinamik olarak eklemek veya görünür yapmak gerekir)
+                        $('.product-grid').replaceWith(
+                            '<div class="text-center py-5">' +
+                            '<i class="fas fa-heart-broken fa-3x text-muted mb-3"></i>' +
+                            '<p class="lead">Favori listenizde ürün kalmadı.</p>' +
+                            '<p>Beğendiğiniz ürünleri kalp ikonuna tıklayarak favorilerinize ekleyebilirsiniz.</p>' +
+                            '<a asp-page="/Index" class="btn btn-primary mt-3">Alışverişe Başla</a>' +
+                            '</div>'
+                        );
+                    }
+                }
+            });
+            */
+        });
+    </script>
+}

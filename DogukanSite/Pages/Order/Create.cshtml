@@ -1,28 +1,178 @@
 ﻿@page
 @model DogukanSite.Pages.Order.CreateModel
 @{
-    ViewData["Title"] = "Siparişi Tamamla";
+    ViewData["Title"] = "Teslimat Bilgileri";
+    Layout = "_CheckoutLayout"; // Hala checkout layout'unu kullanıyoruz
+    ViewData["HideLayoutHeaderFooter"] = true; // YENİ EKLENEN SATIR: Layout'a header/footer'ı gizlemesi için işaret
 }
 
-<h2>Siparişi Tamamla</h2>
-
-<form method="post">
-    <div class="form-group">
-        <label>Ad Soyad</label>
-        <input asp-for="CustomerName" class="form-control" required />
+<div class="checkout-steps-container py-3 mb-4">
+    <div class="container">
+        <ul class="nav nav-pills checkout-steps">
+            <li class="nav-item flex-fill text-center">
+                <a class="nav-link disabled" asp-page="/Cart/Index">
+                    <i class="fas fa-shopping-cart me-2 d-block d-md-inline"></i>Sepetim
+                </a>
+            </li>
+            <li class="nav-item flex-fill text-center">
+                <a class="nav-link active" asp-page="/Order/Create" aria-current="page">
+                    <i class="fas fa-map-marker-alt me-2 d-block d-md-inline"></i>Teslimat
+                </a>
+            </li>
+            <li class="nav-item flex-fill text-center">
+                <a class="nav-link disabled" href="#">
+                    <i class="fas fa-credit-card me-2 d-block d-md-inline"></i>Ödeme
+                </a>
+            </li>
+            <li class="nav-item flex-fill text-center">
+                <a class="nav-link disabled" href="#">
+                    <i class="fas fa-check-circle me-2 d-block d-md-inline"></i>Onay
+                </a>
+            </li>
+        </ul>
     </div>
-    <div class="form-group">
-        <label>Adres</label>
-        <textarea asp-for="Address" class="form-control" required></textarea>
-    </div>
-    <h4>Sepetiniz</h4>
-    <ul>
-        @foreach (var item in Model.CartItems)
-        {
-            <li>@item.Product.Name - @item.Quantity x @item.Product.Price.ToString("C")</li>
-        }
-    </ul>
-    <p><strong>Toplam:</strong> @Model.Total.ToString("C")</p>
-    <button type="submit" class="btn btn-success mt-3">Siparişi Gönder</button>
-</form>
+</div>
 
+<div class="container py-4">
+    @* Bu ana container için py-4 yeterli olabilir, _AuthLayout zaten ortalıyor *@
+    <div class="page-header text-center mb-4">
+        <h1 class="page-title display-6">@ViewData["Title"]</h1>
+    </div>
+
+    @if (Model.CartItems == null || !Model.CartItems.Any())
+    {
+        <div class="alert alert-warning text-center">
+            Sipariş verebilmek için sepetinizde ürün bulunmalıdır.
+            <a asp-page="/Products/Index" class="alert-link ms-2">Alışverişe Başla</a>
+        </div>
+    }
+    else
+    {
+        <form method="post">
+            <div class="row g-lg-5 g-4">
+                @* Büyük ekranlarda aralığı biraz daha açabiliriz *@
+                <div class="col-lg-7 col-xl-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light py-3">
+                            <h5 class="mb-0"><i class="fas fa-user-edit me-2 text-primary"></i>Alıcı Bilgileri</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label asp-for="OrderInput.CustomerName" class="form-label"></label>
+                                    <input asp-for="OrderInput.CustomerName" class="form-control form-control-lg" />
+                                    <span asp-validation-for="OrderInput.CustomerName" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="OrderInput.Email" class="form-label"></label>
+                                    <input asp-for="OrderInput.Email" type="email" class="form-control form-control-lg" />
+                                    <span asp-validation-for="OrderInput.Email" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="OrderInput.PhoneNumber" class="form-label"></label>
+                                    <input asp-for="OrderInput.PhoneNumber" type="tel" class="form-control form-control-lg" placeholder="Örn: 5xxxxxxxxx" />
+                                    <span asp-validation-for="OrderInput.PhoneNumber" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light py-3">
+                            <h5 class="mb-0"><i class="fas fa-shipping-fast me-2 text-primary"></i>Teslimat Adresi</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <label asp-for="OrderInput.AddressLine1" class="form-label"></label>
+                                <textarea asp-for="OrderInput.AddressLine1" class="form-control form-control-lg" rows="3" placeholder="Mahalle, Cadde, Sokak, Bina No, Daire No"></textarea>
+                                <span asp-validation-for="OrderInput.AddressLine1" class="text-danger small"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="OrderInput.AddressLine2" class="form-label"></label>
+                                <input asp-for="OrderInput.AddressLine2" class="form-control form-control-lg" placeholder="Site Adı, Ek Adres Bilgileri vb." />
+                                <span asp-validation-for="OrderInput.AddressLine2" class="text-danger small"></span>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label asp-for="OrderInput.City" class="form-label"></label>
+                                    <input asp-for="OrderInput.City" class="form-control form-control-lg" />
+                                    <span asp-validation-for="OrderInput.City" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="OrderInput.District" class="form-label"></label>
+                                    <input asp-for="OrderInput.District" class="form-control form-control-lg" />
+                                    <span asp-validation-for="OrderInput.District" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="OrderInput.PostalCode" class="form-label"></label>
+                                    <input asp-for="OrderInput.PostalCode" class="form-control form-control-lg" />
+                                    <span asp-validation-for="OrderInput.PostalCode" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <label asp-for="OrderInput.OrderNotes" class="form-label"></label>
+                                <textarea asp-for="OrderInput.OrderNotes" class="form-control" rows="2" placeholder="Satıcıya iletmek istediğiniz bir not varsa..."></textarea>
+                                <span asp-validation-for="OrderInput.OrderNotes" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 col-xl-4">
+                    <div class="order-summary-container bg-white p-3 p-md-4 shadow-sm rounded-3 sticky-lg-top">
+                        <h4 class="mb-3 border-bottom pb-2">Siparişiniz</h4>
+                        @if (Model.CartItems != null)
+                        {
+                            foreach (var item in Model.CartItems)
+                            {
+                                <div class="d-flex justify-content-between align-items-start mb-2 summary-cart-item">
+                                    <div class="d-flex">
+                                        @* Inline style kaldırıldı, summary-cart-item-img sınıfı eklendi *@
+                                        <img src="@(string.IsNullOrEmpty(item.ProductImageUrl) ? "/images/placeholder-product-thumb.png" : item.ProductImageUrl)"
+                                             alt="@item.ProductName"
+                                             class="me-2 summary-cart-item-img">
+                                        <div>
+                                            <small class="d-block fw-semibold summary-cart-item-name">@item.ProductName</small>
+                                            <small class="text-muted">@item.Quantity x @item.UnitPrice.ToString("C")</small>
+                                        </div>
+                                    </div>
+                                    <small class="fw-semibold">@item.TotalPrice.ToString("C")</small>
+                                </div>
+                            }
+                        }
+                        <hr class="my-3">
+                        <ul class="list-unstyled mb-3">
+                            <li class="d-flex justify-content-between py-1">
+                                <small>Ara Toplam</small>
+                                <small>@Model.Subtotal.ToString("C")</small>
+                            </li>
+                            <li class="d-flex justify-content-between py-1">
+                                <small>Kargo Ücreti</small>
+                                <small>@(Model.ShippingCost > 0 ? Model.ShippingCost.ToString("C") : "Ücretsiz")</small>
+                            </li>
+                            @* İndirimler buraya eklenebilir *@
+                            <li class="d-flex justify-content-between py-2 fw-bold border-top mt-2">
+                                <span>Genel Toplam</span>
+                                <span>@Model.Total.ToString("C")</span>
+                            </li>
+                        </ul>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-credit-card me-2"></i>Ödemeye Devam Et
+                            </button>
+                        </div>
+                        <div class="text-center small text-muted mt-3">
+                            <i class="fas fa-lock me-1"></i> Bilgileriniz SSL ile korunmaktadır.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+</div>
+
+@section ValidationScripts {
+    <partial name="_ValidationScriptsPartial" />
+}
