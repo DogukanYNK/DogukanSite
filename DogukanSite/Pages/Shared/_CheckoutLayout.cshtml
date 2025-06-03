@@ -1,0 +1,64 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions {
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(ViewContext.HttpContext).RequestToken;
+    }
+}
+@{
+    bool hideHeaderFooter = ViewData["HideLayoutHeaderFooter"] as bool? ?? false;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="RequestVerificationToken" content="@GetAntiXsrfRequestToken()">
+    <title>@ViewData["Title"] - DogukanStore</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/DogukanSite.styles.css" asp-append-version="true" />
+</head>
+<body class="checkout-layout-active">
+
+    @if (!hideHeaderFooter) // Header'ı sadece hideHeaderFooter true DEĞİLSE göster
+    {
+        <header class="checkout-header-simple">
+            <div class="container">
+                <a asp-page="/Index" class="store-name-link">DogukanStore</a>
+                <span class="secure-checkout-text ms-2 ms-md-3">
+                    <i class="fas fa-lock fa-sm"></i> Güvenli Ödeme
+                </span>
+            </div>
+        </header>
+    }
+
+    @* Eğer header yoksa, ana içeriğin üst boşluğunu ayarlamak gerekebilir *@
+    <main role="main" class="checkout-main-content" style="@(hideHeaderFooter ? "padding-top: 0;" : "")">
+        @RenderBody()
+    </main>
+
+    @if (!hideHeaderFooter) // Footer'ı sadece hideHeaderFooter true DEĞİLSE göster
+    {
+        <footer class="checkout-footer-simple">
+            <div class="container">
+                &copy; @DateTime.Now.Year DogukanStore.
+                <a asp-page="/Privacy" class="ms-2 text-decoration-none">Gizlilik Politikası</a> |
+                <a asp-page="/Terms" class="ms-1 text-decoration-none">Kullanım Koşulları</a>
+            </div>
+        </footer>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("ValidationScripts", required: false)
+</body>
+</html>

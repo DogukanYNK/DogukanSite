@@ -1,0 +1,90 @@
+﻿@page "/sss"
+@* @model SSSPageModel // Eğer dinamik içerik gerekiyorsa bir PageModel oluşturabilirsiniz *@
+@{
+    ViewData["Title"] = "Sıkça Sorulan Sorular";
+    Layout = "_Layout"; // Ana sitenizin layout'unu kullanır
+}
+
+<div class="page-header text-center mb-4">
+    <h1 class="page-title display-5">@ViewData["Title"]</h1>
+    <p class="lead text-muted">Aklınıza takılan soruların yanıtlarını burada bulabilirsiniz.</p>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-xl-8">
+            @* text-content-page sınıfı, accordion'un genişliğini ve içindeki metin okunurluğunu yönetir *@
+            <div class="text-content-page"> 
+                <div class="accordion shadow-sm" id="faqAccordion">
+
+                    @* --- Örnek Soru 1 --- *@
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingSoru1">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSoru1" aria-expanded="true" aria-controls="collapseSoru1">
+                                Siparişimi nasıl takip edebilirim?
+                            </button>
+                        </h2>
+                        <div id="collapseSoru1" class="accordion-collapse collapse show" aria-labelledby="headingSoru1" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Siparişinizi verdikten sonra size e-posta ile gönderilecek olan kargo takip numarasını kullanarak ilgili kargo firmasının web sitesi veya mobil uygulaması üzerinden siparişinizin güncel durumunu anlık olarak takip edebilirsiniz.</p>
+                                <p>Ayrıca, sitemize üye girişi yaparak "Hesabım" > "Siparişlerim" bölümünden de tüm siparişlerinizin detaylarına ve kargo takip bilgilerine ulaşabilirsiniz.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* --- Örnek Soru 2 --- *@
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingSoru2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSoru2" aria-expanded="false" aria-controls="collapseSoru2">
+                                İade ve değişim şartlarınız nelerdir?
+                            </button>
+                        </h2>
+                        <div id="collapseSoru2" class="accordion-collapse collapse" aria-labelledby="headingSoru2" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Satın aldığınız ürünleri, kullanılmamış, etiketi üzerinde ve orijinal ambalajında olması koşuluyla teslim aldığınız tarihten itibaren 14 gün içerisinde iade edebilir veya değişim talep edebilirsiniz.</p>
+                                <p>İade ve değişim süreci hakkında daha detaylı bilgi almak ve talebinizi oluşturmak için <a asp-page="/ReturnsPolicy">İade ve Değişim Politikası</a> sayfamızı ziyaret edebilirsiniz. Hijyenik ürünler, kişiye özel üretilen ürünler gibi bazı kategorilerde iade ve değişim kabul edilmeyebilir.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* --- Örnek Soru 3 --- *@
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingSoru3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSoru3" aria-expanded="false" aria-controls="collapseSoru3">
+                                Hangi ödeme yöntemlerini kabul ediyorsunuz?
+                            </button>
+                        </h2>
+                        <div id="collapseSoru3" class="accordion-collapse collapse" aria-labelledby="headingSoru3" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Sitemizde güvenle alışveriş yapabilmeniz için çeşitli ödeme yöntemleri sunuyoruz:</p>
+                                <ul>
+                                    <li>Kredi Kartı (Visa, MasterCard, American Express vb. - 3D Secure ile güvenli ödeme)</li>
+                                    <li>Banka Kartı (Debit Kart)</li>
+                                    <li>Havale/EFT</li>
+                                    <li>Kapıda Nakit Ödeme (Belirli koşullar ve ek ücretler geçerli olabilir)</li>
+                                </ul>
+                                <p>Tüm online ödemeleriniz en güncel SSL sertifikaları ve güvenlik protokolleri ile korunmaktadır.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* --- Buraya daha fazla soru ve cevap ekleyebilirsiniz --- *@
+                    @*
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingSoruX">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSoruX" aria-expanded="false" aria-controls="collapseSoruX">
+                                Diğer bir soru?
+                            </button>
+                        </h2>
+                        <div id="collapseSoruX" class="accordion-collapse collapse" aria-labelledby="headingSoruX" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Cevabı buraya gelecek...
+                            </div>
+                        </div>
+                    </div>
+                    *@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

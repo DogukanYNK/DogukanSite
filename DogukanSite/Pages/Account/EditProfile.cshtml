@@ -1,0 +1,99 @@
+﻿@page
+@model DogukanSite.Pages.Account.EditProfileModel
+@{
+    ViewData["Title"] = "Profilimi Düzenle";
+    Layout = "_AuthLayout"; // Minimal layout
+}
+
+<div class="container my-lg-5 my-4">
+    <div class="page-header text-center mb-4">
+        <h1 class="page-title display-5">@ViewData["Title"]</h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body p-4 p-md-5">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            @* Dashboard Navigasyonunu buraya partial olarak ekleyebiliriz *@
+                            @* Veya bu sayfa için navigasyonu sadeleştirebiliriz *@
+                            <div class="list-group dashboard-nav">
+                                <a asp-page="/Account/Dashboard" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-arrow-left me-2"></i>Hesabıma Dön
+                                </a>
+                                <a asp-page="/Account/EditProfile" class="list-group-item list-group-item-action active">
+                                    @* Bu sayfa aktif *@
+                                    <i class="fas fa-user-edit me-2"></i>Profilimi Düzenle
+                                </a>
+                                <a asp-page="/Account/ChangePasswordPage" class="list-group-item list-group-item-action">
+                                    @* Özel Şifre Değiştirme Sayfası *@
+                                    <i class="fas fa-key me-2"></i>Şifre Değiştir
+                                </a>
+                                @* Diğer özel yönetim sayfalarınıza linkler *@
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            @if (!string.IsNullOrEmpty(Model.StatusMessage))
+                            {
+                                var statusMessageClass = Model.StatusMessage.ToLower().Contains("hata") ? "danger" : "success";
+                                <div class="alert alert-@statusMessageClass alert-dismissible fade show" role="alert">
+                                    @Model.StatusMessage
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            }
+
+                            <h4 class="mb-3">Kişisel Bilgiler</h4>
+                            <hr class="my-3">
+
+                            <form id="edit-profile-form" method="post">
+                                <div asp-validation-summary="ModelOnly" class="alert alert-danger text-start" role="alert"></div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input asp-for="Input.FirstName" class="form-control" placeholder="Adınız" />
+                                            <label asp-for="Input.FirstName"><i class="fas fa-user me-2"></i></label>
+                                            <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input asp-for="Input.LastName" class="form-control" placeholder="Soyadınız" />
+                                            <label asp-for="Input.LastName"><i class="fas fa-user-tag me-2"></i></label>
+                                            <span asp-validation-for="Input.LastName" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Input.Email" class="form-control" placeholder="E-posta" readonly />
+                                    <label asp-for="Input.Email"><i class="fas fa-envelope me-2"></i></label>
+                                    <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                                    <small class="form-text text-muted">E-posta adresiniz değiştirilemez. Değişiklik için destek ile iletişime geçin.</small>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Telefon Numaranız" />
+                                    <label asp-for="Input.PhoneNumber"><i class="fas fa-phone me-2"></i></label>
+                                    <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                                </div>
+
+                                <div class="d-grid mt-4">
+                                    <button id="update-profile-button" type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-save me-2"></i>Değişiklikleri Kaydet
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,113 @@
+﻿@page "{id:int}"
+@model DogukanSite.Pages.Admin.EditProductModel
+@{
+    ViewData["Title"] = $"Ürünü Düzenle: {Model.Product?.Name}"; // Product null olabilir, kontrol et
+    Layout = "_AdminLayout";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="page-header text-center mb-4">
+                <h1 class="page-title display-6">@ViewData["Title"]</h1>
+                <p class="lead text-muted">Ürün bilgilerini güncelleyebilirsiniz.</p>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" id="editProductForm">
+                        <input type="hidden" asp-for="Product.Id" />
+                        <input type="hidden" asp-for="Product.DateAdded" /> @* Eklenme tarihini korumak için *@
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Product.Name" class="form-label fw-semibold">Ürün Adı</label>
+                            <input asp-for="Product.Name" class="form-control form-control-lg" />
+                            <span asp-validation-for="Product.Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Product.Description" class="form-label fw-semibold">Açıklama</label>
+                            <textarea asp-for="Product.Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Product.Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="Product.Price" class="form-label fw-semibold">Fiyat (₺)</label>
+                                <input asp-for="Product.Price" type="number" step="0.01" min="0" class="form-control" />
+                                <span asp-validation-for="Product.Price" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Product.Category" class="form-label fw-semibold">Kategori</label>
+                                <input asp-for="Product.Category" class="form-control" />
+                                <span asp-validation-for="Product.Category" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Product.Stock" class="form-label fw-semibold">Stok Adedi</label>
+                                <input asp-for="Product.Stock" type="number" min="0" class="form-control" />
+                                <span asp-validation-for="Product.Stock" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Product.ImageUrl" class="form-label fw-semibold">Resim URL</label>
+                            <input asp-for="Product.ImageUrl" type="url" class="form-control" id="Product_ImageUrl_Edit" />
+                            <span asp-validation-for="Product.ImageUrl" class="text-danger small"></span>
+                            <img id="imagePreviewEdit" src="@Model.Product?.ImageUrl" alt="Resim Önizleme"
+                                 class="mt-2 img-thumbnail"
+                                 style="max-height: 150px; @(string.IsNullOrEmpty(Model.Product?.ImageUrl) ? "display: none;" : "")" />
+                        </div>
+
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" class="form-check-input" asp-for="Product.IsFeatured">
+                            <label class="form-check-label" asp-for="Product.IsFeatured">Öne Çıkan Ürün</label>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-page="./ManageProducts" class="btn btn-outline-secondary">İptal / Listeye Dön</a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-save me-2"></i>Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            function updatePreview(url, previewElement) {
+                try {
+                    new URL(url); // Basit URL geçerliliği kontrolü
+                    if (url && (url.toLowerCase().endsWith('.jpg') || url.toLowerCase().endsWith('.jpeg') || url.toLowerCase().endsWith('.png') || url.toLowerCase().endsWith('.gif') || url.toLowerCase().endsWith('.webp'))) {
+                        previewElement.attr('src', url).show();
+                    } else {
+                        previewElement.attr('src', '#').hide();
+                    }
+                } catch (_) {
+                    previewElement.attr('src', '#').hide(); // Geçersiz URL ise gizle
+                }
+            }
+
+            $('#Product_ImageUrl_Edit').on('input', function () {
+                updatePreview($(this).val(), $('#imagePreviewEdit'));
+            });
+
+            // Sayfa yüklendiğinde mevcut ImageUrl varsa önizlemeyi göster
+            var initialImageUrl = $('#Product_ImageUrl_Edit').val();
+            if (initialImageUrl) {
+                updatePreview(initialImageUrl, $('#imagePreviewEdit'));
+            } else {
+                $('#imagePreviewEdit').hide();
+            }
+        });
+    </script>
+}

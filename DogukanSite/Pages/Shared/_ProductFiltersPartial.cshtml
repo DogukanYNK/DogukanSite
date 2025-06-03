@@ -1,0 +1,67 @@
+﻿@* Shared/_ProductFiltersPartial.cshtml *@
+@model DogukanSite.Pages.Products.IndexModel
+@{
+    var displayMode = ViewData["DisplayMode"] as string ?? "full"; // Varsayılan: "full"
+    // Diğer olası değerler: "categoriesOnly", "sortOnly"
+}
+
+@if (displayMode == "full" || displayMode == "categoriesOnly")
+{
+    <div class="sidebar-widget mb-4">
+        <h5 class="sidebar-widget-title">Kategoriler</h5>
+        @if (Model.AllCategories != null && Model.AllCategories.Any())
+        {
+            <ul class="list-unstyled category-filter-list-v2">
+                <li>
+                    <a href="#"
+                       data-category="" @* Tüm kategoriler için boş değer *@
+                       class="category-link ajax-filter-link @(string.IsNullOrEmpty(Model.Category) ? "active" : "")">
+                        <i class="fas fa-th-list fa-fw me-2"></i>Tüm Kategoriler
+                    </a>
+                </li>
+                @foreach (var categoryName in Model.AllCategories)
+                {
+                    <li>
+                        <a href="#"
+                           data-category="@categoryName"
+                           class="category-link ajax-filter-link @(Model.Category == categoryName ? "active" : "")">
+                            <i class="fas fa-chevron-right fa-fw me-2 small"></i>@categoryName
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted small mb-0">Kategori bulunamadı.</p>
+        }
+    </div>
+}
+
+@if (displayMode == "full" || displayMode == "sortOnly")
+{
+    <div class="sidebar-widget @(displayMode == "sortOnly" ? "" : "mb-0")">
+        @* Sadece sıralama ise alt boşluk olmayabilir veya farklı olabilir *@
+        @if (displayMode == "full") // Sadece "full" modda "Sırala" başlığını göster
+        {
+            <h5 class="sidebar-widget-title">Sırala</h5>
+        }
+        @* ID'leri unique yapmak için displayMode eklendi, JS'in doğru formu hedeflemesi için önemli *@
+        <form method="get" id="productSortForm_@(displayMode)" class="filter-sort-form @(displayMode == "sortOnly" ? "d-flex align-items-center" : "")">
+            <input type="hidden" name="searchTerm" id="filterSearchTerm_@(displayMode)" value="@Model.SearchTerm" />
+            <input type="hidden" name="category" id="filterCategory_@(displayMode)" value="@Model.Category" />
+            <input type="hidden" name="currentPage" id="filterCurrentPage_@(displayMode)" value="1" />
+
+            @if (displayMode == "sortOnly") // Sadece sıralama modunda label ekle
+            {
+                <label for="sortByProductPage_@(displayMode)" class="form-label text-muted small me-2 mb-0">Sırala:</label>
+            }
+            <select name="sortBy" id="sortByProductPage_@(displayMode)" class="form-select form-select-sm ajax-sort-select" style="@(displayMode == "sortOnly" ? "width: auto; min-width: 180px;" : "")">
+                <option value="newest" selected="@(Model.SortBy == "newest" || string.IsNullOrEmpty(Model.SortBy))">En Yeniler</option>
+                <option value="priceAsc" selected="@(Model.SortBy == "priceAsc")">Fiyat: Düşükten Yükseğe</option>
+                <option value="priceDesc" selected="@(Model.SortBy == "priceDesc")">Fiyat: Yüksekten Düşüğe</option>
+                <option value="nameAsc" selected="@(Model.SortBy == "nameAsc")">Ad: A-Z</option>
+            </select>
+        </form>
+    </div>
+}

@@ -1,0 +1,188 @@
+﻿/* --- (Login, Register) --- */
+.card .btn-outline-secondary[name="provider"], /* Bu satırı ekleyin veya mevcut olanı güncelleyin */
+.account-page-card .btn-outline-secondary[name="provider"] {
+    /* Mevcut kuralınız */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-color: var(--border-color-strong);
+    color: var(--text-base);
+}
+
+    .card .btn-outline-secondary[name="provider"]:hover,
+    .account-page-card .btn-outline-secondary[name="provider"]:hover {
+        background-color: var(--brand-light);
+        color: var(--brand-primary);
+        border-color: var(--brand-primary);
+    }
+
+    .card .btn-outline-secondary[name="provider"] i.fab,
+    .account-page-card .btn-outline-secondary[name="provider"] i.fab {
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+.card .btn-outline-secondary[value="Google"] i.fab,
+.account-page-card .btn-outline-secondary[value="Google"] i.fab {
+    color: #db4437;
+}
+
+.card .btn-outline-secondary[value="Facebook"] i.fab,
+.account-page-card .btn-outline-secondary[value="Facebook"] i.fab {
+    color: #4267b2;
+}
+
+.card .btn-outline-secondary[value="Microsoft"] i.fab,
+.account-page-card .btn-outline-secondary[value="Microsoft"] i.fab {
+    color: #00a4ef;
+}
+
+.card .btn-outline-secondary[name="provider"],
+.external-login-buttons .btn-outline-secondary[name="provider"] {
+    /* Yeni eklediğimiz sınıfla da hedefleyebiliriz */
+    /* ... (flex, align-items, justify-content, font-weight, border-color, color vb. stiller) ... */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* İkon ve metni ortalamak için */
+    font-weight: 500;
+    border-color: var(--border-color-strong);
+    color: var(--text-base);
+}
+
+    .card .btn-outline-secondary[name="provider"]:hover,
+    .external-login-buttons .btn-outline-secondary[name="provider"]:hover {
+        /* ... (background-color, color, border-color hover stilleri) ... */
+        background-color: var(--brand-light);
+        color: var(--brand-primary);
+        border-color: var(--brand-primary);
+    }
+
+    .card .btn-outline-secondary[name="provider"] i.fab,
+    .external-login-buttons .btn-outline-secondary[name="provider"] i.fab {
+        /* ... (margin-right, font-size ikon stilleri) ... */
+        margin-right: 0.75rem;
+        font-size: 1.1rem; /* İkon boyutu */
+    }
+
+.card .btn-outline-secondary[value="Google"] i.fab,
+.external-login-buttons .btn-outline-secondary[value="Google"] i.fab {
+    color: #db4437;
+}
+
+.card .btn-outline-secondary[value="Facebook"] i.fab,
+.external-login-buttons .btn-outline-secondary[value="Facebook"] i.fab {
+    color: #4267b2;
+}
+
+.card .btn-outline-secondary[value="Microsoft"] i.fab,
+.external-login-buttons .btn-outline-secondary[value="Microsoft"] i.fab {
+    color: #00a4ef;
+}
+/* Hata özeti alanı, hata olmadığında (ModelState geçerli olduğunda) gizlenir */
+.validation-summary-valid.alert, /* .alert sınıfı Bootstrap'ten geldiği için ekledim, daha spesifik olur */
+.validation-summary-valid[data-valmsg-summary="true"] ul {
+    /* içindeki ul'yi de gizleyebiliriz */
+    display: none;
+}
+
+/* Genellikle sadece aşağıdaki yeterli olur: */
+.validation-summary-valid.alert {
+    display: none;
+}
+
+/* Sosyal medya ikon renkleri (zaten tanımlıydı, korundu) */
+.account-page-card .btn-outline-secondary[value="Google"] i {
+    color: #db4437;
+}
+
+.account-page-card .btn-outline-secondary[value="Facebook"] i {
+    color: #4267b2;
+}
+
+.account-page-card .btn-outline-secondary[value="Microsoft"] i {
+    color: #00a4ef;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* --- Hesap Dashboard Navigasyon --- */
+.dashboard-nav .list-group-item {
+    font-weight: 500;
+    border: none; /* Bootstrap'in varsayılan kenarlıklarını kaldırıyoruz */
+    border-left-width: 3px !important; /* Sadece sol kenarlık önemli */
+    border-left-style: solid !important;
+    border-left-color: transparent !important; /* Aktif olmayanın sol kenarlığı transparan */
+    border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0 !important; /* Sağ köşeler yuvarlak */
+    margin-bottom: 0.35rem; /* Öğeler arası boşluk biraz artırıldı */
+    transition: background-color 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
+    padding: 0.85rem 1.25rem; /* İç boşluk */
+    font-size: 0.9rem; /* Font boyutu */
+    color: var(--text-base); /* Varsayılan metin rengi */
+}
+
+    .dashboard-nav .list-group-item.active {
+        background-color: var(--brand-primary);
+        border-left-color: var( --brand-primary ) !important; /* Sol kenarlık ana renkte */
+        color: white;
+        box-shadow: var(--box-shadow-sm); /* Aktif öğeye hafif gölge */
+    }
+
+        .dashboard-nav .list-group-item.active i {
+            color: white; /* Aktif durumda ikon rengi */
+        }
+
+    .dashboard-nav .list-group-item:not(.active):hover,
+    .dashboard-nav .list-group-item:not(.active):focus {
+        background-color: var(--brand-light);
+        color: var(--brand-primary);
+        border-left-color: var( --brand-primary ) !important; /* Hover/Focus'ta sol kenarlık ana renkte */
+        outline: none; /* Focus outline'ı kaldırıldı, kenarlık yeterli */
+        box-shadow: none;
+    }
+
+    .dashboard-nav .list-group-item i {
+        margin-right: 0.85rem; /* İkon ve metin arası boşluk */
+        width: 20px; /* İkonların hizalı durması için sabit genişlik */
+        text-align: center;
+        color: var(--text-muted); /* Varsayılan ikon rengi */
+        transition: color 0.2s ease;
+    }
+
+    .dashboard-nav .list-group-item:not(.active):hover i,
+    .dashboard-nav .list-group-item:not(.active):focus i {
+        color: var(--brand-primary); /* Hover/Focus'ta ikon rengi */
+    }
+
+/* Admin paneli linki için (warning stili) */
+.dashboard-nav .list-group-item-warning {
+    border-left-color: var( --bs-warning, #ffc107 ) !important; /* Bootstrap warning rengi */
+    /* background-color: color-mix(in srgb, var(--bs-warning, #ffc107) 10%, transparent); /* Hafif warning arkaplanı */
+}
+
+    .dashboard-nav .list-group-item-warning:hover,
+    .dashboard-nav .list-group-item-warning:focus {
+        background-color: var(--bs-warning-bg-subtle, #fff3cd);
+        color: var(--bs-warning-text-emphasis, #664d03);
+        border-left-color: var(--bs-warning, #ffc107) !important;
+    }
+
+        .dashboard-nav .list-group-item-warning:hover i,
+        .dashboard-nav .list-group-item-warning:focus i {
+            color: var(--bs-warning-text-emphasis, #664d03);
+        }
+
+/* Dashboard Logout Butonu */
+.dashboard-nav form .btn-outline-danger {
+    font-weight: 500; /* Diğer nav item'larla uyumlu */
+    font-size: 0.9rem; /* Diğer nav item'larla uyumlu */
+    padding: 0.75rem 1.25rem; /* Biraz daha az dikey padding */
+}

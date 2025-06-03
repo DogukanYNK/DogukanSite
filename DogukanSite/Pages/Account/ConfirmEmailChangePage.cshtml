@@ -1,0 +1,49 @@
+﻿@page
+@model DogukanSite.Pages.Account.ConfirmEmailChangePageModel
+@{
+    // ViewData["Title"] PageModel'da set edildi.
+    Layout = "_AuthLayout";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body p-4 p-md-5 text-center">
+                    <h1 class="page-title h3 mb-4">@ViewData["Title"]</h1>
+
+                    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+                    {
+                        var alertClass = Model.StatusMessage.StartsWith("Hata:") ? "alert-danger" : "alert-success";
+                        <div class="alert @alertClass" role="alert">
+                            @if (Model.StatusMessage.StartsWith("Hata:"))
+                            {
+                                <i class="fas fa-times-circle me-2"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-check-circle me-2"></i>
+                            }
+                            @Model.StatusMessage
+                        </div>
+                    }
+
+                    @if (Model.StatusMessage != null && !Model.StatusMessage.StartsWith("Hata:"))
+                    {
+                        <p class="mt-4">
+                            E-posta adresiniz güncellendi. Hesabınıza yeni bilgilerinizle erişebilirsiniz.
+                        </p>
+                        <a asp-page="/Account/Login" class="btn btn-primary mt-2">Giriş Yap Sayfasına Git</a>
+                    }
+                    else
+                    {
+                        <p class="mt-4">
+                            <a asp-page="/Index" class="btn btn-outline-secondary">Ana Sayfaya Dön</a>
+                        </p>
+                    }
+                    <p class="mt-3"><a asp-page="/Account/Dashboard" class="text-decoration-none small">Hesabım Sayfasına Dön</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

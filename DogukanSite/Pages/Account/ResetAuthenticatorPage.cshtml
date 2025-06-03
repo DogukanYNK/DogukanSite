@@ -1,0 +1,62 @@
+﻿@page
+@model DogukanSite.Pages.Account.ResetAuthenticatorPageModel
+@{
+    ViewData["Title"] = "Doğrulama Uygulamasını Sıfırla";
+    Layout = "_AuthLayout";
+}
+
+<div class="container my-lg-5 my-4">
+    <div class="page-header text-center mb-4">
+        <h1 class="page-title display-6">@ViewData["Title"]</h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body p-4 p-md-5">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="list-group dashboard-nav">
+                                <a asp-page="/Account/TwoFactorAuthenticationPage" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-arrow-left me-2"></i>2FA Ayarlarına Dön
+                                </a>
+                                @* Bu sayfada diğer navigasyon linkleri genellikle gereksizdir *@
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            @* StatusMessage genellikle işlem sonrası diğer sayfada gösterilecek,
+                               ama OnGet'te bir hata (örn: zaten ayar yok) olursa burada görünebilir. *@
+                            @if (!string.IsNullOrEmpty(Model.StatusMessage))
+                            {
+                                <div class="alert alert-info" role="alert">
+                                    @Model.StatusMessage
+                                </div>
+                            }
+
+                            <div class="alert alert-danger text-center">
+                                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Önemli Uyarı!</h4>
+                                <p>Bu işlem, mevcut doğrulama uygulaması anahtarınızı (Authenticator Key) sıfırlayacaktır. Eğer iki aşamalı doğrulama (2FA) etkinse, bu işlem aynı zamanda 2FA'yı da devre dışı bırakacaktır.</p>
+                                <p>Sonrasında, 2FA'yı tekrar kullanmak için yeni bir doğrulama uygulaması kurmanız ve sitemize tanıtmanız gerekecektir.</p>
+                                <hr>
+                                <p class="mb-0">Devam etmek istediğinizden emin misiniz?</p>
+                            </div>
+
+                            <form method="post" class="mt-4">
+                                <div class="d-grid">
+                                    <button class="btn btn-danger btn-lg" type="submit">
+                                        <i class="fas fa-trash-alt me-2"></i>Evet, Authenticator Ayarlarımı Sıfırla
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+@* Bu sayfa için özel bir script gerekmiyor gibi görünüyor. *@
+}

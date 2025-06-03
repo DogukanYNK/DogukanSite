@@ -1,0 +1,108 @@
+﻿@page
+@model DogukanSite.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Admin Yönetim Paneli";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header text-center mb-4">
+    <h1 class="page-title display-5">@ViewData["Title"]</h1>
+    <p class="lead text-muted">Site yönetimi ve istatistiklerine hoş geldiniz.</p>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card admin-stat-card shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="stat-icon bg-primary text-white me-3">
+                    <i class="fas fa-box-open fa-2x"></i>
+                </div>
+                <div>
+                    <h5 class="card-title mb-1">Toplam Ürün</h5>
+                    <p class="card-text fs-4 fw-bold mb-0">@Model.TotalProducts</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card admin-stat-card shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="stat-icon bg-success text-white me-3">
+                    <i class="fas fa-receipt fa-2x"></i>
+                </div>
+                <div>
+                    <h5 class="card-title mb-1">Toplam Sipariş</h5>
+                    <p class="card-text fs-4 fw-bold mb-0">@Model.TotalOrders</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card admin-stat-card shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="stat-icon bg-info text-white me-3">
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+                <div>
+                    <h5 class="card-title mb-1">Toplam Müşteri</h5>
+                    <p class="card-text fs-4 fw-bold mb-0">@Model.TotalCustomers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card admin-stat-card shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="stat-icon bg-warning text-dark me-3">
+                    <i class="fas fa-hourglass-half fa-2x"></i>
+                </div>
+                <div>
+                    <h5 class="card-title mb-1">Bekleyen Sipariş</h5>
+                    <p class="card-text fs-4 fw-bold mb-0">@Model.PendingOrders</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4 col-md-6">
+        <div class="card admin-action-card text-center h-100 shadow-sm">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <div class="action-icon text-primary mb-3">
+                    <i class="fas fa-plus-circle fa-3x"></i>
+                </div>
+                <h5 class="card-title">Yeni Ürün Ekle</h5>
+                <p class="card-text small text-muted">Sisteme yeni bir ürün girişi yapın.</p>
+                <a asp-page="/Admin/AddProduct" class="btn btn-primary mt-auto stretched-link">Hemen Ekle</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="card admin-action-card text-center h-100 shadow-sm">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <div class="action-icon text-info mb-3">
+                    <i class="fas fa-boxes fa-3x"></i>
+                </div>
+                <h5 class="card-title">Ürünleri Yönet</h5>
+                <p class="card-text small text-muted">Mevcut ürünleri listeleyin, düzenleyin veya silin.</p>
+                @* "disabled" sınıfı kaldırıldı ve metin güncellendi *@
+                <a asp-page="/Admin/ManageProducts" class="btn btn-info mt-auto stretched-link">Ürün Listesi</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="card admin-action-card text-center h-100 shadow-sm">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <div class="action-icon text-success mb-3">
+                    <i class="fas fa-list-alt fa-3x"></i>
+                </div>
+                <h5 class="card-title">Siparişleri Görüntüle</h5>
+                <p class="card-text small text-muted">Gelen siparişleri takip edin ve yönetin.</p>
+                @* "disabled" sınıfını kaldır ve metni güncelle *@
+                <a asp-page="/Admin/ManageOrders" class="btn btn-success mt-auto stretched-link">Sipariş Listesi</a>
+            </div>
+        </div>
+    </div>
+    @* Gerekirse daha fazla yönetim kartı eklenebilir (Kullanıcı Yönetimi, Kategori Yönetimi, Raporlar vb.) *@
+</div>

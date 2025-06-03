@@ -1,0 +1,64 @@
+﻿/* --- Ana Sayfa Stilleri --- */
+.hero-section .display-4 {
+    /* Bootstrap display sınıfı için ek stil */
+    margin-bottom: 0.5rem; /* Varsayılanı ezebilir */
+}
+
+.hero-section .lead {
+    /* Bootstrap lead sınıfı için ek stil */
+    font-weight: 400; /* Varsayılanı ezebilir */
+    margin-bottom: 2rem; /* Varsayılanı ezebilir */
+}
+
+.category-card {
+    /* Kategori kartı linki için genel sarmalayıcı */
+    display: block; /* Linkin tüm alanı kaplaması için */
+    transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+    border-radius: var(--border-radius-md);
+    overflow: hidden; /* Resim veya içindeki .card taşmasın diye */
+    color: var(--text-base); /* İçindeki metinler için varsayılan renk */
+}
+
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow-lg);
+        color: var( --brand-primary ); /* Hover'da içindeki metinler de renk değiştirebilir */
+    }
+
+    .category-card .card {
+        /* İçindeki Bootstrap card elemanı için (eğer kullanılıyorsa) */
+        border: none; /* Dış .category-card zaten kenarlık/gölge alıyor */
+        background-color: transparent; /* Dış wrapper'ın arkaplanını alsın */
+        /* transition: none; // Eğer .card'ın kendi transition'ı varsa ve istenmiyorsa */
+    }
+
+.category-card-image {
+    width: 100%;
+    height: 200px; /* Sabit yükseklik */
+    object-fit: cover; /* Resmi kapla ve kırp */
+    transition: transform 0.3s ease;
+    /* border-radius: var(--border-radius-md) var(--border-radius-md) 0 0; // Sadece üst köşeler (eğer kartın altı metin ise) */
+}
+
+.category-card:hover .category-card-image {
+    transform: scale(1.05); /* Hafif zoom */
+}
+
+.category-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    /* color: inherit; // .category-card'dan rengi miras alır */
+    padding: 1rem; /* Resimden sonra başlık geliyorsa padding */
+    transition: color 0.2s ease; /* Ana '.category-card:hover' zaten rengi değiştirebilir */
+}
+
+.category-card:hover .category-card-title {
+    /* color: var(--brand-primary); // Zaten .category-card:hover genelinde tanımlı */
+}
+
+.section-see-all-btn {
+    /* "Tümünü Gör" butonu için özel stil (eğer .btn değilse) */
+    font-weight: 600;
+    /* color: var(--link-color); // Link gibi görünmesi için */
+    /* text-decoration: underline; // Link gibi görünmesi için */
+}

@@ -1,0 +1,140 @@
+﻿@page
+@model DogukanSite.Pages.Account.DashboardModel
+@{
+    ViewData["Title"] = "Hesabım";
+    Layout = "_AuthLayout"; // Minimal layout kullanılıyor
+}
+
+@* Sayfa başlığı artık _AuthLayout dışında olduğu için burada daha belirgin hale getirebiliriz
+   veya _AuthLayout'un ortalama yapısı içinde kalması için container'ı daraltabiliriz.
+   Şimdilik _Layout.cshtml'deki gibi bir page-header yapısını koruyalım ama
+   _AuthLayout içinde na-sıl görüneceğine dikkat edelim.
+*@
+<div class="container my-lg-5 my-4">
+    @* Üst ve alt boşluğu biraz ayarlayabiliriz *@
+    <div class="page-header text-center mb-4">
+        <h1 class="page-title display-5">@ViewData["Title"]</h1>
+        @if (Model.UserInfo != null)
+        {
+            <p class="lead text-muted">Hoş geldiniz, @Model.UserInfo.FullName!</p>
+        }
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body p-4 p-md-5">
+                    @if (Model.UserInfo != null)
+                    {
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="list-group dashboard-nav">
+                                    <a asp-page="/Account/EditProfile" class="list-group-item list-group-item-action @IsActivePage("/Account/EditProfile", null)">
+                                        <i class="fas fa-user-cog me-2"></i>Profil Bilgileri
+                                    </a>
+                                    <a asp-page="/Account/ChangePasswordPage" class="list-group-item list-group-item-action @IsActivePage("/Account/ChangePasswordPage", null)">
+                                        <i class="fas fa-key me-2"></i>Şifre Değiştir
+                                    </a>
+                                    <a asp-page="/Account/EmailManagementPage" class="list-group-item list-group-item-action @IsActivePage("/Account/EmailManagementPage", null)">
+                                        <i class="fas fa-envelope me-2"></i>E-posta Yönetimi
+                                    </a>
+                                    <a asp-page="/Account/TwoFactorAuthenticationPage" class="list-group-item list-group-item-action @IsActivePage("/Account/TwoFactorAuthenticationPage", null)">
+                                        <i class="fas fa-shield-alt me-2"></i>İki Aşamalı Doğrulama
+                                    </a>
+                                    <a asp-page="/Account/PersonalDataPage" class="list-group-item list-group-item-action @IsActivePage("/Account/PersonalDataPage", null)">
+                                        <i class="fas fa-database me-2"></i>Kişisel Verilerim
+                                    </a>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-page="/Admin/Index" class="list-group-item list-group-item-action list-group-item-warning mt-3 @(IsActivePage("/Admin/Index", "/Admin"))">
+                                            <i class="fas fa-user-shield me-2"></i>Admin Paneline Git
+                                        </a>
+                                    }
+                                    <form asp-page="/Account/Logout" asp-page-handler="LogoutFromDashboard" asp-route-returnUrl="@Url.Page("/Index")" method="post" class="mt-3">
+                                        <button type="submit" class="btn btn-outline-danger w-100">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Güvenli Çıkış
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="col-md-8">
+                                <h4 class="mb-3">Merhaba, @Model.UserInfo.FirstName!</h4>
+                                <p class="text-muted">Bu sayfadan hesap bilgilerinizi yönetebilir ve tercihlerinizi güncelleyebilirsiniz.</p>
+                                <hr class="my-4">
+                                <div>
+                                    <h5>Kayıtlı Bilgileriniz:</h5>
+                                    <dl class="row">
+                                        <dt class="col-sm-4">Ad Soyad:</dt>
+                                        <dd class="col-sm-8">@Model.UserInfo.FullName</dd>
+
+                                        <dt class="col-sm-4">E-posta:</dt>
+                                        <dd class="col-sm-8">@Model.UserInfo.Email</dd>
+
+                                        @if (!string.IsNullOrEmpty(Model.UserInfo.PhoneNumber))
+                                        {
+                                            <dt class="col-sm-4">Telefon:</dt>
+                                            <dd class="col-sm-8">@Model.UserInfo.PhoneNumber</dd>
+                                        }
+                                    </dl>
+                                    <a asp-page="/Account/EditProfile" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-edit me-1"></i> Bilgilerimi Düzenle
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-center">Kullanıcı bilgileri yüklenemedi veya henüz giriş yapmadınız. <a asp-page="/Account/Login" class="text-decoration-none fw-semibold">Giriş yapmak için tıklayın.</a></p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string IsActivePage(string pageUrl, string areaIfAny = "Identity", string specificSubPagePrefix = "")
+    {
+        var currentPage = ViewContext.RouteData.Values["page"]?.ToString();
+        var currentArea = ViewContext.RouteData.Values["area"]?.ToString() ?? ""; // Null ise boş string
+
+        bool isActive = false;
+
+        // Alanı olmayan sayfalar için (örn: /Account/Favorites) areaIfAny="" gönderilmeli
+        bool areaMatch = string.IsNullOrEmpty(areaIfAny) ? string.IsNullOrEmpty(currentArea) : currentArea.Equals(areaIfAny, StringComparison.OrdinalIgnoreCase);
+
+        if (!string.IsNullOrEmpty(specificSubPagePrefix))
+        {
+            // Belirli bir yolun altındaki tüm sayfaları aktif işaretler (örn: /Account/Manage/*)
+            isActive = currentPage?.StartsWith(specificSubPagePrefix, StringComparison.OrdinalIgnoreCase) == true && areaMatch;
+        }
+        else
+        {
+            isActive = currentPage?.Equals(pageUrl, StringComparison.OrdinalIgnoreCase) == true && areaMatch;
+        }
+
+        // Özel durumlar:
+        // Identity alanı altındaki Manage sayfaları için daha genel bir kontrol
+        // Örn: asp-page="/Account/Manage/Index" geldiğinde, mevcut sayfa /Account/Manage/Email ise, /Account/Manage/Index aktif olmamalı.
+        // Ama eğer hedef /Account/Manage ise ve mevcut sayfa /Account/Manage/Index ise aktif olabilir.
+        // Bu fonksiyonu sayfa linklerindeki `asp-page` değerine göre daha da hassaslaştırabilirsiniz.
+        // Şimdiki haliyle tam eşleşme ve area eşleşmesine bakıyor (specificSubPagePrefix hariç).
+
+        // Örnek: Profil Bilgileri linki (/Account/Manage/Index) için, tüm /Account/Manage/* sayfalarında aktif olması isteniyorsa:
+        if (pageUrl == "/Account/Manage/Index" && currentPage?.StartsWith("/Account/Manage/", StringComparison.OrdinalIgnoreCase) == true && areaMatch)
+        {
+            // Bu, Manage altındaki tüm sayfalar için "Profil Bilgileri"ni aktif yapar, bu istenmeyebilir.
+            // Sadece Index içinse:
+            // isActive = currentPage?.Equals("/Account/Manage/Index", StringComparison.OrdinalIgnoreCase) == true && areaMatch;
+        }
+
+
+        return isActive ? "active" : "";
+    }
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

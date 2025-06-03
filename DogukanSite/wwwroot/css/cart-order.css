@@ -1,0 +1,469 @@
+﻿/* === Sepet Sayfası (Cart/Index) Stil İyileştirmeleri === */
+
+.cart-page .page-title {
+    font-weight: 700;
+    /* color: var(--brand-primary); // İsteğe bağlı: Başlığı ana renkle vurgula */
+    margin-bottom: 2rem; /* Başlık altına daha fazla boşluk */
+}
+
+/* Genel Mesaj Alanları (TempData veya AJAX mesajları için) */
+#cartActionStatusMessages .alert,
+#couponMessageContainer .alert {
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    /* box-shadow: var(--box-shadow-sm); // İsteğe bağlı: Mesajlara hafif gölge */
+}
+
+/* Sepet Elemanları Kapsayıcısı */
+.cart-items-container {
+    background-color: var(--background-content);
+    border-radius: var(--border-radius-lg); /* Daha yumuşak köşeler */
+    padding: 1.5rem; /* İç boşluk */
+    box-shadow: var(--box-shadow-sm);
+}
+
+.cart-item {
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color-light, #f0f0f0); /* Ürünler arası ayırıcı */
+}
+
+    .cart-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+.cart-item-image-link img {
+    width: 90px; /* Tutarlı resim boyutu */
+    height: 90px;
+    object-fit: cover; /* Resmin orantılı kaplaması için */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    transition: opacity 0.2s ease-in-out;
+}
+
+.cart-item-image-link:hover img {
+    opacity: 0.85;
+}
+
+.cart-item-title a {
+    font-weight: 600;
+    color: var(--text-base);
+    font-size: 1.05rem; /* Ürün adı biraz daha büyük */
+    transition: color 0.2s ease;
+}
+
+    .cart-item-title a:hover {
+        color: var(--brand-primary);
+        text-decoration: none;
+    }
+
+.cart-item-price .unit-price-display {
+    font-weight: 500;
+    color: var(--text-muted);
+}
+/* Stok Hata Mesajı */
+.cart-item .stock-error-message {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Ürün Satır Toplam Fiyatı */
+.cart-item .item-total-price {
+    font-size: 1.1rem; /* Biraz daha büyük */
+    font-weight: 700;
+    color: var(--brand-primary); /* Ana renkle vurgu */
+}
+
+/* Kaldır Butonu */
+.remove-item-btn-ajax {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--brand-danger) !important; /* Rengi her zaman kırmızı yap */
+    padding: 0.25rem 0.5rem; /* Biraz tıklama alanı ekle */
+    border-radius: var(--border-radius-sm);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    background-color: transparent;
+}
+
+    .remove-item-btn-ajax:hover,
+    .remove-item-btn-ajax:focus {
+        background-color: rgba( var(--bs-danger-rgb), 0.07 ); /* Danger renginin çok açığı */
+        text-decoration: none;
+        outline: none;
+    }
+
+    .remove-item-btn-ajax i {
+        font-size: 0.9em; /* İkonu metne göre ayarla */
+    }
+/* Sipariş Özeti */
+.order-summary-container {
+    top: var( --sticky-sidebar-top-offset, 100px ); /* Navbar sabitse, navbar yüksekliği + boşluk. Değişkeni site.css :root'ta tanımlayın. */
+    border-radius: var(--border-radius-lg);
+    background-color: var(--background-content);
+    padding: 1.5rem; /* İç boşluk */
+    box-shadow: var(--box-shadow-sm);
+}
+
+    .order-summary-container h4 {
+        font-weight: 600;
+        color: var(--text-base);
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.75rem;
+        margin-bottom: 1rem !important; /* list-group'un margin'ini ezmek için */
+    }
+
+    .order-summary-container .list-group-item {
+        background-color: transparent;
+        border-color: var(--border-color-light); /* Ayırıcılar daha yumuşak */
+        padding-left: 0;
+        padding-right: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+        .order-summary-container .list-group-item:first-child {
+            border-top: none;
+        }
+
+        .order-summary-container .list-group-item span:first-child {
+            /* Etiket (Ara Toplam vb.) */
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .order-summary-container .list-group-item span:last-child {
+            /* Değer (Fiyat vb.) */
+            font-weight: 600;
+            color: var(--text-base);
+        }
+
+    .order-summary-container li#discountRow span:last-child {
+        /* İndirim miktarı */
+        color: var(--brand-success) !important; /* Başarı rengiyle vurgu */
+    }
+
+    .order-summary-container .list-group-item.grand-total-row {
+        /* Genel Toplam satırı */
+        border-top: 2px solid var(--text-base) !important; /* Daha belirgin ayırıcı */
+        margin-top: 0.75rem !important;
+        padding-top: 1rem !important;
+        font-size: 1.2rem; /* Genel toplam daha büyük */
+    }
+
+        .order-summary-container .list-group-item.grand-total-row span {
+            color: var(--brand-primary); /* Genel toplam ana renkte */
+            font-weight: 700; /* Daha da belirgin */
+        }
+
+    .order-summary-container .summary-cart-item-img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--border-color-light);
+    }
+
+.order-item-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    /* rounded sınıfı Bootstrap'ten geliyor, border-radius: var(--border-radius-sm); de eklenebilir */
+}
+
+/* Sipariş Geçmişi Tablosu Stilleri */
+.order-history-table th {
+    font-weight: 600; /* Başlıkları daha belirgin yapar */
+    white-space: nowrap; /* Başlıkların alt satıra kaymasını engeller (özellikle mobilde dikkatli olunmalı) */
+    vertical-align: middle; /* Bootstrap'ten gelebilir ama teyit için */
+}
+
+.order-history-table td {
+    vertical-align: middle; /* Hücre içeriğini dikeyde ortalar */
+}
+
+.order-history-table .badge {
+    /* Sipariş durumu badge'leri için */
+    font-size: 0.825em; /* Biraz daha okunaklı bir boyut */
+    padding: 0.45em 0.75em; /* İç boşluk */
+    /* letter-spacing: 0.5px; // İsteğe bağlı */
+}
+
+/* Opsiyonel: Tablo hover rengini özelleştirmek için (Bootstrap table-hover üzerine) */
+
+.order-history-table tbody tr:hover {
+    /* background-color: var(--brand-light-hover, #f1f3f5); Yeni bir CSS değişkeni tanımlanabilir */
+}
+/* Kupon Formu */
+.coupon-form .form-label {
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+    font-size: 0.875rem; /* Etiketi biraz küçülttük */
+    color: var(--text-muted);
+}
+
+.coupon-form .input-group {
+    /* Bootstrap .input-group */
+    /* box-shadow: var(--box-shadow-sm); // İsteğe bağlı */
+}
+
+.coupon-form .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none; /* "Uygula" butonuyla birleşik görünüm */
+    font-size: 0.9rem; /* Input fontunu biraz büyüttük */
+}
+
+    .coupon-form .form-control:focus {
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
+    }
+
+.coupon-form .btn-outline-secondary {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-color: var(--border-color-strong);
+    background-color: var(--brand-light);
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.9rem; /* Buton fontunu input ile aynı yaptık */
+    padding-top: 0.375rem; /* Padding'i form-control ile eşitledik */
+    padding-bottom: 0.375rem;
+}
+
+    .coupon-form .btn-outline-secondary:hover,
+    .coupon-form .btn-outline-secondary:focus {
+        background-color: var(--brand-secondary); /* Veya --brand-primary */
+        color: white;
+        border-color: var(--brand-secondary); /* Veya --brand-primary */
+    }
+
+/* Sepet Boş Mesajı (Zaten iyiydi, site.css'te genel tanımı olabilir) */
+.empty-cart-message i {
+    /* font-size: 3.5rem; // Daha önceki site.css'te vardı */
+}
+
+.empty-cart-message h3 {
+    /* font-weight: 600; // Daha önceki site.css'te vardı */
+}
+/* site.css - Boş Sepet Sayfası "Alışverişe Başla" Butonu İçin Özel Stiller */
+.empty-cart-action-btn {
+    padding: 0.6rem 1.3rem; /* Dikeyde biraz daha az, yatayda dengeli bir iç boşluk. */
+    font-size: 0.9rem; /* Metin font boyutu (varsayılan 1rem'den biraz küçük). */
+    font-weight: 500; /* Orta kalınlıkta (Bootstrap .btn için 600 ise bu daha ince durur). */
+    letter-spacing: 0.025em; /* Harfler arasına çok hafif bir boşluk (daha rafine bir görünüm). */
+    line-height: 1.5; /* Satır yüksekliği, ikonla metnin dikey hizalanmasına yardımcı olur. */
+
+    display: inline-flex; /* İkon ve metni yan yana hizalamak ve dikey ortalamak için. */
+    align-items: center; /* İkon ve metni dikeyde ortalar. */
+    justify-content: center; /* İçeriği yatayda ortalar (eğer buton sabit genişlikte olsaydı). */
+    /* border-radius: var(--border-radius-md); // Zaten .btn sınıfından geliyor. */
+    /* box-shadow: var(--box-shadow-sm);    // Zaten .btn sınıfından geliyor. */
+    /* transition: all 0.2s ease-in-out; // Zaten .btn sınıfından geliyor. */
+}
+
+    .empty-cart-action-btn i.fas {
+        /* Buton içindeki Font Awesome Solid ikonu için */
+        font-size: 0.9em; /* İkonun boyutu, butonun metin font boyutunun (0.9rem) %90'ı kadar. 
+                                  Bu değeri (0.8em, 1em vb.) deneyerek en iyi oranı bulun. */
+        margin-right: 0.6rem; /* İkon ile metin arasına boşluk (Bootstrap me-2 ~0.5rem). */
+        /* vertical-align ayarı inline-flex ve align-items: center sayesinde genellikle gerekmez,
+       ancak ikon fontunun dikey hizalamasında özel bir durum varsa çok küçük ayarlamalar için kullanılabilir: */
+        /* vertical-align: -0.05em; */
+    }
+
+    /* Hover ve Focus durumları .btn ve .btn-primary'den miras alınır.
+   Eğer özel bir hover/focus efekti isterseniz buraya ekleyebilirsiniz:*/
+    .empty-cart-action-btn:hover {
+        /* background-color: color-mix(in srgb, var(--brand-primary) 85%, black);
+    box-shadow: var(--box-shadow-md); */
+    }
+
+    /* Alternatif: Eğer bu butonu "outline" tarzında isterseniz:
+   HTML'de: class="btn btn-outline-primary empty-cart-action-btn"
+   CSS'te (ikon rengini de ayarlamak gerekebilir):*/
+    .empty-cart-action-btn.btn-outline-primary i.fas {
+        /* color: var(--brand-primary); // Outline butonun metin rengiyle aynı olması için */
+    }
+
+    .empty-cart-action-btn.btn-outline-primary:hover i.fas {
+        /* color: white; // Eğer buton metni hover'da beyaza dönüyorsa */
+    }
+/* Mobil İyileştirmeleri (Daha önceki site.css'teki mobil sepet stilleri buraya entegre edilebilir veya güncellenebilir) */
+@media (max-width: 767.98px) {
+    /* md altı için (Bootstrap breakpoint) */
+    .cart-item .row {
+        align-items: flex-start; /* Mobilde dikey hizalamayı başa al */
+    }
+
+    .cart-item-image-col {
+        margin-bottom: 0.75rem;
+        display: flex;
+        justify-content: center; /* Resmi ortala */
+    }
+
+    .cart-item-details-col {
+        text-align: center; /* Detayları ortala */
+    }
+
+    .cart-item-actions-col {
+        text-align: center !important; /* Fiyat ve kaldır butonunu ortala */
+        width: 100%; /* Tam genişlik kaplasın */
+        margin-top: 0.75rem !important;
+    }
+
+        .cart-item-actions-col .item-total-price {
+            display: block; /* Fiyat ve kaldır butonu alt alta gelsin */
+            margin-bottom: 0.5rem;
+        }
+
+    .order-summary-container.sticky-lg-top {
+        position: static !important; /* Mobilde sipariş özeti yapışkan olmasın */
+        margin-top: 2rem; /* Sepet listesinden sonra boşluk */
+    }
+}
+/* --- Sipariş Oluşturma (Checkout) --- */
+.checkout-steps-container {
+    background-color: var(--background-content);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky; /* Sayfa scroll olurken üstte sabit kalır */
+    top: 0; /* Eğer navbar sabit DEĞİLSE 0, sabitse --navbar-height değeri olmalı */
+    z-index: 1020; /* Bootstrap'in dropdown (1000), sticky-top (1020), modal-backdrop (1040) değerlerine göre ayarlanır */
+}
+
+.checkout-steps .nav-link {
+    /* Bootstrap .nav-link */
+    color: var(--text-muted);
+    font-weight: 500;
+    border-bottom: 3px solid transparent; /* Aktif olmayanlar için transparan border */
+    border-radius: 0; /* Köşe yuvarlaklığı yok */
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    transition: color 0.2s, border-color 0.2s;
+    text-align: center;
+    flex-grow: 1; /* Nav item'lar eşit genişlikte olsun (eğer .nav-fill veya .nav-justified kullanılmıyorsa) */
+}
+
+    .checkout-steps .nav-link.active {
+        color: var(--brand-primary);
+        background-color: transparent !important; /* Bootstrap'in .active stilini ezmek için, !important kalabilir. */
+        border-bottom-color: var(--brand-primary);
+    }
+
+    .checkout-steps .nav-link.disabled {
+        color: #adb5bd; /* Bootstrap'in disabled text rengi */
+        pointer-events: none; /* Tıklanamaz */
+        /* opacity: 0.7; // Daha sönük görünmesi için */
+    }
+
+    .checkout-steps .nav-link i {
+        /* Adım ikonları */
+        display: block; /* Metnin üstünde yer alması için */
+        font-size: 1.3rem;
+        margin-bottom: 0.3rem;
+    }
+
+/* Checkout sayfasındaki kart başlıkları */
+.card-header h5 {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0; /* Bootstrap card-header padding'i yeterli */
+}
+
+.card-header i {
+    font-size: 1rem;
+    margin-right: 0.5rem;
+}
+
+/* --- Sipariş Başarı Sayfası --- */
+.order-success-page .card {
+    text-align: left; /* Genellikle kart içeriği sola hizalıdır */
+    /* border-color: var(--brand-success); // Başarı vurgusu için kart kenarlığı */
+}
+
+.order-success-page .card-title i {
+    /* Başlıkta başarı ikonu (örn: check-circle) */
+    color: var(--brand-success);
+    margin-right: 0.5rem;
+}
+
+/*  Checkout Layout Stilleri */
+
+body.checkout-layout-active {
+    background-color: var(--background-body); /* Ana sitedeki gövde arkaplanı */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.checkout-header-simple {
+    padding: 1rem 0;
+    background-color: var( --background-content ); /* Genellikle beyaz veya açık bir ton */
+    border-bottom: 1px solid var(--border-color);
+    text-align: center;
+}
+
+    .checkout-header-simple .store-name-link {
+        font-size: 1.8rem; /* .logo-text ile benzer olabilir */
+        font-weight: 700;
+        color: var(--brand-primary);
+        text-decoration: none;
+    }
+    /* Bu sınıf için HTML'de bir kullanım yoktu, eğer header'a eklerseniz diye burada duruyor: */
+    .checkout-header-simple .secure-checkout-text {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+.checkout-main-content {
+    flex-grow: 1; /* Footer'ı aşağı itmek için */
+    padding-top: 1.5rem; /* İçeriğe üstten boşluk */
+    padding-bottom: 1.5rem; /* İçeriğe alttan boşluk */
+}
+
+.checkout-footer-simple {
+    text-align: center;
+    padding: 1.5rem 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-color);
+    background-color: var( --background-content ); /* Genellikle beyaz veya açık bir ton */
+}
+
+/* site.css - Sipariş Başarı Sayfası Stilleri */
+.success-icon-container {
+    animation: bounceInSuccess 0.8s ease-out; /* Animasyon adını daha spesifik yapabiliriz */
+}
+
+/* Sipariş özeti kartı içindeki başlık için (eğer genel .card-title'dan farklıysa) */
+/* Eğer bu sadece bu sayfadaki bir kart başlığı içinse daha spesifik bir seçici kullanın,
+   örn: .order-success-summary .card-title */
+.order-success-summary .card-title {
+    /* HTML'de bu sarmalayıcı sınıfı ekleyin */
+    font-weight: 600;
+    /* color: var(--text-base); // Gerekirse renk */
+}
+
+@keyframes bounceInSuccess {
+    /* Animasyon adını daha spesifik yapabiliriz */
+    0% {
+        opacity: 0;
+        transform: scale(0.3) translateY(-50px);
+    }
+
+    50% {
+        opacity: 0.9;
+        transform: scale(1.1);
+    }
+
+    80% {
+        opacity: 1;
+        transform: scale(0.89);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}

@@ -1,0 +1,158 @@
+﻿
+/* site.css - Metin İçerik Sayfaları İçin Stiller */
+
+.text-content-page {
+    max-width: 720px; /* Metin bloğunun ideal okunabilirlik için maksimum genişliği (yaklaşık 65-75 karakter/satır) */
+    margin-left: auto; /* Sayfa içinde ortalamak için */
+    margin-right: auto; /* Sayfa içinde ortalamak için */
+    font-size: var( --font-size-base ); /* Temel font boyutu veya okunurluk için biraz daha büyük (örn: 1rem) */
+    line-height: 1.7; /* Uzun metinler için satır yüksekliğini biraz artırmak okunurluğu iyileştirir (varsayılan 1.65'ti) */
+    color: var(--text-base);
+}
+
+    .text-content-page h1.page-title {
+        /* Sayfa başlığı zaten .page-header içinde, ama burada da ezilebilir */
+        margin-bottom: 2rem; /* Ana başlıktan sonra daha fazla boşluk */
+    }
+
+    .text-content-page h2 {
+        font-size: 1.8rem; /* h1'den küçük, p'den büyük */
+        font-weight: 600;
+        color: var(--text-base); /* veya var(--brand-primary); */
+        margin-top: 2.5rem; /* Üstteki içerikle arasında boşluk */
+        margin-bottom: 1rem; /* Altındaki paragrafla arasında boşluk */
+        /* border-bottom: 1px solid var(--border-color); */ /* İsteğe bağlı: Başlık altı ayırıcı */
+        /* padding-bottom: 0.5rem; */
+    }
+
+    .text-content-page h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-base);
+        margin-top: 2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .text-content-page p {
+        margin-bottom: 1.25rem; /* Paragraflar arası boşluk */
+    }
+
+    .text-content-page ul,
+    .text-content-page ol {
+        margin-bottom: 1.25rem;
+        padding-left: 1.8rem; /* Madde işaretleri için iç boşluk */
+    }
+
+    .text-content-page li {
+        margin-bottom: 0.6rem; /* Liste elemanları arası boşluk */
+    }
+
+    .text-content-page a {
+        /* Metin içindeki linkler */
+        color: var(--link-color);
+        text-decoration: underline; /* Metin içinde linklerin altı çizili olması genellikle daha belirgindir */
+        text-decoration-thickness: 1px; /* Daha ince bir alt çizgi */
+        text-underline-offset: 3px; /* Alt çizgi ile metin arasına boşluk */
+        font-weight: 500; /* Linkleri biraz daha belirgin yapabilir */
+    }
+
+        .text-content-page a:hover,
+        .text-content-page a:focus {
+            color: var(--link-hover-color);
+            text-decoration-color: var(--brand-primary); /* Hover'da alt çizgi rengi */
+            outline: none; /* İsteğe bağlı: Tarayıcı varsayılan focus outline'ını kaldırıp özel ekleyebilirsiniz */
+        }
+
+    .text-content-page strong,
+    .text-content-page b {
+        font-weight: 600; /* Kalın metinler için */
+    }
+
+    .text-content-page em,
+    .text-content-page i {
+        /* İtalik metinler için (semantik kullanıma dikkat) */
+        /* color: var(--text-muted); // İsteğe bağlı: italikleri hafifçe vurgulamak için */
+    }
+    /* İsteğe bağlı: Metin içinde kullanılacak alıntılar için */
+    .text-content-page blockquote {
+        margin: 1.5rem 0;
+        padding: 1rem 1.5rem;
+        border-left: 4px solid var(--brand-primary);
+        background-color: var(--brand-light);
+        font-style: italic;
+        color: var(--text-muted);
+    }
+
+        .text-content-page blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+
+/* site.css - SSS Sayfası Accordion Stilleri (Opsiyonel Geliştirmeler) */
+
+.accordion-item {
+    border: 1px solid var(--border-color);
+    border-radius: var( --border-radius-md ); /* Genel border-radius'unuzu kullanın */
+    margin-bottom: 1rem; /* Accordion elemanları arası boşluk */
+    overflow: hidden; /* border-radius'un iç elemanları etkilememesi için */
+}
+
+    .accordion-item:first-of-type {
+        /* Bootstrap 5 zaten köşe yuvarlaklığını doğru yönetir, bu kurallar gerekmeyebilir */
+        /* border-top-left-radius: var(--border-radius-md); */
+        /* border-top-right-radius: var(--border-radius-md); */
+    }
+
+    .accordion-item:last-of-type {
+        /* border-bottom-left-radius: var(--border-radius-md); */
+        /* border-bottom-right-radius: var(--border-radius-md); */
+        margin-bottom: 0; /* Son elemanın alt boşluğunu kaldır */
+    }
+
+.accordion-button {
+    font-weight: 500; /* Veya 600 - başlıkları biraz daha vurgulu yapar */
+    color: var(--text-base); /* Soru metni rengi */
+    background-color: var( --background-content ); /* Veya var(--brand-light) - hafif bir ton farkı için */
+    border-radius: 0; /* Eğer .accordion-item'a radius verdiysek, butonun kendi radius'unu sıfırla */
+    padding: 1.15rem 1.5rem; /* İç boşlukları biraz artırabiliriz */
+    text-align: left; /* Metni sola yasla (Bootstrap varsayılanı) */
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+    .accordion-button:not(.collapsed) {
+        /* Açık (aktif) durumdaki soru */
+        color: var(--brand-primary); /* Aktif soru metni ana marka renginizde */
+        background-color: color-mix( in srgb, var(--brand-primary) 8%, var(--background-content) ); /* Çok hafif bir ana renk tonu */
+        box-shadow: inset 0 -1px 0 var(--border-color); /* Bootstrap'in alt çizgi gölgesini koru */
+    }
+
+    .accordion-button:focus {
+        z-index: 3; /* Diğer elemanların üzerinde kalması için */
+        border-color: var(--brand-primary); /* Focus durumunda kenarlık rengi */
+        outline: 0; /* Varsayılan outline'ı kaldır */
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25); /* Sitenizin genel focus gölgesi */
+    }
+    /* Accordion açma/kapama ikonunu (sağdaki ok) özelleştirmek isterseniz: */
+    /* Bootstrap 5'te bu ikon SVG olarak eklenir ve CSS değişkenleriyle rengi ayarlanır. */
+    .accordion-button::after {
+        /* --bs-accordion-btn-icon-transform: rotate(-90deg); // İkonun başlangıç dönüşü */
+        /* --bs-accordion-btn-icon-transition: transform 0.2s ease-in-out; */
+        /* filter: brightness(0.8) saturate(0.5); // İkonu biraz daha sönük yapmak için (isteğe bağlı) */
+    }
+
+    .accordion-button:not(.collapsed)::after {
+        /* --bs-accordion-btn-active-icon-transform: rotate(-270deg); // Açık durumdaki ikon dönüşü */
+        /* filter: none; // Aktifken normal parlaklık */
+    }
+
+.accordion-body {
+    padding: 1.25rem 1.5rem; /* Cevapların iç boşluğu */
+    /* line-height: 1.7; // .text-content-page sınıfından miras alabilir */
+    background-color: var(--background-content); /* Cevap alanı arkaplanı */
+}
+
+    .accordion-body p:last-child,
+    .accordion-body ul:last-child,
+    .accordion-body ol:last-child {
+        margin-bottom: 0; /* Accordion body içindeki son paragraf/listenin alt boşluğunu kaldır */
+    }

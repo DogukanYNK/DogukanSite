@@ -1,0 +1,28 @@
+﻿@page
+@model ErrorModel
+@{
+    // ViewData["Title"] PageModel'da set edildi.
+}
+
+<div class="container text-center py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <i class="fas fa-exclamation-triangle fa-5x text-danger mb-4"></i>
+            <h1 class="display-5 fw-bold text-danger">Bir Hata Oluştu!</h1>
+            <p class="lead text-muted mb-4">
+                İsteğinizi işlerken beklenmedik bir sorunla karşılaştık. Lütfen daha sonra tekrar deneyin.
+            </p>
+
+            @if (Model.ShowRequestId)
+            {
+                <p class="small text-muted">
+                    <strong>Hata Kodu (Destek için):</strong> <code>@Model.RequestId</code>
+                </p>
+            }
+            <hr class="my-4">
+            <a asp-page="/Index" class="btn btn-primary btn-lg">
+                <i class="fas fa-home me-2"></i>Ana Sayfaya Dön
+            </a>
+        </div>
+    </div>
+</div>

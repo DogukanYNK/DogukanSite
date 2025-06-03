@@ -1,0 +1,100 @@
+﻿@model DogukanSite.Models.Product
+@using DogukanSite.Models;
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> SignInManager
+@* UserManager'a burada ihtiyacımız yok, favori durumu ViewData'dan geliyor *@
+@* @using Microsoft.AspNetCore.Http.Extensions; // Artık login'e direkt gitmediği için buna da gerek yok *@
+@{
+    var placeholderImage = "/images/placeholder-product.png";
+    bool isUserLoggedIn = SignInManager.IsSignedIn(User);
+    bool isCurrentlyFavorite = false; // Varsayılan olarak favori değil
+
+    if (isUserLoggedIn)
+    {
+        // 1. Favorilerim sayfasından mı geliyoruz kontrolü
+        // PageModel (Favorites.cshtml.cs), ViewData["IsFavoritePageContext"] = true; set etmeli.
+        bool isFavoritesPageContext = ViewData["IsFavoritePageContext"] as bool? ?? false;
+        if (isFavoritesPageContext)
+        {
+            isCurrentlyFavorite = true; // Favorilerim sayfasındaki her ürün zaten favoridir
+        }
+        else
+        {
+            // 2. Diğer sayfalardan (Index, Products/Index) geliyorsak,
+            // PageModel'dan gelen UserFavoriteProductIds listesini kontrol et
+            // PageModel (Index.cshtml.cs, Products.Index.cshtml.cs), ViewData["UserFavoriteProductIds"] = UserFavoriteProductIdsSet; set etmeli.
+            var favoriteProductIdsFromViewData = ViewData["UserFavoriteProductIds"] as HashSet<int>;
+            if (favoriteProductIdsFromViewData != null)
+            {
+                isCurrentlyFavorite = favoriteProductIdsFromViewData.Contains(Model.Id);
+            }
+        }
+    }
+
+    // İkonun sınıfını ve başlığını belirle
+    string heartIconClass = isCurrentlyFavorite ? "fas fa-heart text-danger" : "far fa-heart";
+    string favoriteTitle;
+
+    if (!isUserLoggedIn)
+    {
+        favoriteTitle = "Favorilere eklemek için giriş yapın";
+        // Giriş yapmamışsa kalp her zaman boş olsun (isCurrentlyFavorite zaten false olacak)
+        heartIconClass = "far fa-heart";
+    }
+    else
+    {
+        favoriteTitle = isCurrentlyFavorite ? "Favorilerden Çıkar" : "Favorilere Ekle";
+    }
+}
+
+<div class="card product-card h-100">
+    @if (isUserLoggedIn)
+    {
+        @* Giriş yapmış kullanıcı için AJAX ile çalışan favori butonu *@
+        <button class="btn btn-link favorite-icon" title="@favoriteTitle" data-product-id="@Model.Id">
+            <i class="@heartIconClass"></i>
+        </button>
+    }
+    else
+    {
+        @* Giriş yapmamış kullanıcı için favori ikonuna tıklayınca modal'ı açan buton *@
+        <button type="button" class="btn btn-link favorite-icon" title="@favoriteTitle"
+                data-bs-toggle="modal" data-bs-target="#loginOrRegisterToFavoriteModal">
+            <i class="@heartIconClass"></i> @* Boş kalp gösterilir *@
+        </button>
+    }
+
+    <div class="product-image-wrapper">
+        <a asp-page="/Products/Details" asp-route-id="@Model.Id" class="d-block">
+            <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? placeholderImage : Model.ImageUrl)"
+                 class="product-image" alt="@Model.Name">
+        </a>
+    </div>
+
+    <div class="card-body text-center d-flex flex-column">
+        @if (!string.IsNullOrEmpty(Model.Category))
+        {
+            <p class="product-category mb-1"><small>@Model.Category</small></p>
+        }
+        <h5 class="card-title mb-2">
+            <a asp-page="/Products/Details" asp-route-id="@Model.Id" class="text-decoration-none product-name-link">
+                <span class="product-name-text">@Model.Name</span>
+            </a>
+        </h5>
+        <p class="product-price mt-auto mb-3">
+            @Model.Price.ToString("C")
+        </p>
+    </div>
+
+    <div class="product-card-hover-actions">
+        <div class="d-flex align-items-center justify-content-center mb-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm quantity-decrease" aria-label="Azalt">-</button>
+            <input type="number" class="form-control form-control-sm quantity-input mx-2 text-center" value="1" min="1" max="100">
+            <button type="button" class="btn btn-outline-secondary btn-sm quantity-increase" aria-label="Artır">+</button>
+        </div>
+        <button type="button"
+                class="btn btn-primary btn-sm add-to-cart-js-btn w-100"
+                data-product-id="@Model.Id">
+            <i class="fas fa-cart-plus me-1"></i>Sepete Ekle
+        </button>
+    </div>
+</div>
