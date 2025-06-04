@@ -525,7 +525,7 @@
 /* === Mobil Menü (Navbar Collapse) Stilleri === */
 @media (max-width: 991.98px) {
     .navbar-collapse {
-        background-color: var(--background-content);
+    background-color: var(--background-content);
         border-top: 1px solid var(--border-color);
         margin-top: 0.5rem;
         box-shadow: var(--box-shadow-md);
@@ -533,7 +533,7 @@
         max-height: calc( 100vh - 70px ); /* Navbar yüksekliði (yaklaþýk) çýkarýlarak viewport yüksekliði */
         overflow-y: auto; /* Ýçerik sýðmazsa scroll */
         padding: 0; /* Ýç padding'i alt bölümler yönetsin */
-    }
+}
 
         /* Mobil Menü Üst Ýkon Grubu */
         .navbar-collapse .mobile-icon-group {
@@ -871,7 +871,7 @@
         transform: translateY(10px); /* Aþaðýdan gelsin */
         pointer-events: none; /* Gizliyken týklanamaz */
         transition: opacity 0.25s ease-out, transform 0.25s ease-out, visibility 0s linear 0.25s;
-    }
+}
 
     .navbar-nav .nav-item.dropdown:hover > .dropdown-menu {
         /* Hover durumu (görünür) */
@@ -881,4 +881,4 @@
         pointer-events: auto;
         /* transition tanýmý zaten yukarýda, burada tekrar etmeye gerek yok. */
     }
-}
+    }
