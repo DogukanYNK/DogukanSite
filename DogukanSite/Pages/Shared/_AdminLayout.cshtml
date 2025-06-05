@@ -13,10 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     @* Ana site.css'i yine de dahil edebiliriz, bazı temel stiller (formlar, butonlar) ortak olabilir *@
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/core.css" asp-append-version="true" />
     @* Admin Paneline Özel CSS Dosyası *@
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/DogukanSite.styles.css" asp-append-version="true" />
 
     @await RenderSectionAsync("Styles", required: false)
 </head>

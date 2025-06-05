@@ -1,8 +1,8 @@
 ﻿@page
-@model ErrorModel
+@model DogukanSite.Pages.ErrorModel
 @{
     // ViewData["Title"] PageModel'da set edildi.
-    Layout = "_Layout"; // Ana sitenizin layout'unu kullanır
+    Layout = "_SideLayout"; // Ana sitenizin layout'unu kullanır
 }
 
 <div class="container text-center py-5">
@@ -28,3 +28,6 @@
     </div>
 </div>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages.css" asp-append-version="true" />
+}
