@@ -12,7 +12,7 @@
 
     foreach ($item in $items) {
         # Burada sadece $item.Name kullanılmalı:
-        Write-Host "$indent$item.Name"
+        Write-Host "$indent$item"
 
         if ($item.PSIsContainer) {
             Show-Tree -Path $item.FullName -Level ($Level + 1)
