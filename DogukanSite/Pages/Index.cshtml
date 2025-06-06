@@ -1,40 +1,37 @@
-﻿@page "/"
+﻿@page
 @model DogukanSite.Pages.IndexModel
 @{
     ViewData["Title"] = "Ana Sayfa";
 }
 
-<section class="hero-section text-center bg-white py-5 mb-5 shadow-sm">
+<section class="text-center py-5">
     <div class="container">
-        <h1 class="display-4 fw-bold text-primary">DogukanStore'a Hoş Geldiniz!</h1>
-        <p class="lead text-secondary col-lg-8 mx-auto">
-            Modern tasarımlar, kaliteli ürünler ve rakipsiz fırsatlar bir tık uzağınızda.
-            Hemen keşfetmeye başlayın!
+        <h1 class="display-4 fw-bold">Aradığın Her Şey Burada!</h1>
+        <p class="lead text-muted col-lg-8 mx-auto">
+            Modadan elektroniğe binlerce ürün arasında en iyi fırsatları keşfet.
+            Güvenli ve hızlı alışverişin keyfini çıkar.
         </p>
         <div class="mt-4">
-            <a asp-page="/Products/Index" class="btn btn-primary btn-lg px-4 me-sm-3 mb-2 mb-sm-0">Tüm Ürünler</a>
-            <a asp-page="/Campaigns" class="btn btn-outline-secondary btn-lg px-4">Kampanyalar</a>
+            <a asp-page="/Products/Index" class="btn btn-primary btn-lg px-5 me-2">Alışverişe Başla</a>
+            <a asp-page="/Campaigns" class="btn btn-outline-dark btn-lg px-4">Kampanyalar</a>
         </div>
     </div>
 </section>
 
 @if (Model.FeaturedCategories != null && Model.FeaturedCategories.Any())
 {
-    <section class="featured-categories-section py-5 bg-white shadow-sm mb-5">
+    <section class="featured-categories-section py-5 bg-white">
         <div class="container">
-            <h2 class="section-title text-center mb-4">Öne Çıkan Kategoriler</h2>
+            <h2 class="text-center mb-5">Öne Çıkan Kategoriler</h2>
             <div class="row g-4">
                 @foreach (var category in Model.FeaturedCategories)
                 {
-                    <div class="col-md-6 col-lg-3 d-flex">
-                        @* text-dark sınıfı kaldırıldı, .category-card-title zaten kendi rengini alıyor *@
-                        <a href="@category.PageUrl" class="category-card text-decoration-none w-100">
-                            <div class="card h-100 shadow-sm overflow-hidden">
-                                <img src="@(string.IsNullOrEmpty(category.ImageUrl) ? "/images/placeholder-category.png" : category.ImageUrl)" class="card-img-top category-card-image" alt="@category.Name">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title category-card-title">@category.Name</h5>
-                                </div>
+                    <div class="col-md-6 col-lg-3">
+                        <a href="@category.PageUrl" class="category-card text-decoration-none">
+                            <div class="category-card-image-wrapper">
+                                <img src="@(string.IsNullOrEmpty(category.ImageUrl) ? "https://via.placeholder.com/400x300" : category.ImageUrl)" class="img-fluid" alt="@category.Name">
                             </div>
+                            <h5 class="category-card-title mt-3 text-center">@category.Name</h5>
                         </a>
                     </div>
                 }
@@ -43,11 +40,12 @@
     </section>
 }
 
+
 @if (Model.NewArrivals != null && Model.NewArrivals.Any())
 {
-    <section class="new-arrivals-section py-5 bg-white shadow-sm mb-5">
+    <section class="new-arrivals-section py-5">
         <div class="container">
-            <h2 class="section-title text-center mb-4">Yeni Gelenler</h2>
+            <h2 class="text-center mb-5">Yeni Gelenler</h2>
             <div class="row product-grid row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                 @foreach (var product in Model.NewArrivals)
                 {
@@ -56,32 +54,13 @@
                     </div>
                 }
             </div>
-            <div class="text-center mt-4">
-                <a asp-page="/Products/Index" class="btn btn-outline-primary">Tüm Yeni Ürünleri Gör</a>
+            <div class="text-center mt-5">
+                <a asp-page="/Products/Index" class="btn btn-outline-dark">Daha Fazlasını Gör</a>
             </div>
         </div>
     </section>
 }
 
-@if (Model.FeaturedProducts != null && Model.FeaturedProducts.Any())
-{
-    <section class="featured-products-section py-5 bg-white shadow-sm mb-5">
-        <div class="container">
-            <h2 class="section-title text-center mb-4">Sizin İçin Seçtiklerimiz</h2>
-            <div class="row product-grid row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-                @foreach (var product in Model.FeaturedProducts)
-                {
-                    <div class="col d-flex align-items-stretch">
-                        <partial name="Shared/_ProductCard" model="product" view-data="ViewData" />
-                    </div>
-                }
-            </div>
-            <div class="text-center mt-4">
-                <a asp-page="/Products/Index" class="btn btn-outline-primary">Daha Fazla Ürün Keşfet</a>
-            </div>
-        </div>
-    </section>
-}
 @section Styles {
     <link rel="stylesheet" href="~/css/anasayfa.css" asp-append-version="true" />
 }

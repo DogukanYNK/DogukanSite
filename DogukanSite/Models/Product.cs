@@ -31,12 +31,15 @@ namespace DogukanSite.Models
         [Range(0, int.MaxValue, ErrorMessage = "Stok adedi negatif olamaz.")]
         public int Stock { get; set; } = 0; // Varsayılan stok 0 olabilir
 
-        public bool IsFeatured { get; set; } = false; // Öne çıkan ürün mü?
-        public DateTime DateAdded { get; set; } = DateTime.UtcNow;
 
-        // İlişkiler (Eğer varsa)
-        // public virtual ICollection<OrderItem>? OrderItems { get; set; }
-        // public virtual ICollection<CartItem>? CartItems { get; set; }
-        // public virtual ICollection<Favorite>? Favorites { get; set; }
+        // --- YENİ EKLENECEK ALANLAR ---
+
+        // Bu ürün "Sizin İçin Seçtiklerimiz" gibi özel bir bölümde mi gösterilsin?
+        public bool IsFeatured { get; set; } = false;
+
+        // Bu ürün "Yeni Gelenler" bölümünde mi gösterilsin?
+        public bool IsNewArrival { get; set; } = false;
+
+        public DateTime DateAdded { get; set; } = DateTime.UtcNow;
     }
 }

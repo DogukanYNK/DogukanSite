@@ -10,6 +10,21 @@
     margin-bottom: 2rem; /* Varsayılanı ezebilir */
 }
 
+
+.section-see-all-btn {
+    /* "Tümünü Gör" butonu için özel stil (eğer .btn değilse) */
+    font-weight: 600;
+    /* color: var(--link-color); // Link gibi görünmesi için */
+    /* text-decoration: underline; // Link gibi görünmesi için */
+}
+
+
+
+
+
+
+
+
 .category-card {
     /* Kategori kartı linki için genel sarmalayıcı */
     display: block; /* Linkin tüm alanı kaplaması için */
@@ -56,9 +71,69 @@
     /* color: var(--brand-primary); // Zaten .category-card:hover genelinde tanımlı */
 }
 
-.section-see-all-btn {
-    /* "Tümünü Gör" butonu için özel stil (eğer .btn değilse) */
-    font-weight: 600;
-    /* color: var(--link-color); // Link gibi görünmesi için */
-    /* text-decoration: underline; // Link gibi görünmesi için */
+
+/* =================================================================
+   ANASAYFA.CSS - ZARİF VE MİNİMALİST STİLLER
+   ================================================================= */
+
+/* --- Öne Çıkan Kategori Kartları --- */
+.category-card {
+    display: block;
+    color: var(--text-base);
+    transition: color 0.3s ease;
 }
+
+.category-card-image-wrapper {
+    position: relative; /* İçindeki overlay'i konumlandırmak için */
+    border-radius: var(--border-radius-lg); /* Resim köşelerini yuvarlat */
+    overflow: hidden; /* Köşelerden taşanları gizle */
+    box-shadow: var(--box-shadow-md);
+    transition: box-shadow 0.3s ease;
+}
+
+    .category-card-image-wrapper img {
+        display: block;
+        width: 100%;
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Yumuşak bir zoom efekti için */
+    }
+
+    /* Üzerine gelindiğinde resmin üstüne gelecek olan katman */
+    .category-card-image-wrapper::after {
+        content: ''; /* Yazı yerine sadece karartı efekti */
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.2); /* Hafif siyah bir katman */
+        opacity: 0; /* Normalde görünmez */
+        transition: opacity 0.4s ease;
+    }
+
+.category-card-title {
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+/* --- HOVER EFEKTLERİ --- */
+
+.category-card:hover .category-card-image-wrapper {
+    box-shadow: var(--box-shadow-lg); /* Daha belirgin gölge */
+}
+
+    .category-card:hover .category-card-image-wrapper img {
+        transform: scale(1.05); /* Resim hafifçe büyüsün */
+    }
+
+    .category-card:hover .category-card-image-wrapper::after {
+        opacity: 1; /* Siyah katman görünür olsun */
+    }
+
+.category-card:hover .category-card-title {
+    color: var(--brand-primary); /* Başlık maviye dönsün */
+}
+
+
+
+
+
