@@ -1,6 +1,5 @@
 using DogukanSite.Data;
 using DogukanSite.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace DogukanSite.Pages.Order
 {
-    [Authorize]
     public class DetailsModel : PageModel
     {
         private readonly DogukanSiteContext _context;
@@ -26,23 +24,35 @@ namespace DogukanSite.Pages.Order
 
         public async Task<IActionResult> OnGetAsync(int orderId)
         {
-            if (orderId == 0) return NotFound();
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            // Sipariþi; kullanýcýsý, sipariþ kalemleri ve bu kalemlerin ürün bilgileriyle birlikte çekiyoruz.
+            // Bu, en performanslý veri çekme yöntemidir.
             Order = await _context.Orders
-                                .Include(o => o.Items)
-                                    .ThenInclude(oi => oi.Product) // Sipariþ kalemlerindeki ürünleri çek
-                                .Include(o => o.User) // Sipariþi veren kullanýcýyý çek (opsiyonel)
-                                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);
-            // Kullanýcýnýn sadece kendi sipariþini görebilmesini saðla
+                .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                        .ThenInclude(p => p.Category) // Kategori adýný göstermek için bunu da ekledik.
+                .FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (Order == null)
             {
-                return NotFound("Sipariþ bulunamadý veya bu sipariþi görüntüleme yetkiniz yok.");
+                return NotFound();
             }
 
-            ViewData["Title"] = $"Sipariþ Detayý #{Order.Id}";
+            // --- GÜVENLÝK DEÐÝÞÝKLÝÐÝ ---
+            // Bu sipariþin mevcut kullanýcýya ait olup olmadýðýný veya kullanýcýnýn Admin olup olmadýðýný kontrol et.
+            var currentUserId = _userManager.GetUserId(User);
+            bool isGuestOrder = string.IsNullOrEmpty(Order.UserId);
+
+            // Misafir sipariþleri þimdilik sadece ID ile eriþilebilir, daha sonra e-posta linki ile güvenli hale getirilebilir.
+            // Eðer sipariþ bir kullanýcýya aitse ve o kullanýcý mevcut kullanýcý deðilse (ve admin de deðilse), eriþimi engelle.
+            if (!isGuestOrder && Order.UserId != currentUserId && !User.IsInRole("Admin"))
+            {
+                // Kullanýcý baþkasýnýn sipariþini görmeye çalýþýyor.
+                return Forbid();
+            }
+            // --- DEÐÝÞÝKLÝK SONU ---
+
+            ViewData["Title"] = $"Sipariþ Detayý: #{Order.Id}";
             return Page();
         }
     }

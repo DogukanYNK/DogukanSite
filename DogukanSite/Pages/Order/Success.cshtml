@@ -1,9 +1,8 @@
 ﻿@page "{orderId:int}"
 @model DogukanSite.Pages.Order.SuccessModel
 @{
-    ViewData["Title"] = $"Sipariş #{Model.OrderId} Başarıyla Alındı"; // OrderId'yi başlıkta kullanabiliriz
-    Layout = "_CheckoutLayout";
-    // ViewData["HideLayoutHeaderFooter"] = false; // Bu satırı eklemeyerek header/footer'ın görünmesini sağlıyoruz.
+    ViewData["Title"] = $"Sipariş #{Model.CurrentOrder?.Id} Başarıyla Alındı";
+    Layout = "_Layout"; // Veya kendi checkout layout'unuz
 }
 
 <div class="container py-5 text-center">
@@ -11,23 +10,21 @@
         <div class="col-md-8 col-lg-7">
 
             <div class="success-icon-container mb-4">
-                @* Bu sınıfın stili site.css'te olacak *@
                 <i class="fas fa-check-circle fa-5x text-success"></i>
             </div>
 
             <h1 class="display-5 fw-bold text-success mb-3">Teşekkür Ederiz!</h1>
-            <p class="lead text-muted mb-2">Siparişiniz başarıyla alındı ve en kısa sürede hazırlanacaktır.</p>
 
             @if (Model.CurrentOrder != null)
             {
+                <p class="lead text-muted mb-2">Siparişiniz başarıyla alındı ve en kısa sürede hazırlanacaktır.</p>
                 <p class="fs-5 mb-4">
                     Sipariş Numaranız: <strong class="text-primary">#@Model.CurrentOrder.Id</strong>
                 </p>
 
-                <div class="card shadow-sm mb-4 order-success-summary">
-                    @* Özel sınıf eklendi *@
+                <div class="card shadow-sm mb-4">
                     <div class="card-body">
-                        <h5 class="card-title mb-3">Sipariş Onayı</h5> @* Bu başlığın stili site.css'te olacak *@
+                        <h5 class="card-title mb-3">Sipariş Onayı</h5>
                         <p class="card-text text-start">
                             Siparişinizin detayları ve kargo takip bilgileriniz (hazır olduğunda)
                             @if (!string.IsNullOrEmpty(Model.CustomerEmail))
@@ -42,11 +39,15 @@
                         </p>
                         <ul class="list-unstyled text-start small text-muted mt-3">
                             <li><strong>Sipariş Tarihi:</strong> @Model.CurrentOrder.OrderDate.ToString("dd MMMM yyyy, HH:mm")</li>
-                            @if (!string.IsNullOrEmpty(Model.CurrentOrder.ShippingAddress))
-                            {
-                                <li><strong>Teslimat Adresi:</strong> @Model.CurrentOrder.ShippingAddress</li>
-                            }
-                            <li><strong>Toplam Tutar:</strong> @Model.CurrentOrder.OrderTotal.ToString("C")</li>
+
+                            @* Düzeltme: Teslimat adresi ayrı alanlardan oluşturuldu *@
+                            <li>
+                                <strong>Teslimat Adresi:</strong>
+                                @Model.CurrentOrder.ShippingStreet, @Model.CurrentOrder.ShippingPostalCode @Model.CurrentOrder.ShippingCity / @Model.CurrentOrder.ShippingState
+                            </li>
+
+                            @* Düzeltme: OrderTotal -> TotalAmount *@
+                            <li><strong>Toplam Tutar:</strong> @Model.CurrentOrder.TotalAmount.ToString("C")</li>
                         </ul>
                     </div>
                 </div>
@@ -60,19 +61,13 @@
             }
 
             <div class="mt-5 d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <a asp-page="/Products/Index" class="btn btn-primary btn-lg px-4 gap-3">
+                <a asp-page="/Index" class="btn btn-primary btn-lg px-4 gap-3">
                     <i class="fas fa-shopping-bag me-2"></i>Alışverişe Devam Et
                 </a>
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
                     <a asp-page="/Order/History" class="btn btn-outline-secondary btn-lg px-4">
                         <i class="fas fa-receipt me-2"></i>Siparişlerimi Gör
-                    </a>
-                }
-                else
-                {
-                    <a asp-page="/Index" class="btn btn-outline-secondary btn-lg px-4">
-                        <i class="fas fa-home me-2"></i>Ana Sayfaya Dön
                     </a>
                 }
             </div>

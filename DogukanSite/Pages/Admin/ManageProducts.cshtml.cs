@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering; // SelectListItem için
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DogukanSite.Pages.Admin
 {
@@ -28,15 +28,13 @@ namespace DogukanSite.Pages.Admin
 
         [BindProperty(SupportsGet = true)]
         public string CategoryFilter { get; set; }
-        public List<SelectListItem> AllCategories { get; set; } // SelectListItem olarak deðiþtirildi
+        public List<SelectListItem> AllCategories { get; set; }
 
-        // Sayfalama için
         [BindProperty(SupportsGet = true)]
         public int CurrentPage { get; set; } = 1;
         public int PageSize { get; set; } = 10;
         public int TotalPages { get; set; }
         public int TotalProductCount { get; set; }
-
 
         public class ProductViewModel
         {
@@ -45,54 +43,51 @@ namespace DogukanSite.Pages.Admin
             public string Category { get; set; }
             public decimal Price { get; set; }
             public string ImageUrl { get; set; }
-            // public int StockQuantity { get; set; } // Eðer stok yönetimi varsa
+            public int Stock { get; set; }
         }
 
         public async Task OnGetAsync()
         {
             ViewData["Title"] = "Ürünleri Yönet";
 
-            var query = _context.Products.AsQueryable();
+            // DÜZELTME: Kategoriye göre filtreleme ve listeleme için Category verisini de sorguya dahil ediyoruz.
+            var query = _context.Products.Include(p => p.Category).AsQueryable();
 
             if (!string.IsNullOrEmpty(SearchTerm))
             {
-                var searchTermLower = SearchTerm.ToLower();
-                query = query.Where(p => p.Name.ToLower().Contains(searchTermLower));
+                query = query.Where(p => p.Name.Contains(SearchTerm));
             }
 
             if (!string.IsNullOrEmpty(CategoryFilter))
             {
-                query = query.Where(p => p.Category == CategoryFilter);
+                query = query.Where(p => p.Category.Name == CategoryFilter);
             }
 
-            AllCategories = await _context.Products
-                                        .Select(p => p.Category)
-                                        .Where(c => !string.IsNullOrEmpty(c))
-                                        .Distinct()
-                                        .OrderBy(c => c)
-                                        .Select(c => new SelectListItem { Value = c, Text = c })
-                                        .ToListAsync();
+            // DÜZELTME: Kategori listesini doðrudan Categories tablosundan, daha verimli bir þekilde çekiyoruz.
+            AllCategories = await _context.Categories
+                .OrderBy(c => c.Name)
+                .Select(c => new SelectListItem { Value = c.Name, Text = c.Name })
+                .ToListAsync();
             AllCategories.Insert(0, new SelectListItem { Value = "", Text = "Tüm Kategoriler" });
-
 
             TotalProductCount = await query.CountAsync();
             TotalPages = (int)System.Math.Ceiling(TotalProductCount / (double)PageSize);
             CurrentPage = System.Math.Max(1, System.Math.Min(CurrentPage, TotalPages == 0 ? 1 : TotalPages));
 
             var products = await query
-                                .OrderByDescending(p => p.Id)
-                                .Skip((CurrentPage - 1) * PageSize)
-                                .Take(PageSize)
-                                .ToListAsync();
+                .OrderByDescending(p => p.Id)
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToListAsync();
 
             ProductsVM = products.Select(p => new ProductViewModel
             {
                 Id = p.Id,
                 Name = p.Name,
-                Category = p.Category,
+                Category = p.Category?.Name ?? "Kategorisiz", // Kategori null ise "Kategorisiz" yazar.
                 Price = p.Price,
-                ImageUrl = p.ImageUrl
-                // StockQuantity = p.StockQuantity // Eðer stok yönetimi varsa
+                ImageUrl = p.ImageUrl,
+                Stock = p.Stock
             }).ToList();
         }
 
@@ -106,9 +101,6 @@ namespace DogukanSite.Pages.Admin
                 return RedirectToPage(new { currentPage = CurrentPage, searchTerm = SearchTerm, categoryFilter = CategoryFilter });
             }
 
-            // UYARI: Bu basit silme iþlemi, iliþkili verilerde sorun yaratabilir (OrderItem, CartItem).
-            // Gerçek bir uygulamada "soft delete" (IsDeleted=true) veya iliþkili verileri
-            // yöneten bir mantýk kullanýlmalýdýr.
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
 

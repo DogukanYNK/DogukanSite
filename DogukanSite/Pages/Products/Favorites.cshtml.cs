@@ -45,7 +45,7 @@ namespace DogukanSite.Pages.Products
             }
 
             FavoriteProducts = await _context.Favorites
-                .Where(f => f.ApplicationUserId == userId)
+                .Where(f => f.UserId == userId)
                 .Include(f => f.Product)
                 .Select(f => f.Product!)
                 .ToListAsync();
@@ -67,7 +67,7 @@ namespace DogukanSite.Pages.Products
             }
 
             var favorite = await _context.Favorites
-                .FirstOrDefaultAsync(f => f.ApplicationUserId == userId && f.ProductId == productId);
+                .FirstOrDefaultAsync(f => f.UserId == userId && f.ProductId == productId);
 
             if (favorite != null)
             {

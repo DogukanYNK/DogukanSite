@@ -85,3 +85,7 @@
         @await Html.PartialAsync("Shared/_ProductFiltersPartial", Model, new ViewDataDictionary(ViewData) { { "DisplayMode", "full" } })
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/product-filters.js" asp-append-version="true"></script>
+}

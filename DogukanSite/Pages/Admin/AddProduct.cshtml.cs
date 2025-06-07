@@ -1,9 +1,15 @@
 using DogukanSite.Data;
-using DogukanSite.Models; // Product modeli için
+using DogukanSite.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Threading.Tasks; // Asenkron Task için
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DogukanSite.Pages.Admin
 {
@@ -18,42 +24,97 @@ namespace DogukanSite.Pages.Admin
         }
 
         [BindProperty]
-        public Product Product { get; set; } = new Product(); // Baþlangýçta boþ bir Product nesnesi atayalým
+        public ProductInputModel Input { get; set; }
 
-        // Kategori seçimi için (opsiyonel, eðer dropdown kullanacaksak)
-        // public List<SelectListItem> Categories { get; set; }
+        public List<SelectListItem> Categories { get; set; }
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
-            // Eðer kategori dropdown'ý için veri çekilecekse burada yapýlabilir
-            // Categories = _context.Products
-            //                    .Select(p => p.Category)
-            //                    .Where(c => !string.IsNullOrEmpty(c))
-            //                    .Distinct()
-            //                    .OrderBy(c => c)
-            //                    .Select(c => new SelectListItem { Value = c, Text = c })
-            //                    .ToList();
-            // Categories.Insert(0, new SelectListItem { Value = "", Text = "Kategori Seçin" });
+            await PopulateCategoriesDropDownList();
         }
 
-        public async Task<IActionResult> OnPostAsync() // Metodu asenkron yapýyoruz
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                // OnGet içindeki kategori listesi doldurma iþlemini burada da yapmak gerekebilir
-                // (Eðer sayfa hata ile tekrar gösterilecekse dropdown'ýn dolu olmasý için)
-                // OnGet(); // Basitçe OnGet'i çaðýrabiliriz veya kodu tekrar edebiliriz.
+                // Form geçersizse, dropdown'ý tekrar doldur ve sayfayý hatalarla göster
+                await PopulateCategoriesDropDownList();
                 return Page();
             }
 
-            // Yeni ürün olduðu için ID'si 0 olmalý veya atanmamýþ olmalý
-            Product.Id = 0;
+            var product = new Product
+            {
+                Name = Input.Name,
+                Description = Input.Description,
+                Price = Input.Price,
+                DiscountPrice = Input.DiscountPrice,
+                Stock = Input.Stock,
+                CategoryId = Input.CategoryId,
+                ImageUrl = Input.ImageUrl,
+                IsFeatured = Input.IsFeatured,
+                IsBestSeller = Input.IsBestSeller,
+                IsNewArrival = Input.IsNewArrival,
+                DateAdded = DateTime.UtcNow
+            };
 
-            _context.Products.Add(Product);
-            await _context.SaveChangesAsync(); // Asenkron kaydetme
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = $"'{Product.Name}' ürünü baþarýyla eklendi.";
-            return RedirectToPage("/Products/Index"); // Veya admin ürün listeleme sayfasýna
+            TempData["SuccessMessage"] = $"'{product.Name}' ürünü baþarýyla eklendi.";
+            return RedirectToPage("./ManageProducts");
+        }
+
+        private async Task PopulateCategoriesDropDownList()
+        {
+            Categories = await _context.Categories
+                                       .OrderBy(c => c.Name)
+                                       .Select(c => new SelectListItem
+                                       {
+                                           Value = c.Id.ToString(),
+                                           Text = c.Name
+                                       }).ToListAsync();
+        }
+
+        // Formdan gelen veriler için ayrý bir model kullanmak en iyi pratiktir.
+        public class ProductInputModel
+        {
+            [Required(ErrorMessage = "Ürün adý alaný zorunludur.")]
+            [Display(Name = "Ürün Adý")]
+            public string Name { get; set; }
+
+            [Display(Name = "Açýklama")]
+            public string Description { get; set; }
+
+            [Required(ErrorMessage = "Fiyat alaný zorunludur.")]
+            [Range(0.01, 1000000, ErrorMessage = "Fiyat 0'dan büyük olmalýdýr.")]
+            [Display(Name = "Fiyat (?)")]
+            public decimal Price { get; set; }
+
+            [Range(0.01, 1000000, ErrorMessage = "Ýndirimli Fiyat 0'dan büyük olmalýdýr.")]
+            [Display(Name = "Ýndirimli Fiyat (Opsiyonel)")]
+            public decimal? DiscountPrice { get; set; }
+
+            [Required(ErrorMessage = "Stok adedi zorunludur.")]
+            [Range(0, int.MaxValue, ErrorMessage = "Stok adedi negatif olamaz.")]
+            [Display(Name = "Stok Adedi")]
+            public int Stock { get; set; }
+
+            [Required(ErrorMessage = "Lütfen bir kategori seçin.")]
+            [Display(Name = "Kategori")]
+            public int CategoryId { get; set; }
+
+            [Url(ErrorMessage = "Lütfen geçerli bir URL giriniz.")]
+            [Display(Name = "Resim URL")]
+            public string ImageUrl { get; set; }
+
+            [Display(Name = "Öne Çýkan Ürün")]
+            public bool IsFeatured { get; set; }
+
+            [Display(Name = "Çok Satan")]
+            public bool IsBestSeller { get; set; }
+
+            [Display(Name = "Yeni Ürün")]
+            public bool IsNewArrival { get; set; }
         }
     }
 }

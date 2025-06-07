@@ -2,39 +2,10 @@
 @model DogukanSite.Pages.Order.CreateModel
 @{
     ViewData["Title"] = "Teslimat Bilgileri";
-    Layout = "_CheckoutLayout"; // Hala checkout layout'unu kullanıyoruz
-    ViewData["HideLayoutHeaderFooter"] = true; // YENİ EKLENEN SATIR: Layout'a header/footer'ı gizlemesi için işaret
+    Layout = "_Layout"; // Veya kendi checkout layout'unuz
 }
 
-<div class="checkout-steps-container py-3 mb-4">
-    <div class="container">
-        <ul class="nav nav-pills checkout-steps">
-            <li class="nav-item flex-fill text-center">
-                <a class="nav-link disabled" asp-page="/Cart/Index">
-                    <i class="fas fa-shopping-cart me-2 d-block d-md-inline"></i>Sepetim
-                </a>
-            </li>
-            <li class="nav-item flex-fill text-center">
-                <a class="nav-link active" asp-page="/Order/Create" aria-current="page">
-                    <i class="fas fa-map-marker-alt me-2 d-block d-md-inline"></i>Teslimat
-                </a>
-            </li>
-            <li class="nav-item flex-fill text-center">
-                <a class="nav-link disabled" href="#">
-                    <i class="fas fa-credit-card me-2 d-block d-md-inline"></i>Ödeme
-                </a>
-            </li>
-            <li class="nav-item flex-fill text-center">
-                <a class="nav-link disabled" href="#">
-                    <i class="fas fa-check-circle me-2 d-block d-md-inline"></i>Onay
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
-
-<div class="container py-4">
-    @* Bu ana container için py-4 yeterli olabilir, _AuthLayout zaten ortalıyor *@
+<div class="container py-5">
     <div class="page-header text-center mb-4">
         <h1 class="page-title display-6">@ViewData["Title"]</h1>
     </div>
@@ -50,8 +21,7 @@
     {
         <form method="post">
             <div class="row g-lg-5 g-4">
-                @* Büyük ekranlarda aralığı biraz daha açabiliriz *@
-                <div class="col-lg-7 col-xl-8">
+                <div class="col-lg-7">
                     <div class="card shadow-sm mb-4">
                         <div class="card-header bg-light py-3">
                             <h5 class="mb-0"><i class="fas fa-user-edit me-2 text-primary"></i>Alıcı Bilgileri</h5>
@@ -61,9 +31,9 @@
 
                             <div class="row g-3">
                                 <div class="col-md-12">
-                                    <label asp-for="OrderInput.CustomerName" class="form-label"></label>
-                                    <input asp-for="OrderInput.CustomerName" class="form-control form-control-lg" />
-                                    <span asp-validation-for="OrderInput.CustomerName" class="text-danger small"></span>
+                                    <label asp-for="OrderInput.ContactName" class="form-label"></label>
+                                    <input asp-for="OrderInput.ContactName" class="form-control form-control-lg" />
+                                    <span asp-validation-for="OrderInput.ContactName" class="text-danger small"></span>
                                 </div>
                                 <div class="col-md-6">
                                     <label asp-for="OrderInput.Email" class="form-label"></label>
@@ -85,14 +55,9 @@
                         </div>
                         <div class="card-body p-4">
                             <div class="mb-3">
-                                <label asp-for="OrderInput.AddressLine1" class="form-label"></label>
-                                <textarea asp-for="OrderInput.AddressLine1" class="form-control form-control-lg" rows="3" placeholder="Mahalle, Cadde, Sokak, Bina No, Daire No"></textarea>
-                                <span asp-validation-for="OrderInput.AddressLine1" class="text-danger small"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label asp-for="OrderInput.AddressLine2" class="form-label"></label>
-                                <input asp-for="OrderInput.AddressLine2" class="form-control form-control-lg" placeholder="Site Adı, Ek Adres Bilgileri vb." />
-                                <span asp-validation-for="OrderInput.AddressLine2" class="text-danger small"></span>
+                                <label asp-for="OrderInput.Street" class="form-label"></label>
+                                <textarea asp-for="OrderInput.Street" class="form-control form-control-lg" rows="3" placeholder="Mahalle, Cadde, Sokak, Bina No, Daire No"></textarea>
+                                <span asp-validation-for="OrderInput.Street" class="text-danger small"></span>
                             </div>
                             <div class="row g-3">
                                 <div class="col-md-4">
@@ -101,9 +66,9 @@
                                     <span asp-validation-for="OrderInput.City" class="text-danger small"></span>
                                 </div>
                                 <div class="col-md-4">
-                                    <label asp-for="OrderInput.District" class="form-label"></label>
-                                    <input asp-for="OrderInput.District" class="form-control form-control-lg" />
-                                    <span asp-validation-for="OrderInput.District" class="text-danger small"></span>
+                                    <label asp-for="OrderInput.State" class="form-label"></label>
+                                    <input asp-for="OrderInput.State" class="form-control form-control-lg" />
+                                    <span asp-validation-for="OrderInput.State" class="text-danger small"></span>
                                 </div>
                                 <div class="col-md-4">
                                     <label asp-for="OrderInput.PostalCode" class="form-label"></label>
@@ -120,21 +85,18 @@
                     </div>
                 </div>
 
-                <div class="col-lg-5 col-xl-4">
+                <div class="col-lg-5">
                     <div class="order-summary-container bg-white p-3 p-md-4 shadow-sm rounded-3 sticky-lg-top">
                         <h4 class="mb-3 border-bottom pb-2">Siparişiniz</h4>
                         @if (Model.CartItems != null)
                         {
                             foreach (var item in Model.CartItems)
                             {
-                                <div class="d-flex justify-content-between align-items-start mb-2 summary-cart-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div class="d-flex">
-                                        @* Inline style kaldırıldı, summary-cart-item-img sınıfı eklendi *@
-                                        <img src="@(string.IsNullOrEmpty(item.ProductImageUrl) ? "/images/placeholder-product-thumb.png" : item.ProductImageUrl)"
-                                             alt="@item.ProductName"
-                                             class="me-2 summary-cart-item-img">
+                                        <img src="@(string.IsNullOrEmpty(item.ProductImageUrl) ? "/images/placeholder.png" : item.ProductImageUrl)" alt="@item.ProductName" class="me-2" style="width: 50px; height: 50px; border-radius: 4px; object-fit: cover;">
                                         <div>
-                                            <small class="d-block fw-semibold summary-cart-item-name">@item.ProductName</small>
+                                            <small class="d-block fw-semibold">@item.ProductName</small>
                                             <small class="text-muted">@item.Quantity x @item.UnitPrice.ToString("C")</small>
                                         </div>
                                     </div>
@@ -152,7 +114,6 @@
                                 <small>Kargo Ücreti</small>
                                 <small>@(Model.ShippingCost > 0 ? Model.ShippingCost.ToString("C") : "Ücretsiz")</small>
                             </li>
-                            @* İndirimler buraya eklenebilir *@
                             <li class="d-flex justify-content-between py-2 fw-bold border-top mt-2">
                                 <span>Genel Toplam</span>
                                 <span>@Model.Total.ToString("C")</span>
@@ -173,6 +134,6 @@
     }
 </div>
 
-@section ValidationScripts {
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

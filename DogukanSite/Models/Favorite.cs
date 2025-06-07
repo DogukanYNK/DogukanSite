@@ -1,22 +1,16 @@
-﻿// Models/Favorite.cs
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace DogukanSite.Models
+﻿namespace DogukanSite.Models
 {
     public class Favorite
     {
         public int Id { get; set; }
+        public string UserId { get; set; }
+        public int ProductId { get; set; }
 
-        [Required]
-        public string ApplicationUserId { get; set; } // Kimin favorisi
-        [ForeignKey("ApplicationUserId")]
-        public ApplicationUser? ApplicationUser { get; set; } // Nullable olabilir
+        // YENİ EKLENEN ALAN
+        public DateTime AddedDate { get; set; }
 
-        public int ProductId { get; set; } // Hangi ürün
-        [ForeignKey("ProductId")]
-        public Product? Product { get; set; } // Nullable olabilir
-
-        public DateTime AddedDate { get; set; } = DateTime.UtcNow; // Ne zaman eklendi
+        // Navigation properties
+        public virtual ApplicationUser User { get; set; }
+        public virtual Product Product { get; set; }
     }
-}
+}   

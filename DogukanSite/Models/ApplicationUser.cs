@@ -1,24 +1,22 @@
-﻿// DogukanSite/Models/ApplicationUser.cs
-using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations; // DataAnnotations için eklendi
+﻿using Microsoft.AspNetCore.Identity;
+using System; // DateTime için eklendi
+using System.Collections.Generic; // ICollection için eklendi
 
 namespace DogukanSite.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        // Gerekirse özel alanlar eklenebilir
-        [PersonalData] // Bu verinin kişisel veri olduğunu belirtir (GDPR vb. için)
-        [StringLength(50)]
-        public string? FirstName { get; set; } // Nullable olabilir veya Required eklenebilir
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
 
-        [PersonalData]
-        [StringLength(50)]
-        public string? LastName { get; set; } // Nullable olabilir veya Required eklenebilir
+        // YENİ EKLENEN ALAN
+        public DateTime RegistrationDate { get; set; }
 
-        // İleride kayıtlı kullanıcılar için varsayılan adres bilgileri de buraya eklenebilir:
-        // public string? DefaultAddressLine1 { get; set; }
-        // public string? DefaultCity { get; set; }
-        // public string? DefaultDistrict { get; set; }
-        // public string? DefaultPostalCode { get; set; }
+        // Navigation Properties
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+        public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public virtual ICollection<Address> Addresses { get; set; } = new List<Address>();
+        public virtual ICollection<ProductReview> Reviews { get; set; } = new List<ProductReview>();
     }
 }

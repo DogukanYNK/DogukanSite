@@ -1,0 +1,48 @@
+﻿@page "{id:int}"
+@model DogukanSite.Pages.Admin.EditCategoryModel
+@{
+    ViewData["Title"] = "Kategoriyi Düzenle";
+    Layout = "_AdminLayout";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="page-header mb-4">
+                <h1 class="page-title display-6">@ViewData["Title"]</h1>
+                <p class="lead text-muted">"@Model.Category.Name"</p>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <form method="post">
+                        <input type="hidden" asp-for="Category.Id" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Category.Name" class="form-label fw-semibold"></label>
+                            <input asp-for="Category.Name" class="form-control form-control-lg" />
+                            <span asp-validation-for="Category.Name" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Category.Description" class="form-label fw-semibold"></label>
+                            <textarea asp-for="Category.Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Category.Description" class="text-danger small"></span>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-page="./ManageCategories" class="btn btn-outline-secondary">Vazgeç</a>
+                            <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-2"></i>Değişiklikleri Kaydet</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

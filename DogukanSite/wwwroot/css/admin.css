@@ -1,368 +1,254 @@
-﻿/* wwwroot/css/admin.css */
+﻿/* =================================================================
+   YENİ PROFESYONEL ADMIN PANELİ TASARIMI
+================================================================= */
+
+/* Genel Ayarlar ve Değişkenler */
+:root {
+    --admin-bg: #f8f9fc;
+    --sidebar-width: 240px;
+    --header-height: 60px;
+    --sidebar-link-color: #5a5c69;
+    --sidebar-link-hover-bg: #eef2f8;
+    --sidebar-link-active-color: var(--brand-primary);
+    --sidebar-header-color: #333;
+}
 
 body.admin-layout-active {
-    font-family: var(--font-family-main); /* site.css'ten Inter fontunu alır */
-    font-size: 0.9rem; /* Admin panelinde biraz daha küçük temel font */
-    background-color: #f4f7f9; /* Admin paneli için hafif gri bir arkaplan */
+    background-color: var(--admin-bg);
+    font-family: var(--font-family-main);
+    font-size: 0.9rem;
 }
 
 .admin-wrapper {
     display: flex;
-    min-height: calc(100vh - 56px); /* Header yüksekliği (56px varsayıldı) çıkarıldı */
+    width: 100%;
 }
 
-.admin-header {
-    height: 56px; /* Sabit header yüksekliği */
-    z-index: 1030; /* Sidebar'dan ve diğer elementlerden yukarıda */
-}
-
+/* -------------------------
+   YENİ KENAR ÇUBUĞU (SIDEBAR)
+   ------------------------- */
 .admin-sidebar {
-    width: 260px;
-    min-height: calc(100vh - 56px); /* Header yüksekliği hariç tam yükseklik */
-    transition: margin-left 0.3s ease-in-out;
-    padding-top: 1rem; /* Üst boşluk */
-    position: sticky; /* Sayfa scroll olurken sidebar sabit kalır */
-    top: 56px; /* Header yüksekliği kadar aşağıdan başlar */
-    max-height: calc(100vh - 56px); /* Kaydırılabilir olması için */
-    overflow-y: auto; /* İçerik sığmazsa scroll bar */
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1031;
+    background-color: #fff;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
 }
 
-    .admin-sidebar .nav-header {
-        padding: 0.5rem 1rem 0.25rem;
-        font-size: 0.75rem;
-        font-weight: 600;
+.sidebar-header {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.sidebar-brand-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--brand-primary);
+}
+
+.sidebar-nav {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem 0.75rem;
+}
+
+    .sidebar-nav .nav-header {
+        padding: 1.5rem 1rem 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 700;
         color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.08em;
     }
 
-    .admin-sidebar .nav-link {
-        padding: 0.65rem 1rem;
+    .sidebar-nav .sidebar-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: var(--sidebar-link-color);
         font-weight: 500;
-        color: #495057; /* Koyu gri link rengi */
-        border-radius: var(--border-radius-sm); /* Hafif yuvarlak köşeler */
-        margin: 0.1rem 0.5rem; /* Linkler arası boşluk */
-        transition: background-color 0.2s ease, color 0.2s ease;
+        border-radius: var(--border-radius-md);
+        margin-bottom: 0.25rem;
     }
 
-        .admin-sidebar .nav-link:hover {
-            background-color: var(--brand-light); /* site.css'teki hover rengi */
-            color: var(--brand-primary);
+        .sidebar-nav .sidebar-link:hover {
+            background-color: var(--sidebar-link-hover-bg);
+            color: var(--sidebar-link-active-color);
         }
 
-        .admin-sidebar .nav-link.active {
-            background-color: var(--brand-primary);
-            color: white;
+        .sidebar-nav .sidebar-link.active {
+            background-color: var(--sidebar-link-hover-bg);
+            color: var(--sidebar-link-active-color);
             font-weight: 600;
         }
 
-        .admin-sidebar .nav-link i.fa-fw {
-            width: 1.25em; /* İkonların hizalı durması için */
+        .sidebar-nav .sidebar-link .sidebar-link-icon {
+            font-size: 1rem;
+            width: 24px;
+            margin-right: 0.75rem;
+            text-align: center;
+            flex-shrink: 0;
         }
 
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
 
+/* -------------------------
+   ANA İÇERİK ALANI
+   ------------------------- */
 .admin-main-content {
     flex-grow: 1;
-    transition: padding-left 0.3s ease-in-out;
-    background-color: #ffffff; /* Ana içerik alanı için beyaz arkaplan */
-    min-width: 0; /* Flexbox item'larının küçülmesini sağlar */
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.3s ease;
 }
 
+.main-content-header {
+    height: var(--header-height);
+    background-color: #fff;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+}
 
-/* Mobil ve Küçük Ekranlar İçin Sidebar (Offcanvas) */
+.page-content-wrapper {
+    padding: 1.5rem;
+}
+
+/* -------------------------
+   MOBİL VE KÜÇÜK EKRAN AYARLARI
+   ------------------------- */
 @media (max-width: 991.98px) {
     .admin-sidebar {
-        display: none; /* Masaüstü sidebar'ı gizle */
+        transform: translateX(-100%);
     }
+
+        .admin-sidebar.is-open {
+            transform: translateX(0);
+            box-shadow: 0 0 2rem rgba(0,0,0,.15);
+        }
 
     .admin-main-content {
-        padding-left: 0; /* Sidebar gizlendiği için sol boşluğu kaldır */
-    }
-    /* Offcanvas içindeki .nav-link stilleri .admin-sidebar .nav-link ile aynı olabilir */
-    .offcanvas-body .nav-link {
-        color: #495057;
+        margin-left: 0;
     }
 
-        .offcanvas-body .nav-link:hover {
-            background-color: var(--brand-light);
-            color: var(--brand-primary);
-        }
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 1030;
+        display: none;
+    }
 
-        .offcanvas-body .nav-link.active {
-            background-color: var(--brand-primary);
-            color: white;
-            font-weight: 600;
-        }
+    .admin-sidebar.is-open ~ .sidebar-overlay {
+        display: block;
+    }
 }
 
-/* Genel Admin Sayfası Başlık Stili */
-.admin-main-content .page-header .page-title {
-    font-size: 1.75rem; /* display-6'dan biraz daha küçük olabilir */
+/* -------------------------
+   ADMİN PANELİ BİLEŞENLERİ
+   ------------------------- */
+
+.page-header .page-title {
+    font-size: 1.75rem;
     font-weight: 600;
+    margin-bottom: 0;
 }
 
-
+/* İstatistik Kartları */
 .admin-stat-card .stat-icon {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+/*    font-size: 1.5rem;*/
 }
+
+    /* === YENİ EKLENEN İKON DÜZELTMESİ === */
+    .admin-stat-card .stat-icon i {
+        color: currentColor; /* İkonun rengini her zaman parent'ından almasını sağlar */
+    }
+/* ================================== */
+
 
 .admin-stat-card .card-title {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--text-muted);
-}
-
-.admin-stat-card .card-text { /* Sayısal değer */
-    color: var(--text-base);
-}
-
-.admin-action-card {
-    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-    border: 1px solid var(--border-color);
-}
-
-    .admin-action-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--box-shadow-md) !important;
-    }
-
-    .admin-action-card .action-icon {
-        margin-bottom: 1rem;
-    }
-
-        .admin-action-card .action-icon i {
-            transition: transform 0.3s ease;
-            font-size: 2.5rem;
-        }
-
-    .admin-action-card:hover .action-icon i {
-        transform: scale(1.1);
-    }
-
-    .admin-action-card .card-body {
-        padding: 1.75rem;
-    }
-
-    .admin-action-card .card-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    .admin-action-card .card-text {
-        font-size: 0.85rem;
-        flex-grow: 1;
-    }
-
-    .admin-action-card .btn.stretched-link {
-        position: relative;
-        z-index: 1;
-        font-weight: 500;
-    }
-
-
-.page-title {
-    /* Zaten genel stillerden alıyor */
-}
-
-.checkout-steps-container { /* Order/Create sayfasındaki ile aynı */
-    background-color: var(--background-content);
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: var(--navbar-height);
-    z-index: 1020;
-}
-
-.checkout-steps .nav-link {
-    color: var(--text-muted);
-    font-weight: 500;
-    border-bottom: 3px solid transparent;
-    border-radius: 0;
-    padding-top: 0.8rem;
-    padding-bottom: 0.8rem;
     font-size: 0.9rem;
-    transition: color 0.2s, border-color 0.2s;
-}
-
-    .checkout-steps .nav-link.active {
-        color: var(--brand-primary);
-        background-color: transparent !important;
-        border-bottom-color: var(--brand-primary);
-    }
-
-    .checkout-steps .nav-link.disabled {
-        color: #adb5bd;
-        pointer-events: none;
-    }
-
-    .checkout-steps .nav-link i {
-        display: block;
-        font-size: 1.3rem;
-        margin-bottom: 0.3rem;
-    }
-
-.card-header h5 {
     font-weight: 600;
-}
-
-
-
-.admin-table th {
-    font-weight: 600;
-    white-space: nowrap;
-    font-size: 0.85rem; /* Başlık fontu biraz küçültüldü */
-}
-
-.admin-table td {
-    vertical-align: middle;
-    font-size: 0.9rem; /* İçerik fontu biraz küçültüldü */
-}
-
-.admin-table .btn-sm i {
-    font-size: 0.85em; /* İkonlar butonla orantılı */
-    /* margin-right: 0; Buton sadece ikondan oluşacaksa */
-}
-
-.admin-table .btn-sm { /* Sadece ikon içerecek şekilde butonları küçültelim */
-    padding: 0.25rem 0.5rem;
-}
-
-.page-header .page-title {
-    font-size: 1.8rem; /* Sayfa başlığı biraz küçültüldü */
-}
-
-.pagination .page-link {
-    font-size: 0.85rem; /* Sayfalama linkleri biraz küçültüldü */
-}
-
-.admin-table .badge { /* Sipariş durumu badge'leri için */
-    font-size: 0.75em;
-    padding: 0.4em 0.65em;
-    font-weight: 600;
-}
-
-
-
-/* --- Admin Sayfaları --- */
-.admin-page-card .form-label {
-    font-weight: 600; /* Admin form etiketleri daha belirgin */
-}
-
-#imagePreview {
-    border: 1px solid var(--border-color);
-    padding: 0.25rem;
-    background-color: var(--brand-light);
-    max-width: 200px; /* Maksimum genişlik */
-    height: auto; /* Oranı koru */
-    display: block; /* Altında margin çalışsın */
-    margin-top: 10px;
-    border-radius: var(--border-radius-sm);
-}
-
-/* Admin Dashboard İstatistik Kartları */
-.admin-stat-card .stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%; /* Tam daire */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0; /* Küçülmesin */
-    /* background-color: color-mix(in srgb, var(--brand-primary) 15%, transparent); // Hafif renkli arkaplan */
-    /* color: var(--brand-primary); // İkon rengi */
-}
-
-.admin-stat-card .card-title {
-    /* İstatistik başlığı (örn: Toplam Sipariş) */
-    font-size: 0.95rem;
-    font-weight: 500;
     color: var(--text-muted);
-    margin-bottom: 0.25rem;
 }
 
 .admin-stat-card .card-text {
-    /* İstatistik değeri */
-    color: var(--text-base);
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
 }
 
-/* Admin Panelindeki Eylem Kartları (örn: Yeni Ürün Ekle) */
-.admin-action-card {
-    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-    border: 1px solid var(--border-color);
-    height: 100%; /* Eşit yükseklik için (grid/flex içinde) */
-    display: flex;
-    flex-direction: column;
-    text-decoration: none; /* Eğer <a> tag'i ise */
-    color: var(--text-base); /* Varsayılan metin rengi */
+/* Tablo Stilleri */
+.admin-table {
+    font-size: 0.9rem;
 }
 
-    .admin-action-card:hover,
-    .admin-action-card:focus {
-        transform: translateY(-5px);
-        box-shadow: var( --box-shadow-md ) !important; /* !important Bootstrap'in card shadow'unu ezmek için kalabilir. */
-        color: var(--brand-primary); /* Hover'da genel renk değişimi */
-        outline: none;
-    }
-
-    .admin-action-card .action-icon {
-        margin-bottom: 1rem;
-        text-align: center;
-    }
-
-        .admin-action-card .action-icon i {
-            transition: transform 0.3s ease;
-            font-size: 2.5rem; /* Büyük ikonlar */
-            /* color: var(--brand-primary); // İkon rengi, :hover ile yönetilebilir */
-        }
-
-    .admin-action-card:hover .action-icon i,
-    .admin-action-card:focus .action-icon i {
-        transform: scale(1.1); /* İkonu hafif büyüt */
-        color: var(--brand-primary); /* İkon rengini hover'da değiştir */
-    }
-
-    .admin-action-card .card-body {
-        padding: 1.75rem;
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1; /* İçeriği dikeyde yayar */
-    }
-
-    .admin-action-card .card-title {
-        font-size: 1.2rem;
+    .admin-table th {
         font-weight: 600;
-        margin-bottom: 0.5rem;
-        text-align: center;
+        white-space: nowrap;
     }
 
-    .admin-action-card .card-text {
-        /* Açıklama metni */
-        font-size: 0.85rem;
-        flex-grow: 1; /* Butonu aşağı iter */
-        margin-bottom: 1.5rem;
-        text-align: center;
-        color: var(--text-muted); /* Normalde sönük renk */
-        transition: color 0.2s ease;
+    .admin-table td {
+        vertical-align: middle;
     }
 
-    .admin-action-card:hover .card-text,
-    .admin-action-card:focus .card-text {
-        color: var(--text-base); /* Hover'da metin rengi canlansın */
+/* Durum Etiketleri (Badge) */
+.status-badge {
+    padding: .4em .65em;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+    .status-badge.status-pending {
+        background-color: rgb(var(--bs-warning-rgb));
+        color: #000;
     }
 
-    .admin-action-card .btn.stretched-link {
-        /* Kartın tamamını tıklanabilir yapan buton */
-        position: relative; /* stretched-link için gerekli */
-        z-index: 1; /* Diğer içeriklerin üzerine çıkmasın */
-        font-weight: 500;
-        margin-top: auto; /* En alta yaslar */
+    .status-badge.status-processing {
+        background-color: #0dcaf0;
+        color: #000;
     }
 
+    .status-badge.status-shipped {
+        background-color: rgb(var(--bs-primary-rgb));
+        color: #fff;
+    }
+
+    .status-badge.status-delivered {
+        background-color: rgb(var(--bs-success-rgb));
+        color: #fff;
+    }
+
+    .status-badge.status-cancelled {
+        background-color: rgb(var(--bs-danger-rgb));
+        color: #fff;
+    }
+
+    .status-badge.status-refunded {
+        background-color: rgb(var(--bs-secondary-rgb));
+        color: #fff;
+    }

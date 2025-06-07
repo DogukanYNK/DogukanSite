@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims; // UserId almak için
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DogukanSite.Pages.Order
@@ -26,38 +27,40 @@ namespace DogukanSite.Pages.Order
 
         public List<OrderViewModel> Orders { get; set; }
 
-        // Sipariþleri daha iyi göstermek için bir ViewModel
+        // Sipariþleri arayüzde daha iyi göstermek için bir ViewModel
         public class OrderViewModel
         {
             public int OrderId { get; set; }
             public DateTime OrderDate { get; set; }
-            public decimal OrderTotal { get; set; }
-            public string OrderStatus { get; set; }
-            public int ItemCount { get; set; } // Sipariþteki toplam ürün adedi
+            public decimal TotalAmount { get; set; } // Düzeltildi: OrderTotal -> TotalAmount
+            public string Status { get; set; }      // Düzeltildi: OrderStatus -> Status
+            public int ItemCount { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Giriþ yapmýþ kullanýcýnýn ID'si
+            var userId = _userManager.GetUserId(User); // Bu yöntem daha güvenilirdir.
             if (string.IsNullOrEmpty(userId))
             {
-                // Bu durum [Authorize] nedeniyle normalde oluþmaz
-                return Challenge(); // Veya RedirectToPage("/Account/Login");
+                // [Authorize] etiketi sayesinde bu normalde gerçekleþmez.
+                return Challenge();
             }
 
+            // Düzeltme: .Include(o => o.Items) -> .Include(o => o.OrderItems)
             var userOrders = await _context.Orders
-                                    .Where(o => o.UserId == userId)
-                                    .Include(o => o.Items) // Sipariþteki ürün sayýsýný almak için
-                                    .OrderByDescending(o => o.OrderDate) // En yeni sipariþler üste
-                                    .ToListAsync();
+                                           .Where(o => o.UserId == userId)
+                                           .Include(o => o.OrderItems) // Sipariþteki ürün sayýsýný almak için
+                                           .OrderByDescending(o => o.OrderDate) // En yeni sipariþler üste
+                                           .ToListAsync();
 
+            // Düzeltme: ViewModel'e atama yaparken yeni modeldeki doðru alan adlarý kullanýldý.
             Orders = userOrders.Select(o => new OrderViewModel
             {
                 OrderId = o.Id,
                 OrderDate = o.OrderDate,
-                OrderTotal = o.OrderTotal,
-                OrderStatus = o.OrderStatus ?? "Bilinmiyor", // OrderStatus null ise varsayýlan deðer
-                ItemCount = o.Items?.Sum(i => i.Quantity) ?? 0 // Items null ise veya boþsa 0
+                TotalAmount = o.TotalAmount,         // OrderTotal -> TotalAmount
+                Status = o.Status.ToString(),        // OrderStatus (string) -> Status (enum), metne çevrildi
+                ItemCount = o.OrderItems.Sum(i => i.Quantity) // Items -> OrderItems
             }).ToList();
 
             ViewData["Title"] = "Sipariþ Geçmiþim";

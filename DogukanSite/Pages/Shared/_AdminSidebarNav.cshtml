@@ -1,0 +1,64 @@
+﻿@functions {
+    public string IsAdminPageActive(params string[] pageUrls)
+    {
+        var activePage = ViewContext.RouteData.Values["page"]?.ToString();
+        if (activePage != null && pageUrls.Any(url => activePage.Equals(url, StringComparison.OrdinalIgnoreCase)))
+        {
+            return "active";
+        }
+        return "";
+    }
+}
+
+<ul class="nav flex-column">
+    <li class="nav-header">Genel</li>
+    <li class="nav-item">
+        <a asp-page="/Admin/Index" class="nav-link sidebar-link @IsAdminPageActive("/Admin/Index")">
+            <i class="fas fa-tachometer-alt sidebar-link-icon"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+    <li class="nav-header">İçerik Yönetimi</li>
+    <li class="nav-item">
+        <a asp-page="/Admin/ManageProducts" class="nav-link sidebar-link @IsAdminPageActive("/Admin/ManageProducts", "/Admin/AddProduct", "/Admin/EditProduct")">
+            <i class="fas fa-box-open sidebar-link-icon"></i>
+            <span>Ürünler</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a asp-page="/Admin/ManageCategories" class="nav-link sidebar-link @IsAdminPageActive("/Admin/ManageCategories")">
+            <i class="fas fa-sitemap sidebar-link-icon"></i>
+            <span>Kategoriler</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a asp-page="/Admin/ManageCoupons" class="nav-link sidebar-link @IsAdminPageActive("/Admin/ManageCoupons")">
+            <i class="fas fa-percent sidebar-link-icon"></i>
+            <span>İndirim Kuponları</span>
+        </a>
+    </li>
+
+
+    <li class="nav-header">Satış Yönetimi</li>
+    <li class="nav-item">
+        <a asp-page="/Admin/ManageOrders" class="nav-link sidebar-link @IsAdminPageActive("/Admin/ManageOrders", "/Admin/OrderDetails")">
+            <i class="fas fa-receipt sidebar-link-icon"></i>
+            <span>Siparişler</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a asp-page="/Admin/ManageCustomers" class="nav-link sidebar-link @IsAdminPageActive("/Admin/ManageCustomers")">
+            <i class="fas fa-users sidebar-link-icon"></i>
+            <span>Müşteriler</span>
+        </a>
+    </li>
+
+    <li class="nav-header mt-auto">Site</li>
+    <li class="nav-item">
+        <a asp-page="/Index" target="_blank" class="nav-link sidebar-link">
+            <i class="fas fa-external-link-alt sidebar-link-icon"></i>
+            <span>Siteyi Görüntüle</span>
+        </a>
+    </li>
+</ul>

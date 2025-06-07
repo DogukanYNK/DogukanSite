@@ -1,0 +1,115 @@
+﻿@page "{id}"
+@model DogukanSite.Pages.Admin.CustomerDetailsModel
+@{
+    ViewData["Title"] = $"Müşteri Detayı: {Model.Customer.FullName}";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3">
+    <div>
+        <h1 class="page-title display-6 mb-0">Müşteri Detayı</h1>
+        <p class="lead text-muted mb-0">@Model.Customer.FullName</p>
+    </div>
+    <a asp-page="./ManageCustomers" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Tüm Müşterilere Dön
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body text-center">
+                <i class="fas fa-user-circle fa-5x text-muted mb-3"></i>
+                <h4 class="card-title">@Model.Customer.FullName</h4>
+                <p class="text-muted">@Model.Customer.Email</p>
+                @if (!string.IsNullOrEmpty(Model.Customer.PhoneNumber))
+                {
+                    <p class="text-muted small">@Model.Customer.PhoneNumber</p>
+                }
+                <p class="text-muted small">Kayıt Tarihi: @Model.Customer.RegistrationDate.ToString("dd MMMM yyyy")</p>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-light"><h5 class="mb-0">Kayıtlı Adresler</h5></div>
+            <div class="list-group list-group-flush">
+                @if (Model.Customer.Addresses.Any())
+                {
+                    @foreach (var address in Model.Customer.Addresses)
+                    {
+                        <div class="list-group-item">
+                            <strong>@address.AddressTitle</strong>
+                            <address class="mb-0 small text-muted not-italic" style="font-style: normal;">
+                                @address.Street<br>
+                                @address.PostalCode @address.City / @address.State
+                            </address>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="list-group-item text-muted text-center small p-3">Kayıtlı adres bulunmuyor.</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card admin-stat-card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Toplam Sipariş</h5>
+                        <p class="card-text display-4 fw-bold mb-0">@Model.Customer.TotalOrderCount</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card admin-stat-card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Toplam Harcama</h5>
+                        <p class="card-text display-4 fw-bold mb-0">@Model.Customer.TotalSpent.ToString("C")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-light"><h5 class="mb-0">Sipariş Geçmişi</h5></div>
+            <div class="card-body p-0">
+                @if (Model.Customer.Orders.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Sipariş No</th>
+                                    <th>Tarih</th>
+                                    <th class="text-center">Durum</th>
+                                    <th class="text-end">Tutar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.Customer.Orders)
+                                {
+                                    <tr>
+                                        <td><a asp-page="/Admin/OrderDetails" asp-route-orderId="@order.Id" class="fw-semibold">#@order.Id</a></td>
+                                        <td>@order.OrderDate.ToString("dd MMM yyyy")</td>
+                                        <td class="text-center">
+                                            <span class="badge status-badge status-@order.Status.ToString().ToLower()">@order.Status</span>
+                                        </td>
+                                        <td class="text-end">@order.TotalAmount.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-center text-muted p-4 mb-0">Bu müşterinin hiç siparişi yok.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

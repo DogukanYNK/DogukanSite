@@ -96,10 +96,11 @@ namespace DogukanSite.Pages.Account
             {
                 var user = new ApplicationUser
                 {
-                    UserName = Input.Email, // Kullanýcý adý olarak e-postayý kullanýyoruz
+                    UserName = Input.Email,
                     Email = Input.Email,
                     FirstName = Input.FirstName,
-                    LastName = Input.LastName
+                    LastName = Input.LastName,
+                    RegistrationDate = DateTime.UtcNow // YENÝ EKLENEN SATIR
                 };
 
                 var result = await _userManager.CreateAsync(user, Input.Password);

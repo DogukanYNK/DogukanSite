@@ -53,10 +53,9 @@
                             </a>
                         </li>
                         <li class="nav-item ms-2">
-                            <a class="nav-link position-relative px-2" asp-area="" asp-page="/Cart/Index" title="Sepetim">
+                            <a class="nav-link position-relative px-2" asp-page="/Cart/Index" title="Sepetim">
                                 <i class="fas fa-shopping-bag"></i>
-                                <span class="badge rounded-pill bg-primary position-absolute top-0 start-100 translate-middle d-none"
-                                      id="cartItemCountLayoutDesktop">0</span>
+                                <span class="badge rounded-pill bg-primary position-absolute top-0 start-100 translate-middle d-none cart-item-count-badge">0</span>
                             </a>
                         </li>
                         @if (SignInManager.IsSignedIn(User))
@@ -139,9 +138,8 @@
                 </li>
                 <li class="list-group-item">
                     <a class="d-flex align-items-center text-decoration-none position-relative" asp-page="/Cart/Index">
-                        @* data-bs-dismiss kaldırıldı *@
                         <i class="fas fa-shopping-bag fa-fw me-3"></i>Sepetim
-                        <span id="cartItemCountLayoutMobile" class="badge rounded-pill bg-primary ms-auto">0</span>
+                        <span class="badge rounded-pill bg-primary ms-auto cart-item-count-badge d-none">0</span>
                     </a>
                 </li>
                 @if (SignInManager.IsSignedIn(User))
@@ -312,9 +310,11 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    
+    @* --- YENİ YAPI --- *@
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/product-interactions.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
-    @await RenderSectionAsync("ValidationScripts", required: false)
 </body>
 </html>

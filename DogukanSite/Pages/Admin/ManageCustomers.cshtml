@@ -1,0 +1,94 @@
+﻿@page "{currentPage:int?}"
+@model DogukanSite.Pages.Admin.ManageCustomersModel
+@{
+    ViewData["Title"] = "Müşterileri Yönet";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3">
+    <h1 class="page-title display-6 mb-2 mb-md-0">@ViewData["Title"]</h1>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-9">
+                <label asp-for="SearchTerm" class="form-label small fw-semibold">Müşteri Adı veya E-posta Ara</label>
+                <input asp-for="SearchTerm" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="fas fa-search me-1"></i>Ara
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Customers.Any())
+{
+    <p class="text-muted small">Toplam @Model.TotalCustomerCount müşteri bulundu. Sayfa: @Model.CurrentPage / @Model.TotalPages</p>
+    <div class="table-responsive shadow-sm rounded-3 bg-white">
+        <table class="table table-hover align-middle mb-0 admin-table">
+            <thead class="table-light">
+                <tr>
+                    <th>Adı Soyadı</th>
+                    <th>E-posta</th>
+                    <th>Kayıt Tarihi</th>
+                    <th class="text-center">Sipariş Sayısı</th>
+                    <th class="text-end">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var customer in Model.Customers)
+                {
+                    <tr>
+                        <td><strong>@customer.FullName</strong></td>
+                        <td>@customer.Email</td>
+                        <td>@customer.RegistrationDate.ToString("dd MMM yyyy")</td>
+                        <td class="text-center">@customer.OrderCount</td>
+                        <td class="text-end">
+                            <a asp-page="./CustomerDetails" asp-route-id="@customer.Id" class="btn btn-sm btn-outline-info" title="Müşteri Detayları">
+                                <i class="fas fa-eye"></i> Detayları Gör
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Müşteri Sayfaları" class="mt-4 d-flex justify-content-center">
+            <ul class="pagination pagination-sm">
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-page="/Admin/ManageCustomers" asp-route-currentPage="@(Model.CurrentPage - 1)" asp-route-searchTerm="@Model.SearchTerm">&laquo;</a>
+                </li>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-page="/Admin/ManageCustomers" asp-route-currentPage="@i" asp-route-searchTerm="@Model.SearchTerm">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-page="/Admin/ManageCustomers" asp-route-currentPage="@(Model.CurrentPage + 1)" asp-route-searchTerm="@Model.SearchTerm">&raquo;</a>
+                </li>
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <div class="alert alert-light text-center py-4 mt-4">
+        <i class="fas fa-users fa-2x text-muted mb-3"></i>
+        @if (!string.IsNullOrEmpty(Model.SearchTerm))
+        {
+            <p class="mb-0">Aradığınız kriterlere uygun müşteri bulunamadı.</p>
+        }
+        else
+        {
+            <p class="mb-0">Sistemde kayıtlı müşteri bulunamadı.</p>
+        }
+    </div>
+}

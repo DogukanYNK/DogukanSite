@@ -1,4 +1,4 @@
-﻿/* --- (Login, Register) --- */
+﻿    /* --- (Login, Register) --- */
 .card .btn-outline-secondary[name="provider"], /* Bu satırı ekleyin veya mevcut olanı güncelleyin */
 .account-page-card .btn-outline-secondary[name="provider"] {
     /* Mevcut kuralınız */

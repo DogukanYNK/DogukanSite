@@ -2,20 +2,19 @@
 @model DogukanSite.Pages.Order.HistoryModel
 @{
     ViewData["Title"] = "Sipariş Geçmişim";
-    // Layout = "_Layout"; // Varsayılan olarak bu kullanılır, belirtmeye gerek yok.
+    Layout = "_Layout";
 }
 
-<div class="page-header text-center mb-4">
-    <h1 class="page-title display-5">@ViewData["Title"]</h1>
-    <p class="lead text-muted">Geçmiş siparişlerinizi buradan takip edebilirsiniz.</p>
-</div>
+<div class="container my-5">
+    <div class="page-header text-center mb-4">
+        <h1 class="page-title display-5">@ViewData["Title"]</h1>
+        <p class="lead text-muted">Geçmiş siparişlerinizi buradan takip edebilirsiniz.</p>
+    </div>
 
-<div class="container my-4">
     @if (Model.Orders != null && Model.Orders.Any())
     {
         <div class="table-responsive shadow-sm rounded-3 bg-white">
             <table class="table table-hover align-middle mb-0 order-history-table">
-                @* Stiller site.css'ten gelecek *@
                 <thead class="table-light">
                     <tr>
                         <th scope="col">Sipariş No</th>
@@ -31,17 +30,13 @@
                     {
                         <tr>
                             <td><strong class="text-primary">#@order.OrderId</strong></td>
-                            <td>@order.OrderDate.ToString("dd MMMM yyyy, HH:mm")</td> @* yyyy eklendi *@
+                            <td>@order.OrderDate.ToString("dd MMMM yyyy, HH:mm")</td>
                             <td class="text-center">@order.ItemCount</td>
-                            <td class="text-end fw-semibold">@order.OrderTotal.ToString("C")</td>
+                            <td class="text-end fw-semibold">@order.TotalAmount.ToString("C")</td>
                             <td class="text-center">
-                                <span class="badge rounded-pill
-                                    @(order.OrderStatus?.ToLower() == "pending" ? "bg-warning text-dark" :
-                                      order.OrderStatus?.ToLower() == "shipped" ? "bg-info text-dark" :
-                                      order.OrderStatus?.ToLower() == "processing" ? "bg-primary" : // Örnek: İşleniyor durumu
-                                      order.OrderStatus?.ToLower() == "delivered" ? "bg-success" :
-                                      order.OrderStatus?.ToLower() == "cancelled" ? "bg-danger" : "bg-secondary")">
-                                    @order.OrderStatus
+                                @* Düzeltme: Merkezi CSS yapısı kullanıldı *@
+                                <span class="badge rounded-pill status-badge status-@order.Status.ToLower()">
+                                    @order.Status
                                 </span>
                             </td>
                             <td class="text-end">
@@ -61,8 +56,7 @@
             <i class="fas fa-receipt fa-4x text-muted mb-3"></i>
             <h3 class="mb-3">Henüz Bir Siparişiniz Yok</h3>
             <p class="lead text-muted mb-4">Görünüşe göre daha önce hiç sipariş vermemişsiniz.</p>
-            @* Buton boyutu küçültüldü *@
-            <a asp-page="/Products/Index" class="btn btn-primary">
+            <a asp-page="/Index" class="btn btn-primary">
                 <i class="fas fa-shopping-bag me-2"></i>Alışverişe Başla
             </a>
         </div>

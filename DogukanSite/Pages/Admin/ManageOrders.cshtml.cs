@@ -3,11 +3,12 @@ using DogukanSite.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering; // SelectListItem için
 
 namespace DogukanSite.Pages.Admin
 {
@@ -24,63 +25,61 @@ namespace DogukanSite.Pages.Admin
         public IList<OrderViewModel> OrdersVM { get; set; } = new List<OrderViewModel>();
 
         [BindProperty(SupportsGet = true)]
-        public string SearchTerm { get; set; } // Sipariþ ID veya Müþteri Adý için
+        public string SearchTerm { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public string StatusFilter { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string DateFilter { get; set; }
+
         public List<SelectListItem> AllOrderStatuses { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public string DateFilter { get; set; } // "today", "last7days", "last30days"
-
-        // Sayfalama için
-        [BindProperty(SupportsGet = true)]
         public int CurrentPage { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
+        public int PageSize { get; set; } = 15; // Sayfa baþýna gösterilecek sipariþ sayýsý
         public int TotalPages { get; set; }
         public int TotalOrderCount { get; set; }
 
         public class OrderViewModel
         {
             public int Id { get; set; }
-            public string CustomerName { get; set; } // Veya Kullanýcý Adý/E-postasý
+            public string ContactName { get; set; }
             public DateTime OrderDate { get; set; }
-            public decimal OrderTotal { get; set; }
-            public string OrderStatus { get; set; }
-            public string UserId { get; set; }
-            public string UserEmail { get; set; } // Kullanýcý e-postasýný da gösterelim
+            public decimal TotalAmount { get; set; }
+            public string Status { get; set; }
+            public string? UserEmail { get; set; } // Misafir sipariþlerinde boþ olabilir
         }
 
         public async Task OnGetAsync()
         {
             ViewData["Title"] = "Sipariþleri Yönet";
 
-            var query = _context.Orders.Include(o => o.User).AsQueryable(); // User bilgisini çekmek için Include
+            var query = _context.Orders.Include(o => o.User).AsQueryable();
 
-            // Arama (Sipariþ ID veya Müþteri Adý/E-postasý)
             if (!string.IsNullOrEmpty(SearchTerm))
             {
-                // Sipariþ ID'si sayýsal mý diye kontrol et
                 if (int.TryParse(SearchTerm, out int orderId))
                 {
-                    query = query.Where(o => o.Id == orderId ||
-                                             (o.User != null && (o.User.FirstName.Contains(SearchTerm) || o.User.LastName.Contains(SearchTerm) || o.User.Email.Contains(SearchTerm))) ||
-                                             o.CustomerName.Contains(SearchTerm));
+                    query = query.Where(o => o.Id == orderId);
                 }
                 else
                 {
-                    query = query.Where(o => (o.User != null && (o.User.FirstName.Contains(SearchTerm) || o.User.LastName.Contains(SearchTerm) || o.User.Email.Contains(SearchTerm))) ||
-                                             o.CustomerName.Contains(SearchTerm));
+                    query = query.Where(o =>
+                        (o.User != null && (o.User.FirstName.Contains(SearchTerm) || o.User.LastName.Contains(SearchTerm) || o.User.Email.Contains(SearchTerm))) ||
+                        o.ShippingContactName.Contains(SearchTerm) ||
+                        o.GuestEmail.Contains(SearchTerm));
                 }
             }
 
-            // Durum Filtreleme
             if (!string.IsNullOrEmpty(StatusFilter))
             {
-                query = query.Where(o => o.OrderStatus == StatusFilter);
+                if (Enum.TryParse<OrderStatus>(StatusFilter, out var statusEnum))
+                {
+                    query = query.Where(o => o.Status == statusEnum);
+                }
             }
 
-            // Tarih Filtreleme
             if (!string.IsNullOrEmpty(DateFilter))
             {
                 var today = DateTime.UtcNow.Date;
@@ -98,25 +97,17 @@ namespace DogukanSite.Pages.Admin
                 }
             }
 
-            // Sipariþ durumlarýný al (filtreleme dropdown'ý için)
-            // Order modelinde OrderStatus alanýnýn string olduðunu varsayýyoruz.
-            // Gerçekte bir enum veya ayrý bir tablo olabilir.
-            AllOrderStatuses = await _context.Orders
-                                        .Select(o => o.OrderStatus)
-                                        .Where(s => !string.IsNullOrEmpty(s))
-                                        .Distinct()
-                                        .OrderBy(s => s)
-                                        .Select(s => new SelectListItem { Value = s, Text = s })
-                                        .ToListAsync();
+            AllOrderStatuses = Enum.GetValues<OrderStatus>()
+                                   .Select(status => new SelectListItem { Value = status.ToString(), Text = status.ToString() })
+                                   .ToList();
             AllOrderStatuses.Insert(0, new SelectListItem { Value = "", Text = "Tüm Durumlar" });
 
-
             TotalOrderCount = await query.CountAsync();
-            TotalPages = (int)System.Math.Ceiling(TotalOrderCount / (double)PageSize);
-            CurrentPage = System.Math.Max(1, System.Math.Min(CurrentPage, TotalPages == 0 ? 1 : TotalPages));
+            TotalPages = (int)Math.Ceiling(TotalOrderCount / (double)PageSize);
+            CurrentPage = Math.Max(1, Math.Min(CurrentPage, TotalPages == 0 ? 1 : TotalPages));
 
             var orders = await query
-                                .OrderByDescending(o => o.OrderDate) // En yeni sipariþler üste
+                                .OrderByDescending(o => o.OrderDate)
                                 .Skip((CurrentPage - 1) * PageSize)
                                 .Take(PageSize)
                                 .ToListAsync();
@@ -124,39 +115,36 @@ namespace DogukanSite.Pages.Admin
             OrdersVM = orders.Select(o => new OrderViewModel
             {
                 Id = o.Id,
-                CustomerName = o.User?.FirstName + " " + o.User?.LastName ?? o.CustomerName, // Kullanýcý varsa adýný, yoksa sipariþteki adý
-                UserEmail = o.User?.Email ?? o.Email, // Kullanýcý varsa e-postasýný, yoksa sipariþteki e-postayý
+                ContactName = o.ShippingContactName ?? (o.User != null ? $"{o.User.FirstName} {o.User.LastName}" : "Ýsimsiz"),
+                UserEmail = o.User?.Email ?? o.GuestEmail,
                 OrderDate = o.OrderDate,
-                OrderTotal = o.OrderTotal,
-                OrderStatus = o.OrderStatus ?? "Bilinmiyor",
-                UserId = o.UserId
+                TotalAmount = o.TotalAmount,
+                Status = o.Status.ToString(),
             }).ToList();
         }
 
         public async Task<IActionResult> OnPostUpdateStatusAsync(int orderId, string newStatus)
         {
-            if (orderId == 0 || string.IsNullOrEmpty(newStatus))
+            var routeValues = new { currentPage = CurrentPage, searchTerm = SearchTerm, statusFilter = StatusFilter, dateFilter = DateFilter };
+
+            if (orderId == 0 || string.IsNullOrEmpty(newStatus) || !Enum.TryParse<OrderStatus>(newStatus, out var statusEnum))
             {
                 TempData["ErrorMessage"] = "Geçersiz sipariþ ID veya durum.";
-                return RedirectToPage(new { currentPage = CurrentPage, searchTerm = SearchTerm, statusFilter = StatusFilter, dateFilter = DateFilter });
+                return RedirectToPage(routeValues);
             }
 
             var order = await _context.Orders.FindAsync(orderId);
             if (order == null)
             {
                 TempData["ErrorMessage"] = "Güncellenecek sipariþ bulunamadý.";
-                return RedirectToPage(new { currentPage = CurrentPage, searchTerm = SearchTerm, statusFilter = StatusFilter, dateFilter = DateFilter });
+                return RedirectToPage(routeValues);
             }
 
-            order.OrderStatus = newStatus;
-            // Ýsteðe baðlý: Sipariþ durumu deðiþtiðinde bir log tutulabilir veya kullanýcýya e-posta gönderilebilir.
-            // Örneðin: if (newStatus == "Shipped") { /* Kargo takip no gir, e-posta gönder */ }
-
-            _context.Orders.Update(order);
+            order.Status = statusEnum;
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = $"Sipariþ #{orderId} durumu '{newStatus}' olarak güncellendi.";
-            return RedirectToPage(new { currentPage = CurrentPage, searchTerm = SearchTerm, statusFilter = StatusFilter, dateFilter = DateFilter });
+            TempData["SuccessMessage"] = $"Sipariþ #{orderId} durumu '{statusEnum}' olarak güncellendi.";
+            return RedirectToPage(routeValues);
         }
     }
 }

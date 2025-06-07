@@ -82,7 +82,7 @@ namespace DogukanSite.Pages.Products
             if (User.Identity != null && User.Identity.IsAuthenticated && !string.IsNullOrEmpty(userId))
             {
                 UserFavoriteProductIds = (await _context.Favorites
-                                            .Where(f => f.ApplicationUserId == userId)
+                                            .Where(f => f.UserId == userId)
                                             .Select(f => f.ProductId)
                                             .ToListAsync())
                                             .ToHashSet();
@@ -97,7 +97,7 @@ namespace DogukanSite.Pages.Products
             }
             if (!string.IsNullOrEmpty(Category))
             {
-                query = query.Where(p => p.Category.ToLower() == Category.ToLower());
+                query = query.Where(p => p.Category.Name.ToLower() == Category.ToLower());
             }
 
             switch (SortBy?.ToLower())
@@ -118,14 +118,14 @@ namespace DogukanSite.Pages.Products
             // AllCategories sadece sayfa ilk yüklendiðinde veya filtreler için gerekebilir.
             // AJAX ile sadece ürün listesi güncelleniyorsa, AllCategories'i her seferinde çekmeye gerek yok.
             // Ancak _ProductFiltersPartial hem sidebar'da hem offcanvas'ta kullanýldýðý için OnGetAsync'te kalmasý mantýklý.
-            if (AllCategories == null || !AllCategories.Any()) // Sadece ilk yüklemede veya ihtiyaç halinde
+            if (AllCategories == null || !AllCategories.Any())
             {
-                AllCategories = await _context.Products
-                                   .Where(p => !string.IsNullOrEmpty(p.Category))
-                                   .Select(p => p.Category)
-                                   .Distinct()
-                                   .OrderBy(c => c)
-                                   .ToListAsync();
+                // Doðrudan Kategoriler tablosunu sorguluyoruz.
+                // Bu yöntem hem hatayý giderir hem de çok daha performanslýdýr.
+                AllCategories = await _context.Categories
+                                              .OrderBy(c => c.Name) // Kategori adýna göre sýrala
+                                              .Select(c => c.Name)  // Sadece kategori adlarýný al
+                                              .ToListAsync();
             }
         }
     }

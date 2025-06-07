@@ -1,18 +1,15 @@
-﻿/* === Products/Index Sayfası Sidebar ve Filtre Stilleri === */
+﻿/* === SİZİN MEVCUT KODUNUZ (OLDUĞU GİBİ KORUNDU) === */
+
+/* === Products/Index Sayfası Sidebar ve Filtre Stilleri === */
 .products-sidebar {
-    /* background-color: var(--background-content); // Ana içerikle aynıysa gereksiz */
-    /* border-radius: var(--border-radius-lg); */
-    /* padding: 1rem; // Eğer sticky ise padding scrollbar'ı etkileyebilir */
-    /* box-shadow: var(--box-shadow-sm); */
 }
 
 .sidebar-widget {
-    /* Her bir filtre bloğu */
     margin-bottom: 2rem;
 }
 
     .sidebar-widget:last-child {
-        margin-bottom: 0; /* Son widget altı boşluk olmasın */
+        margin-bottom: 0;
     }
 
 .sidebar-widget-title {
@@ -22,7 +19,7 @@
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid var(--brand-primary);
-    display: inline-block; /* Çizgi metin kadar olsun */
+    display: inline-block;
 }
 
 .category-filter-list-v2 {
@@ -46,18 +43,17 @@
     }
 
         .category-filter-list-v2 .category-link i.fa-fw {
-            /* FontAwesome fixed-width ikonlar için */
-            width: 1.25em; /* Hizalama */
+            width: 1.25em;
             opacity: 0.8;
-            transition: opacity 0.2s ease, color 0.2s ease; /* Renk geçişi de eklendi */
-            color: var(--text-muted); /* İkon rengi metinle uyumlu */
+            transition: opacity 0.2s ease, color 0.2s ease;
+            color: var(--text-muted);
         }
 
         .category-filter-list-v2 .category-link:hover,
         .category-filter-list-v2 .category-link:focus {
             background-color: var(--brand-light);
             color: var(--brand-primary);
-            padding-left: 1rem; /* Hover'da hafifçe içeri kaydır */
+            padding-left: 1rem;
             outline: none;
         }
 
@@ -71,20 +67,19 @@
             background-color: var(--brand-primary);
             color: white;
             font-weight: 600;
-            padding-left: 1rem; /* Aktif durumda da içeri kayık */
+            padding-left: 1rem;
             box-shadow: var(--box-shadow-sm);
         }
 
             .category-filter-list-v2 .category-link.active i.fa-fw {
-                color: white !important; /* !important Bootstrap'i eziyorsa kalabilir. Test edin. */
+                color: white !important;
                 opacity: 1;
             }
 
-    /* Kategori listesi scrollbar (JS ile eklenecek 'has-scrollbar' sınıfı için) */
     .category-filter-list-v2.has-scrollbar {
-        max-height: 350px; /* Ayarlanabilir maksimum yükseklik */
+        max-height: 350px;
         overflow-y: auto;
-        padding-right: 8px; /* Scrollbar için yer */
+        padding-right: 8px;
     }
 
         .category-filter-list-v2.has-scrollbar::-webkit-scrollbar {
@@ -92,7 +87,7 @@
         }
 
         .category-filter-list-v2.has-scrollbar::-webkit-scrollbar-track {
-            background: transparent; /* Veya var(--brand-light) */
+            background: transparent;
         }
 
         .category-filter-list-v2.has-scrollbar::-webkit-scrollbar-thumb {
@@ -104,33 +99,23 @@
                 background: var(--text-muted);
             }
 
-/* Sıralama Formu Stilleri */
-.filter-sort-form .form-label {
-    /* margin-bottom: 0.25rem; */
-    /* font-size: 0.85rem; */
-}
-
 .filter-sort-form .form-select-sm {
-    /* Bootstrap .form-select-sm */
     font-size: 0.9rem;
     border: 1px solid var(--border-color-strong);
     background-color: var(--background-content);
-    /* box-shadow: var(--box-shadow-sm); // İsteğe bağlı */
 }
 
     .filter-sort-form .form-select-sm:focus {
         border-color: var(--brand-primary);
-        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15); /* Daha soft focus */
+        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
     }
 
 @media (max-width: 991.98px) {
-    /* Mobilde Sidebar */
     .products-sidebar .sticky-top {
-        position: static !important; /* Mobilde sticky olmasın */
+        position: static !important;
     }
 
     .products-sidebar {
-        /* Mobilde sidebar'ı kart gibi göstermek için */
         background-color: var(--background-content);
         border-radius: var(--border-radius-md);
         padding: 1rem;
@@ -140,7 +125,7 @@
 
         .products-sidebar .sidebar-widget {
             margin-bottom: 1.5rem;
-            padding: 0; /* Widget içindeki padding'i sıfırla */
+            padding: 0;
             background-color: transparent;
             border-radius: 0;
             box-shadow: none;
@@ -156,22 +141,20 @@
         }
 }
 
-/* Sayfalama Stilleri */
 .pagination .page-item.active .page-link {
-    /* Bootstrap .pagination */
     background-color: var(--brand-primary);
     border-color: var(--brand-primary);
     color: white;
     box-shadow: var(--box-shadow-sm);
-    z-index: 3; /* Diğerlerinin üzerine çıksın */
+    z-index: 3;
 }
 
 .pagination .page-link {
     color: var(--brand-primary);
-    border-radius: var( --border-radius-sm ) !important; /* !important Bootstrap'i ezer. Utility class (.rounded-sm gibi) tercih edilebilir. */
-    margin: 0 2px; /* Sayfa butonları arası boşluk */
+    border-radius: var( --border-radius-sm ) !important;
+    margin: 0 2px;
     border-color: var(--border-color);
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.2s ease;
 }
 
     .pagination .page-link:hover,
@@ -179,81 +162,63 @@
         background-color: var(--brand-light);
         color: var(--link-hover-color);
         border-color: var(--border-color-strong);
-        z-index: 2; /* Hover olan bir üste çıksın */
-        box-shadow: var(--box-shadow-sm); /* Hover'da da hafif gölge */
+        z-index: 2;
+        box-shadow: var(--box-shadow-sm);
         outline: none;
     }
 
     .pagination .page-link:focus {
-        /* Sadece focus için ek halka */
         box-shadow: var(--box-shadow-sm), 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
     }
 
 .pagination .page-item.disabled .page-link {
     color: var(--text-muted);
-    background-color: transparent; /* Veya var(--brand-light) */
+    background-color: transparent;
     border-color: var(--border-color);
-    box-shadow: none; /* Disabled durumda gölge olmasın */
-}
-/* === Ürün Filtreleme Offcanvas Stilleri === */
-#productFiltersOffcanvas .offcanvas-header {
-    /* border-bottom: 1px solid var(--border-color); // Zaten genel offcanvas stilinde var */
-}
-
-#productFiltersOffcanvas .offcanvas-title {
-    /* font-weight: 600; */
+    box-shadow: none;
 }
 
 #productFiltersOffcanvas .offcanvas-body {
-    padding: 1rem; /* Offcanvas içeriğine genel padding */
+    padding: 1rem;
 }
 
     #productFiltersOffcanvas .offcanvas-body .sidebar-widget {
-        margin-bottom: 1.5rem; /* Daha az boşluk */
+        margin-bottom: 1.5rem;
     }
 
     #productFiltersOffcanvas .offcanvas-body .sidebar-widget-title {
-        font-size: 1rem; /* Biraz daha küçük */
+        font-size: 1rem;
         margin-bottom: 0.75rem;
     }
 
 @media (max-width: 991.98px) {
-    /* Mobilde, offcanvas içindeki kategori listesi çok uzunsa scroll */
     #productFiltersOffcanvas .category-filter-list-v2.has-scrollbar {
-        max-height: calc( 100vh - 250px ); /* Navbar + offcanvas header/footer + diğer boşluklara göre ayarla */
+        max-height: calc( 100vh - 250px );
     }
 }
-/* === Product veya Fovorites Boş Sepet Mesajı === */
-.empty-cart-message {
-    /* HTML'de .text-center varsa text-align:center gereksiz */
-    /* text-align: center; */
+
+.empty-cart-message i,
+.empty-cart-icon {
+    font-size: 3.5rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
 }
 
-    .empty-cart-message i, /* .empty-cart-icon zaten vardı, birleştirildi */
-    .empty-cart-icon {
-        font-size: 3.5rem;
-        color: var(--text-muted);
-        margin-bottom: 1rem;
-    }
+.empty-cart-message h3 {
+    font-weight: 600;
+    color: var(--text-base);
+    margin-bottom: 0.5rem;
+}
 
-    .empty-cart-message h3 {
-        font-weight: 600;
-        color: var(--text-base);
-        margin-bottom: 0.5rem;
-    }
+.empty-cart-message p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
 
-    .empty-cart-message p {
-        color: var(--text-muted);
-        margin-bottom: 1.5rem;
-    }
-/* === Mobil Sepet İyileştirmeleri (v2 ile birleştirildi) === */
 @media (max-width: 575.98px) {
-    /* sm altı için Bootstrap breakpoint */
-    /* Genel .cart-item yapısı (eğer row > col-* ise) */
     .cart-item .row > div[class*="col-"] {
-        /* Tüm sütunlar için */
-        margin-bottom: 0.75rem; /* Sütunlar arası dikey boşluk */
-        text-align: center; /* Mobilde çoğu şeyi ortalamak daha iyi görünebilir */
+        margin-bottom: 0.75rem;
+        text-align: center;
     }
 
         .cart-item .row > div[class*="col-"]:last-child {
@@ -261,9 +226,7 @@
         }
 
     .cart-item .col-auto.cart-item-image-col {
-        /* Resim sütunu */
-        width: 100%; /* Tam genişlik */
-        /* justify-content: center; // Zaten text-align:center ile ortalanır */
+        width: 100%;
     }
 
     .cart-item-image-link img {
@@ -271,46 +234,105 @@
         height: 80px;
     }
 
-    .cart-item .col.cart-item-details-col {
-        /* Ürün detayları ve adet kontrolleri sütunu */
-        /* text-align: center; // Zaten genel col-* için tanımlı */
-    }
-
     .cart-item-title a {
-        font-size: 1rem; /* Mobilde okunurluk için */
+        font-size: 1rem;
     }
 
     .cart-item-details .quantity-controls {
-        justify-content: center; /* Adet butonlarını ortala */
+        justify-content: center;
         margin-top: 0.5rem;
         margin-bottom: 0.5rem;
     }
 
     .cart-item .col.cart-item-pricing-col {
-        /* Fiyat ve Kaldır sütunu */
         display: flex;
-        flex-direction: column; /* Alt alta */
-        align-items: center; /* Ortala */
-        /* text-align: center; // Zaten genel col-* için tanımlı */
+        flex-direction: column;
+        align-items: center;
     }
 
     .cart-item-total-price {
-        margin-bottom: 0.5rem; /* Kaldır butonu ile arasına boşluk */
+        margin-bottom: 0.5rem;
     }
 
     .remove-item-btn-ajax {
-        display: inline-block; /* Buton gibi görünmesi için */
+        display: inline-block;
     }
 
-    /* Sipariş Özeti Mobilde */
     .order-summary-container.sticky-lg-top {
-        /* sticky-lg-top mobilde static olur */
-        position: static !important; /* !important Bootstrap'i ezmek için kalmalı */
-        margin-top: 2rem; /* Sepet listesinden sonra boşluk */
-        box-shadow: none; /* Mobilde daha sade */
-        border-top: 1px solid var(--border-color); /* Üstüne ayırıcı çizgi */
+        position: static !important;
+        margin-top: 2rem;
+        box-shadow: none;
+        border-top: 1px solid var(--border-color);
         padding-top: 1.5rem;
-        border-radius: 0; /* Köşeleri düz */
-        background-color: var(--background-body); /* Sayfa arkaplanıyla aynı */
+        border-radius: 0;
+        background-color: var(--background-body);
     }
+}
+
+
+/* =================================================================
+   YENİ EKLENEN BÖLÜM - ÜRÜN KARTI STİLLERİ
+================================================================= */
+
+.product-card {
+    position: relative;
+    background-color: var(--background-content);
+    transition: all 0.3s ease-in-out;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow-md);
+    }
+
+    .product-card .product-card-hover-actions {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.98);
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        visibility: hidden;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .product-card:hover .product-card-hover-actions {
+        transform: translateY(0);
+        visibility: visible;
+    }
+
+.favorite-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(2px);
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    padding: 0;
+    border: none;
+}
+
+.product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    padding: 0.3em 0.7em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    border-radius: var(--border-radius-sm);
+    text-transform: uppercase;
 }
