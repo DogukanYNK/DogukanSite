@@ -1,16 +1,19 @@
-﻿namespace DogukanSite.Models
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace DogukanSite.Models
 {
     public class Favorite
     {
         public int Id { get; set; }
-        public string UserId { get; set; }
+
         public int ProductId { get; set; }
-
-        // YENİ EKLENEN ALAN
-        public DateTime AddedDate { get; set; }
-
-        // Navigation properties
-        public virtual ApplicationUser User { get; set; }
         public virtual Product Product { get; set; }
+
+        // Tutarlılık için ApplicationUserId olarak güncellendi
+        public string ApplicationUserId { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
+
+        public DateTime AddedDate { get; set; } = DateTime.UtcNow;
     }
-}   
+}

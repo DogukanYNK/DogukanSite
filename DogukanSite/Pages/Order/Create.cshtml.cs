@@ -57,9 +57,9 @@ namespace DogukanSite.Pages.Order
             [Required(ErrorMessage = "Þehir alaný zorunludur.")]
             public string City { get; set; }
             [Required(ErrorMessage = "Ýlçe alaný zorunludur.")]
-            public string State { get; set; }
+            public string? State { get; set; }
             public string PostalCode { get; set; }
-            public string OrderNotes { get; set; }
+            public string? OrderNotes { get; set; }
         }
 
         public class CartItemViewModel
@@ -125,16 +125,17 @@ namespace DogukanSite.Pages.Order
 
             if (!cartItemsDb.Any())
             {
-                ModelState.AddModelError(string.Empty, "Sepetiniz boþ veya zaman aþýmýna uðradý.");
+                ModelState.AddModelError(string.Empty, "Sepetiniz boþ.");
             }
 
+            // Sayfayý yeniden yüklemek için sepet ve toplam verilerini hazýrla
             CartItems = cartItemsDb.Select(ci => new CartItemViewModel
             {
                 ProductId = ci.ProductId,
                 ProductName = ci.Product?.Name,
-                ProductImageUrl = ci.Product?.ImageUrl,
                 UnitPrice = ci.Product?.DiscountPrice ?? ci.Product.Price,
-                Quantity = ci.Quantity
+                Quantity = ci.Quantity,
+                ProductImageUrl = ci.Product?.ImageUrl
             }).ToList();
             CalculateTotals();
 
@@ -143,48 +144,76 @@ namespace DogukanSite.Pages.Order
                 return Page();
             }
 
-            var order = new Models.Order
+            // --- TRANSACTION BAÞLANGICI ---
+            // Bu blok içindeki tüm iþlemler ya hep birlikte baþarýlý olur ya da hep birlikte geri alýnýr.
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                OrderDate = DateTime.UtcNow,
-                Status = OrderStatus.Pending,
-                TotalAmount = Total,
-                OrderNotes = OrderInput.OrderNotes,
-                ShippingContactName = OrderInput.ContactName,
-                ShippingStreet = OrderInput.Street,
-                ShippingCity = OrderInput.City,
-                ShippingState = OrderInput.State,
-                ShippingPostalCode = OrderInput.PostalCode,
-                ShippingCountry = "Türkiye",
-                OrderItems = cartItemsDb.Select(ci => new Models.OrderItem
+                // 1. Sipariþ ana kaydýný oluþtur
+                var order = new Models.Order
                 {
-                    ProductId = ci.ProductId,
-                    Quantity = ci.Quantity,
-                    PriceAtTimeOfPurchase = ci.Product.DiscountPrice ?? ci.Product.Price
-                }).ToList()
-            };
+                    OrderDate = DateTime.UtcNow,
+                    Status = OrderStatus.Pending,
+                    TotalAmount = Total,
+                    OrderNotes = OrderInput.OrderNotes, // Artýk isteðe baðlý
+                    ShippingContactName = OrderInput.ContactName,
+                    ShippingStreet = OrderInput.Street,
+                    ShippingCity = OrderInput.City,
+                    ShippingState = OrderInput.State,
+                    ShippingPostalCode = OrderInput.PostalCode,
+                    ShippingCountry = "Türkiye",
+                    UserId = cartIdentifier.userId,
+                    GuestEmail = cartIdentifier.userId == null ? OrderInput.Email : null
+                };
+                _context.Orders.Add(order);
+                await _context.SaveChangesAsync(); // Order ID'sinin oluþmasý için kaydet
 
-            // Sipariþi kullanýcýya veya misafire baðla
-            if (cartIdentifier.userId != null)
-            {
-                order.UserId = cartIdentifier.userId;
+                // 2. Sipariþ kalemlerini oluþtur ve stoklarý düþür
+                foreach (var cartItem in cartItemsDb)
+                {
+                    var productInDb = await _context.Products.FindAsync(cartItem.ProductId);
+
+                    // Son bir stok kontrolü
+                    if (productInDb == null || productInDb.Stock < cartItem.Quantity)
+                    {
+                        await transaction.RollbackAsync(); // Ýþlemi geri al
+                        TempData["ErrorMessage"] = $"'{cartItem.Product.Name}' adlý üründe yeterli stok kalmadý, sipariþ iptal edildi.";
+                        return RedirectToPage("/Cart/Index");
+                    }
+
+                    // STOK DÜÞÜRME ÝÞLEMÝ
+                    productInDb.Stock -= cartItem.Quantity;
+
+                    var orderItem = new Models.OrderItem
+                    {
+                        OrderId = order.Id,
+                        ProductId = cartItem.ProductId,
+                        Quantity = cartItem.Quantity,
+                        PriceAtTimeOfPurchase = cartItem.Product.DiscountPrice ?? cartItem.Product.Price
+                    };
+                    _context.OrderItems.Add(orderItem);
+                }
+
+                // 3. Sepeti temizle
+                _context.CartItems.RemoveRange(cartItemsDb);
+
+                // 4. Stok ve sipariþ kalemleri ile ilgili tüm deðiþiklikleri veritabanýna iþle
+                await _context.SaveChangesAsync();
+
+                // 5. Her þey yolundaysa, iþlemi onayla
+                await transaction.CommitAsync();
+
+                _logger.LogInformation("Sipariþ (ID: {OrderId}) baþarýyla oluþturuldu.", order.Id);
+                return RedirectToPage("/Order/Success", new { orderId = order.Id });
             }
-            else
+            catch (Exception ex)
             {
-                order.GuestEmail = OrderInput.Email;
+                // Beklenmedik bir hata olursa her þeyi geri al
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Sipariþ oluþturulurken bir hata oluþtu.");
+                TempData["ErrorMessage"] = "Sipariþiniz oluþturulurken beklenmedik bir hata oluþtu. Lütfen tekrar deneyin.";
+                return RedirectToPage("/Cart/Index");
             }
-
-            _context.Orders.Add(order);
-            _context.CartItems.RemoveRange(cartItemsDb);
-            await _context.SaveChangesAsync();
-
-            // Misafir sepetini de temizle
-            if (cartIdentifier.userId == null)
-            {
-                HttpContext.Session.Remove("SessionId");
-            }
-
-            _logger.LogInformation("Sipariþ (ID: {OrderId}) baþarýyla oluþturuldu.", order.Id);
-            return RedirectToPage("/Order/Success", new { orderId = order.Id });
         }
 
         // Hem misafir hem de üye için sepet kimliðini alan yardýmcý metot
@@ -211,11 +240,11 @@ namespace DogukanSite.Pages.Order
 
             if (userId != null)
             {
-                query = query.Where(c => c.UserId == userId);
+                query = query.Where(c => c.ApplicationUserId == userId);
             }
             else if (sessionId != null)
             {
-                query = query.Where(c => c.SessionId == sessionId && c.UserId == null);
+                query = query.Where(c => c.SessionId == sessionId && c.ApplicationUserId == null);
             }
             else
             {

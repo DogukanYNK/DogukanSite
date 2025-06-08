@@ -82,7 +82,7 @@ namespace DogukanSite.Pages.Products
             if (User.Identity != null && User.Identity.IsAuthenticated && !string.IsNullOrEmpty(userId))
             {
                 UserFavoriteProductIds = (await _context.Favorites
-                                            .Where(f => f.UserId == userId)
+                                            .Where(f => f.ApplicationUserId == userId)
                                             .Select(f => f.ProductId)
                                             .ToListAsync())
                                             .ToHashSet();

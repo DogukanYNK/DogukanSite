@@ -10,43 +10,47 @@
         <div class="col-md-8 col-lg-6">
             <div class="page-header mb-4">
                 <h1 class="page-title display-6">@ViewData["Title"]</h1>
-                <p class="lead text-muted">"@Model.Coupon.Code"</p>
+                <p class="lead text-muted">"<strong>@Model.Coupon.Code</strong>" kodlu kuponu düzenliyorsunuz.</p>
             </div>
 
             <div class="card shadow-sm">
                 <div class="card-body p-4 p-md-5">
                     <form method="post">
                         <input type="hidden" asp-for="Coupon.Id" />
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <input type="hidden" asp-for="Coupon.UsageCount" /> <div asp-validation-summary="All" class="alert alert-danger"></div>
 
                         <div class="mb-3">
                             <label asp-for="Coupon.Code" class="form-label"></label>
                             <input asp-for="Coupon.Code" class="form-control" />
-                            <span asp-validation-for="Coupon.Code" class="text-danger small"></span>
                         </div>
-                        <div class="mb-3">
-                            <label asp-for="Coupon.Description" class="form-label"></label>
-                            <input asp-for="Coupon.Description" class="form-control" />
-                            <span asp-validation-for="Coupon.Description" class="text-danger small"></span>
-                        </div>
+
                         <div class="row g-2 mb-3">
                             <div class="col-6">
-                                <label asp-for="Coupon.DiscountType" class="form-label"></label>
-                                <select asp-for="Coupon.DiscountType" asp-items="Html.GetEnumSelectList<Models.DiscountType>()" class="form-select"></select>
+                                <label asp-for="Coupon.Type" class="form-label"></label>
+                                <select asp-for="Coupon.Type" asp-items="Html.GetEnumSelectList<DiscountType>()" class="form-select"></select>
                             </div>
                             <div class="col-6">
-                                <label asp-for="Coupon.Amount" class="form-label">Değer</label>
-                                <input asp-for="Coupon.Amount" class="form-control" type="text" />
+                                <label asp-for="Coupon.Value" class="form-label"></label>
+                                <input asp-for="Coupon.Value" class="form-control" type="text" />
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label asp-for="Coupon.MinimumSpend" class="form-label">Minimum Harcama (₺)</label>
-                            <input asp-for="Coupon.MinimumSpend" class="form-control" type="text" />
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label asp-for="Coupon.StartDate" class="form-label"></label>
+                                <input asp-for="Coupon.StartDate" class="form-control" type="datetime-local" />
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="Coupon.EndDate" class="form-label"></label>
+                                <input asp-for="Coupon.EndDate" class="form-control" type="datetime-local" />
+                            </div>
                         </div>
+
                         <div class="mb-3">
-                            <label asp-for="Coupon.ExpiryDate" class="form-label">Son Kullanma Tarihi</label>
-                            <input asp-for="Coupon.ExpiryDate" class="form-control" type="date" />
+                            <label asp-for="Coupon.UsageLimit" class="form-label">Kullanım Limiti (Boşsa limitsiz)</label>
+                            <input asp-for="Coupon.UsageLimit" class="form-control" type="number" />
                         </div>
+
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" asp-for="Coupon.IsActive">
                             <label class="form-check-label" asp-for="Coupon.IsActive">Kupon Aktif mi?</label>

@@ -3,6 +3,8 @@ using DogukanSite.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DogukanSite.Pages.Admin
@@ -22,9 +24,17 @@ namespace DogukanSite.Pages.Admin
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null) return NotFound();
-            Coupon = await _context.Coupons.FindAsync(id);
-            if (Coupon == null) return NotFound();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Coupon = await _context.Coupons.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (Coupon == null)
+            {
+                return NotFound();
+            }
             return Page();
         }
 
@@ -35,14 +45,23 @@ namespace DogukanSite.Pages.Admin
                 return Page();
             }
 
-            if (Coupon.ExpiryDate.HasValue)
-            {
-                // Gelen tarihin türünü UTC olarak belirtiyoruz.
-                Coupon.ExpiryDate = DateTime.SpecifyKind(Coupon.ExpiryDate.Value, DateTimeKind.Utc);
-            }
+            _context.Attach(Coupon).State = EntityState.Modified;
 
-            _context.Attach(Coupon).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Coupons.Any(e => e.Id == Coupon.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             TempData["SuccessMessage"] = $"'{Coupon.Code}' kuponu baþarýyla güncellendi.";
             return RedirectToPage("./ManageCoupons");

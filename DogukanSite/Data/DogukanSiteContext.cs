@@ -31,28 +31,12 @@ namespace DogukanSite.Data
 
             // Favorite için bileşik unique index (bir kullanıcı aynı ürünü tekrar favorileyemez)
             builder.Entity<Favorite>()
-                .HasIndex(f => new { f.UserId, f.ProductId }).IsUnique();
+                .HasIndex(f => new { f.ApplicationUserId, f.ProductId }).IsUnique();
 
             // YENİ EKLENEN KURAL
             // Coupon 'Code' alanının benzersiz (unique) olmasını sağlar
             builder.Entity<Coupon>()
                 .HasIndex(c => c.Code).IsUnique();
-
-
-            // CartItem için (isteğe bağlı ama mantıklı olabilir):
-            // Bir kullanıcı için aynı ürün sepette birden fazla satırda olmamalı, sadece adedi artmalı.
-            // VEYA bir session için aynı ürün birden fazla satırda olmamalı.
-            // Bu kuralı ApplicationUserId null ise SessionId + ProductId, değilse ApplicationUserId + ProductId olarak kurmak karmaşık olabilir.
-            // Şimdilik bu kuralı eklemiyorum, uygulama katmanında bu kontrolü yapmak daha esnek olabilir.
-            // Ama istersen eklenebilir:
-            // builder.Entity<CartItem>()
-            //    .HasIndex(ci => new { ci.ApplicationUserId, ci.ProductId }).IsUnique(); // Bu, ApplicationUserId null ise sorun yaratır.
-            // Daha karmaşık bir unique index veya ayrı kontrol gerekir.
-
-            // Ondalık sayılar için hassasiyet (eğer Product modelinde Price decimal ise)
-            // builder.Entity<Product>()
-            //    .Property(p => p.Price)
-            //    .HasColumnType("decimal(18,2)");
 
         }
     }

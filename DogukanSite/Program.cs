@@ -7,6 +7,8 @@ using DogukanSite.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<IEmailSender, EmailSender>(); // Veya Scoped/Singleton
+// Diğer servislerin hemen altına ekleyebilirsiniz.
+builder.Services.AddScoped<ICartService, CartService>();
 
 // 1. Veritabanı bağlantısı
 builder.Services.AddDbContext<DogukanSiteContext>(options =>

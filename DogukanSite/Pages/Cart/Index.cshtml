@@ -2,7 +2,7 @@
 @model DogukanSite.Pages.Cart.IndexModel
 @{
     ViewData["Title"] = "Alışveriş Sepetim";
-    Layout = "_CheckoutLayout";
+    Layout = "_Layout"; // Veya "_CheckoutLayout" hangisini kullanıyorsanız
 }
 
 <div class="container py-4 py-md-5 cart-page">
@@ -10,81 +10,67 @@
         <h1 class="page-title display-5">@ViewData["Title"]</h1>
     </div>
 
-    <div id="cartActionStatusMessages" class="mb-3">
+    <div id="statusMessageContainer">
         @if (!string.IsNullOrEmpty(Model.StatusMessage))
         {
-            <div class="alert @(Model.StatusMessage.ToLower().Contains("hata") || Model.StatusMessage.ToLower().Contains("bulunamadı") || Model.StatusMessage.ToLower().Contains("stok") ? "alert-warning" : "alert-success") alert-dismissible fade show" role="alert">
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
                 @Model.StatusMessage
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         }
     </div>
-
-    <div id="couponMessageContainer" class="mb-3">
-        @if (!string.IsNullOrEmpty(Model.CouponResponseMessage))
-        {
-            <div class="alert @(Model.CouponAppliedSuccessfully ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
-                @Model.CouponResponseMessage
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        }
-    </div>
+    <div id="couponMessageContainer" class="mb-3"></div>
 
     <div id="cartPageContainer">
-        @if (!Model.IsCartEmpty)
+        @if (Model.Cart != null && !Model.Cart.IsCartEmpty)
         {
             <div class="row">
                 <div class="col-lg-8 mb-4 mb-lg-0">
                     <div class="cart-items-container">
-                        @* Stil site.css'ten gelecek *@
-                        @foreach (var item in Model.Items)
+                        @foreach (var item in Model.Cart.Items)
                         {
                             <div class="cart-item" data-cart-item-id="@item.Id" id="cart-item-@item.Id">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-auto cart-item-image-col">
-                                        @* Resim sütunu için özel class eklenebilir *@
                                         <a asp-page="/Products/Details" asp-route-id="@item.ProductId" class="cart-item-image-link">
                                             <img src="@(string.IsNullOrEmpty(item.ProductImageUrl) ? "/images/placeholder-product-thumb.png" : item.ProductImageUrl)"
-                                                 alt="@item.ProductName" class="img-fluid"> @* Inline style kaldırıldı, stil site.css'ten gelecek *@
+                                                 alt="@item.ProductName" class="img-fluid">
                                         </a>
                                     </div>
                                     <div class="col cart-item-details-col">
-                                        @* Detay sütunu için özel class eklenebilir *@
                                         <h5 class="cart-item-title mb-1">
                                             <a asp-page="/Products/Details" asp-route-id="@item.ProductId" class="text-decoration-none">@item.ProductName</a>
                                         </h5>
                                         <p class="cart-item-price text-muted small mb-2">Birim Fiyat: <span class="unit-price-display">@item.UnitPrice.ToString("C")</span></p>
+                                        @* --- BU KISIM GÜNCELLENECEK --- *@
                                         <div class="d-flex align-items-center quantity-controls" data-cart-item-id="@item.Id">
-                                            <button type="button" class="btn quantity-btn-ajax quantity-decrease-ajax"
-                                                    data-cart-item-id="@item.Id"
-                                                    aria-label="Azalt" @(item.Quantity <= 1 ? "disabled" : "")>
+                                            <button type="button" class="btn quantity-btn-ajax quantity-decrease-ajax" aria-label="Azalt">
                                                 <i class="fas fa-minus"></i>
                                             </button>
+
                                             <input type="number" value="@item.Quantity"
-                                                   class="form-control form-control-sm text-center mx-1 quantity-input-ajax" @* Inline style kaldırıldı *@
-                                                   min="1" max="@item.MaxQuantity"
+                                                   class="form-control form-control-sm text-center mx-1 quantity-input-ajax"
+                                                   min="1"
+                                                   max="@item.MaxQuantity" @* Stok limiti için max attribute'u eklendi *@
                                                    data-cart-item-id="@item.Id"
-                                                   data-unit-price="@item.UnitPrice.ToString("F2").Replace(",", ".")"
                                                    aria-label="Adet">
-                                            <button type="button" class="btn quantity-btn-ajax quantity-increase-ajax"
-                                                    data-cart-item-id="@item.Id"
-                                                    aria-label="Artır" @(item.Quantity >= item.MaxQuantity ? "disabled" : "")>
+
+                                            <button type="button" class="btn quantity-btn-ajax quantity-increase-ajax" aria-label="Artır">
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                             <span class="ajax-loading-spinner ms-2" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
                                         </div>
-                                        <small class="text-danger d-block mt-1 stock-error-message" id="stock-error-message-@item.Id" style="display: none;"></small>
+                                        @* Stok uyarı mesajı için yeni bir alan eklendi *@
+                                        <small class="text-danger stock-warning-message mt-1 d-block" style="display: none;"></small>
+                                        @* --- GÜNCELLEME BİTİŞİ --- *@
                                     </div>
                                     <div class="col-md-auto text-md-end mt-3 mt-md-0 cart-item-actions-col">
-                                        @* Eylemler sütunu için özel class *@
                                         <p class="fw-bold mb-1 item-total-price">@item.TotalPrice.ToString("C")</p>
-                                        <button type="button" class="btn btn-link text-danger p-0 btn-sm remove-item-btn-ajax mt-1"
-                                                data-cart-item-id="@item.Id" title="Sepetten Kaldır">
+                                        <button type="button" class="btn btn-link text-danger p-0 btn-sm remove-item-btn-ajax mt-1" data-cart-item-id="@item.Id" title="Sepetten Kaldır">
                                             <i class="fas fa-trash-alt me-1"></i>Kaldır
                                         </button>
                                     </div>
                                 </div>
-                                @* <hr class="my-3"> // Bu <hr> yerine .cart-item'a border-bottom ekleyeceğiz (CSS'te) *@
                             </div>
                         }
                     </div>
@@ -97,40 +83,47 @@
 
                 <div class="col-lg-4">
                     <div id="orderSummaryContainer" class="order-summary-container sticky-lg-top">
-                        @* Stil site.css'ten gelecek *@
-                        <h4 class="mb-3">Sipariş Özeti</h4> @* fw-semibold kaldırıldı, CSS'ten yönetilecek *@
+                        <h4 class="mb-3">Sipariş Özeti</h4>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span>Ara Toplam</span>
-                                <span id="cartSubtotal">@Model.Subtotal.ToString("C")</span> @* fw-medium kaldırıldı *@
+                                <span id="cartSubtotal">@Model.Cart.Subtotal.ToString("C")</span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center @(Model.DiscountAmount > 0 ? "" : "d-none")" id="discountRow">
-                                <span>Kupon İndirimi <small id="appliedCouponCodeText" class="text-muted">@(!string.IsNullOrEmpty(Model.AppliedCouponCode) ? $"({Model.AppliedCouponCode})" : "")</small></span>
-                                <span id="cartDiscount" class="text-success">-@Model.DiscountAmount.ToString("C")</span> @* fw-medium kaldırıldı *@
+                            <li class="list-group-item d-flex justify-content-between align-items-center @(Model.Cart.DiscountAmount > 0 ? "" : "d-none")" id="discountRow">
+                                <span>
+                                    Kupon İndirimi
+                                    <small id="appliedCouponCodeText" class="text-muted">(@Model.Cart.AppliedCouponCode)</small>
+
+                                    @* --- YENİ EKLENEN KISIM --- *@
+                                    <button type="button" id="removeCouponBtn" class="btn btn-link text-danger p-0 ms-1" title="Kuponu Kaldır" style="text-decoration: none;">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                    @* --- BİTİŞ --- *@
+
+                                </span>>
+                                <span id="cartDiscount" class="text-success">-@Model.Cart.DiscountAmount.ToString("C")</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span>Kargo Ücreti</span>
-                                <span id="cartShippingCost">@(Model.ShippingCost > 0 ? Model.ShippingCost.ToString("C") : "Ücretsiz")</span> @* fw-medium kaldırıldı *@
+                                <span id="cartShippingCost">@(Model.Cart.ShippingCost > 0 ? Model.Cart.ShippingCost.ToString("C") : "Ücretsiz")</span>
                             </li>
                             <li class="list-group-item pt-3">
                                 <form id="couponForm" class="coupon-form">
                                     @Html.AntiForgeryToken()
-                                    <label for="couponCodeInput" class="form-label">İndirim Kuponu:</label> @* small, fw-medium, text-muted kaldırıldı *@
+                                    <label for="couponCodeInput" class="form-label">İndirim Kuponu:</label>
                                     <div class="input-group">
-                                        @* input-group-sm kaldırıldı, CSS'ten yönetilecek *@
-                                        <input type="text" name="couponCode" id="couponCodeInput" class="form-control" placeholder="Kupon Kodunuz" value="@Model.AppliedCouponCode">
+                                        <input type="text" name="couponCode" id="couponCodeInput" class="form-control" placeholder="Kupon Kodunuz" value="@Model.Cart.AppliedCouponCode">
                                         <button type="submit" class="btn btn-outline-secondary">Uygula</button>
                                     </div>
                                 </form>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center grand-total-row">
-                                @* fs-5 fw-bold border-top pt-3 mt-2 yerine özel class *@
                                 <span>Genel Toplam</span>
-                                <span id="cartTotal">@Model.Total.ToString("C")</span>
+                                <span id="cartTotal">@Model.Cart.Total.ToString("C")</span>
                             </li>
                         </ul>
                         <div class="d-grid gap-2 mt-4">
-                            <a asp-page="/Order/Create" class="btn btn-primary btn-lg @(Model.IsCartEmpty ? "disabled" : "")">
+                            <a asp-page="/Order/Create" class="btn btn-primary btn-lg @(Model.Cart.IsCartEmpty ? "disabled" : "")">
                                 <i class="fas fa-shield-alt me-2"></i>Güvenli Ödemeye Geç
                             </a>
                         </div>
@@ -154,15 +147,9 @@
         }
     </div>
 </div>
-
 @section Scripts {
-    <script>
-        $(document).ready(function () {
-            if (typeof initializeCartPageEvents === 'function') {
-                initializeCartPageEvents();
-            } else {
-                console.error("HATA: initializeCartPageEvents fonksiyonu site.js dosyasında bulunamadı!");
-            }
-        });
-    </script>
+    <script src="~/js/cart.js" asp-append-version="true"></script>
+    }
+@section Styles {
+    <link rel="stylesheet" href="~/css/cart-order.css" asp-append-version="true" />
 }

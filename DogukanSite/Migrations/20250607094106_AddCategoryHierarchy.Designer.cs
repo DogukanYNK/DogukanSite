@@ -3,6 +3,7 @@ using System;
 using DogukanSite.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DogukanSite.Migrations
 {
     [DbContext(typeof(DogukanSiteContext))]
-    partial class DogukanSiteContextModelSnapshot : ModelSnapshot
+    [Migration("20250607094106_AddCategoryHierarchy")]
+    partial class AddCategoryHierarchy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,32 @@ namespace DogukanSite.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("Categories");
+                });
 
             modelBuilder.Entity("DogukanSite.Models.Address", b =>
                 {
@@ -156,12 +185,6 @@ namespace DogukanSite.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
@@ -171,40 +194,16 @@ namespace DogukanSite.Migrations
                     b.Property<string>("SessionId")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ProductId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("CartItems");
-                });
-
-            modelBuilder.Entity("DogukanSite.Models.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int?>("ParentCategoryId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentCategoryId");
-
-                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("DogukanSite.Models.Coupon", b =>
@@ -215,31 +214,29 @@ namespace DogukanSite.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("DiscountType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ExpiryDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UsageCount")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("UsageLimit")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("numeric");
+                    b.Property<decimal>("MinimumSpend")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -260,18 +257,18 @@ namespace DogukanSite.Migrations
                     b.Property<DateTime>("AddedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ApplicationUserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("ApplicationUserId", "ProductId")
+                    b.HasIndex("UserId", "ProductId")
                         .IsUnique();
 
                     b.ToTable("Favorites");
@@ -601,6 +598,15 @@ namespace DogukanSite.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Category", b =>
+                {
+                    b.HasOne("Category", "ParentCategory")
+                        .WithMany("SubCategories")
+                        .HasForeignKey("ParentCategoryId");
+
+                    b.Navigation("ParentCategory");
+                });
+
             modelBuilder.Entity("DogukanSite.Models.Address", b =>
                 {
                     b.HasOne("DogukanSite.Models.ApplicationUser", "User")
@@ -614,47 +620,38 @@ namespace DogukanSite.Migrations
 
             modelBuilder.Entity("DogukanSite.Models.CartItem", b =>
                 {
-                    b.HasOne("DogukanSite.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("CartItems")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("DogukanSite.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUser");
+                    b.HasOne("DogukanSite.Models.ApplicationUser", "User")
+                        .WithMany("CartItems")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Product");
-                });
 
-            modelBuilder.Entity("DogukanSite.Models.Category", b =>
-                {
-                    b.HasOne("DogukanSite.Models.Category", "ParentCategory")
-                        .WithMany("SubCategories")
-                        .HasForeignKey("ParentCategoryId");
-
-                    b.Navigation("ParentCategory");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DogukanSite.Models.Favorite", b =>
                 {
-                    b.HasOne("DogukanSite.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("Favorites")
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DogukanSite.Models.Product", "Product")
                         .WithMany("FavoritedByUsers")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUser");
+                    b.HasOne("DogukanSite.Models.ApplicationUser", "User")
+                        .WithMany("Favorites")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DogukanSite.Models.Order", b =>
@@ -687,7 +684,7 @@ namespace DogukanSite.Migrations
 
             modelBuilder.Entity("DogukanSite.Models.Product", b =>
                 {
-                    b.HasOne("DogukanSite.Models.Category", "Category")
+                    b.HasOne("Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -766,6 +763,13 @@ namespace DogukanSite.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Category", b =>
+                {
+                    b.Navigation("Products");
+
+                    b.Navigation("SubCategories");
+                });
+
             modelBuilder.Entity("DogukanSite.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Addresses");
@@ -777,13 +781,6 @@ namespace DogukanSite.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("DogukanSite.Models.Category", b =>
-                {
-                    b.Navigation("Products");
-
-                    b.Navigation("SubCategories");
                 });
 
             modelBuilder.Entity("DogukanSite.Models.Order", b =>

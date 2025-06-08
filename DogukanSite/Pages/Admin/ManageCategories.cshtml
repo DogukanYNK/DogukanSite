@@ -5,82 +5,100 @@
     Layout = "_AdminLayout";
 }
 
-<div class="page-header d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3">
-    <h1 class="page-title display-6 mb-2 mb-md-0">@ViewData["Title"]</h1>
-</div>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">@ViewData["Title"]</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-page="/Admin/Index">Yönetim Paneli</a></li>
+        <li class="breadcrumb-item active">Kategorileri Yönet</li>
+    </ol>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">@TempData["SuccessMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">@TempData["ErrorMessage"]<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
-}
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-plus me-1"></i>
+                    Yeni Kategori Ekle
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="NewCategory.Name" class="form-control" placeholder="Kategori Adı" />
+                            <label asp-for="NewCategory.Name">Kategori Adı</label>
+                            <span asp-validation-for="NewCategory.Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="NewCategory.Description" class="form-control" placeholder="Açıklama" style="height: 100px;"></textarea>
+                            <label asp-for="NewCategory.Description">Açıklama</label>
+                            <span asp-validation-for="NewCategory.Description" class="text-danger"></span>
+                        </div>
 
-<div class="row g-4">
-    <div class="col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-header bg-light"><h5 class="mb-0">Mevcut Kategoriler</h5></div>
-            <div class="card-body">
-                @if (Model.Categories.Any())
-                {
+                        <div class="form-floating mb-3">
+                            <select asp-for="NewCategory.ParentCategoryId" asp-items="Model.CategorySelectList" class="form-select">
+                                <option value="0">-- Ana Kategori (Üst Kategorisi Yok) --</option>
+                            </select>
+                            <label asp-for="NewCategory.ParentCategoryId">Üst Kategori</label>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Kategoriyi Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-tags me-1"></i>
+                    Mevcut Kategoriler
+                </div>
+                <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0 admin-table">
-                            <thead>
+                        <table class="table table-bordered table-striped table-hover">
+                            <thead class="table-light">
                                 <tr>
+                                    <th>ID</th>
                                     <th>Kategori Adı</th>
-                                    <th>Açıklama</th>
-                                    <th class="text-center">Ürün Sayısı</th>
-                                    <th class="text-end">İşlemler</th>
+                                    <th>Üst Kategorisi</th>
+                                    <th>Ürün Sayısı</th>
+                                    <th>İşlemler</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var category in Model.Categories)
+                                @foreach (var item in Model.Categories)
                                 {
                                     <tr>
-                                        <td><strong>@category.Name</strong></td>
-                                        <td>@category.Description</td>
-                                        <td class="text-center">@category.Products.Count</td>
-                                        <td class="text-end">
-                                            <a asp-page="./EditCategory" asp-route-id="@category.Id" class="btn btn-sm btn-outline-secondary me-1" title="Düzenle"><i class="fas fa-edit"></i></a>
-                                            <form method="post" asp-page-handler="Delete" asp-route-id="@category.Id" class="d-inline" onsubmit="return confirm('@category.Name kategorisini silmek istediğinizden emin misiniz?')">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil"><i class="fas fa-trash-alt"></i></button>
-                                            </form>
+                                        <td>@item.Id</td>
+                                        <td>@item.Name</td>
+                                        <td>
+                                            @if (item.ParentCategory != null)
+                                            {
+                                                <span class="badge bg-secondary">@item.ParentCategory.Name</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-info">Ana Kategori</span>
+                                            }
+                                        </td>
+                                        <td>@item.Products.Count</td>
+                                        <td>
+                                            <a asp-page="./EditCategory" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Düzenle">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            @* Silme butonu için ileride bir modal onayı eklenebilir *@
+                                            <a asp-page-handler="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Sil" onclick="return confirm('Bu kategoriyi silmek istediğinizden emin misiniz?')">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
                     </div>
-                }
-                else
-                {
-                    <p class="text-center text-muted p-3 mb-0">Henüz hiç kategori eklenmemiş.</p>
-                }
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-header bg-light"><h5 class="mb-0">Yeni Kategori Ekle</h5></div>
-            <div class="card-body">
-                <form method="post" asp-page-handler="Add">
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                    <div class="mb-3">
-                        <label asp-for="NewCategory.Name" class="form-label"></label>
-                        <input asp-for="NewCategory.Name" class="form-control" />
-                        <span asp-validation-for="NewCategory.Name" class="text-danger small"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="NewCategory.Description" class="form-label"></label>
-                        <textarea asp-for="NewCategory.Description" class="form-control" rows="3"></textarea>
-                        <span asp-validation-for="NewCategory.Description" class="text-danger small"></span>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Kategoriyi Ekle</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>

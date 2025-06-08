@@ -56,7 +56,7 @@ namespace DogukanSite.Pages
             {
                 UserFavoriteProductIds = (await _context.Favorites
                     .AsNoTracking()
-                    .Where(f => f.UserId == userId) // Düzeltildi: ApplicationUserId -> UserId
+                    .Where(f => f.ApplicationUserId == userId) // DÜZELTÝLDÝ
                     .Select(f => f.ProductId)
                     .ToListAsync())
                     .ToHashSet();
@@ -64,19 +64,19 @@ namespace DogukanSite.Pages
 
             NewArrivals = await _context.Products
                 .Where(p => p.IsNewArrival)
-                .OrderByDescending(p => p.DateAdded) // DateAdded alanýna göre sýralamak daha mantýklý
+                .OrderByDescending(p => p.Id)
                 .Take(8)
                 .AsNoTracking()
                 .ToListAsync();
 
             FeaturedProducts = await _context.Products
                 .Where(p => p.IsFeatured)
-                .OrderByDescending(p => p.Id) // Veya baþka bir kritere göre
+                .OrderByDescending(p => p.Id)
                 .Take(4)
                 .AsNoTracking()
                 .ToListAsync();
 
-            // Bu kýsým sizin manuel yapýnýz olarak korundu.
+            // Bu kýsým sabit olduðu için korunabilir.
             FeaturedCategories = new List<CategoryTeaser>
             {
                 new CategoryTeaser { Name = "Elektronik", ImageUrl = "/images/categories/electronics.jpg", PageUrl = "/Products/Index?category=Elektronik" },
@@ -94,14 +94,14 @@ namespace DogukanSite.Pages
                 int count = 0;
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    count = await _context.CartItems.Where(c => c.UserId == userId).SumAsync(c => (int?)c.Quantity) ?? 0;
+                    count = await _context.CartItems.Where(c => c.ApplicationUserId == userId).SumAsync(c => (int?)c.Quantity) ?? 0; // DÜZELTÝLDÝ
                 }
                 else
                 {
                     var sessionId = GetSessionId(createIfNull: false);
                     if (!string.IsNullOrEmpty(sessionId))
                     {
-                        count = await _context.CartItems.Where(c => c.SessionId == sessionId && c.UserId == null).SumAsync(c => (int?)c.Quantity) ?? 0;
+                        count = await _context.CartItems.Where(c => c.SessionId == sessionId && c.ApplicationUserId == null).SumAsync(c => (int?)c.Quantity) ?? 0; // DÜZELTÝLDÝ
                     }
                 }
                 return new JsonResult(new { success = true, count });
@@ -129,11 +129,11 @@ namespace DogukanSite.Pages
                 CartItem existingItem = null;
                 if (!string.IsNullOrEmpty(currentUserId))
                 {
-                    existingItem = await _context.CartItems.FirstOrDefaultAsync(c => c.ProductId == productId && c.UserId == currentUserId);
+                    existingItem = await _context.CartItems.FirstOrDefaultAsync(c => c.ProductId == productId && c.ApplicationUserId == currentUserId); // DÜZELTÝLDÝ
                 }
                 else
                 {
-                    existingItem = await _context.CartItems.FirstOrDefaultAsync(c => c.ProductId == productId && c.SessionId == sessionId && c.UserId == null);
+                    existingItem = await _context.CartItems.FirstOrDefaultAsync(c => c.ProductId == productId && c.SessionId == sessionId && c.ApplicationUserId == null); // DÜZELTÝLDÝ
                 }
 
                 if (existingItem != null)
@@ -145,7 +145,7 @@ namespace DogukanSite.Pages
                 }
                 else
                 {
-                    _context.CartItems.Add(new CartItem { ProductId = productId, Quantity = quantity, UserId = currentUserId, SessionId = sessionId });
+                    _context.CartItems.Add(new CartItem { ProductId = productId, Quantity = quantity, ApplicationUserId = currentUserId, SessionId = sessionId }); // DÜZELTÝLDÝ
                 }
 
                 await _context.SaveChangesAsync();
@@ -166,7 +166,7 @@ namespace DogukanSite.Pages
 
             try
             {
-                var existingFavorite = await _context.Favorites.FirstOrDefaultAsync(f => f.UserId == userId && f.ProductId == productId);
+                var existingFavorite = await _context.Favorites.FirstOrDefaultAsync(f => f.ApplicationUserId == userId && f.ProductId == productId); // DÜZELTÝLDÝ
                 bool isFavoriteNow;
 
                 if (existingFavorite != null)
@@ -176,7 +176,7 @@ namespace DogukanSite.Pages
                 }
                 else
                 {
-                    _context.Favorites.Add(new Favorite { UserId = userId, ProductId = productId, AddedDate = DateTime.UtcNow });
+                    _context.Favorites.Add(new Favorite { ApplicationUserId = userId, ProductId = productId }); // DÜZELTÝLDÝ
                     isFavoriteNow = true;
                 }
 

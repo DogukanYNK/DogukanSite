@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DogukanSite.Models
 {
@@ -8,25 +7,25 @@ namespace DogukanSite.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Kupon kodu zorunludur.")]
+        [Required]
         [StringLength(50)]
-        public string Code { get; set; } // Örn: YAZ2024
-
-        [Required(ErrorMessage = "Açıklama zorunludur.")]
-        public string Description { get; set; } // Örn: Yaz Sezonu %20 İndirimi
+        public string Code { get; set; }
 
         [Required]
-        public DiscountType DiscountType { get; set; } // Yüzdesel mi, Sabit Tutar mı?
+        public DiscountType Type { get; set; } // YENİ: İndirim Tipi (Yüzdelik, Sabit Fiyat)
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal Amount { get; set; } // İndirim miktarı (15 veya 50 gibi)
+        public decimal Value { get; set; } // YENİ: İndirim Değeri
 
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal MinimumSpend { get; set; } = 0; // Kuponun geçerli olması için min. harcama
+        [Required]
+        public DateTime StartDate { get; set; } = DateTime.UtcNow; // YENİ: Başlangıç Tarihi
 
-        public DateTime? ExpiryDate { get; set; } // Kuponun son kullanma tarihi (opsiyonel)
+        [Required]
+        public DateTime EndDate { get; set; } = DateTime.UtcNow.AddDays(30); // YENİ: Bitiş Tarihi
 
-        public bool IsActive { get; set; } = true; // Kupon aktif mi?
+        public int? UsageLimit { get; set; } // YENİ: Kullanım Limiti (null ise limitsiz)
+        public int UsageCount { get; set; } = 0; // YENİ: Kaç kez kullanıldığı
+
+        public bool IsActive { get; set; } = true;
     }
 }

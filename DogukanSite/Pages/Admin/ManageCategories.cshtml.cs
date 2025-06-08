@@ -1,11 +1,12 @@
+// using'ler ayný kalacak
 using DogukanSite.Data;
 using DogukanSite.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering; // YENÝ: SelectList için eklendi
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,73 +22,64 @@ namespace DogukanSite.Pages.Admin
             _context = context;
         }
 
-        public IList<Category> Categories { get; set; }
+        public IList<Category> Categories { get; set; } = new List<Category>();
 
         [BindProperty]
-        public NewCategoryInputModel NewCategory { get; set; }
+        public Category NewCategory { get; set; } = default!;
 
-        public class NewCategoryInputModel
-        {
-            [Required(ErrorMessage = "Kategori adý boþ býrakýlamaz.")]
-            [Display(Name = "Yeni Kategori Adý")]
-            public string Name { get; set; }
-
-            [Display(Name = "Açýklama (Opsiyonel)")]
-            public string Description { get; set; }
-        }
+        // YENÝ: Üst kategori seçimi için dropdown listesi
+        public SelectList CategorySelectList { get; set; }
 
         public async Task OnGetAsync()
         {
-            // Tüm kategorileri, içlerindeki ürün sayýsýyla birlikte çekiyoruz.
+            // Kategorileri yüklerken, alt kategorileri ve üst kategorileri de dahil edelim (Include)
+            // Bu sayede listeleme ekranýnda "Ana Kategori: Giyim" gibi bilgiler gösterebiliriz.
             Categories = await _context.Categories
-                                       .Include(c => c.Products) // Ýliþkili ürünleri de saymak için dahil et
-                                       .OrderBy(c => c.Name)
+                                       .Include(c => c.ParentCategory) // Üst kategoriyi getir
+                                       .Include(c => c.SubCategories)  // Alt kategorileri saymak vb. için
+                                       .OrderBy(c => c.ParentCategoryId) // Ana kategorileri baþta göster
+                                       .ThenBy(c => c.Name)
+                                       .AsNoTracking()
                                        .ToListAsync();
+
+            // YENÝ: Dropdown'ý dolduruyoruz
+            // Kendi kendisinin parent'ý olamayacaðý için listeye boþ bir "Ana Kategori" seçeneði ekliyoruz.
+            await LoadCategorySelectListAsync();
         }
 
-        public async Task<IActionResult> OnPostAddAsync()
+        // YENÝ: Kategori listesini yüklemek için yardýmcý bir metod
+        private async Task LoadCategorySelectListAsync(int? selectedCategory = null)
+        {
+            var categoriesQuery = _context.Categories.OrderBy(c => c.Name).AsNoTracking();
+
+            // "selectedCategory" parametresi düzenleme senaryolarý için, þimdilik null kalabilir.
+            CategorySelectList = new SelectList(await categoriesQuery.ToListAsync(), "Id", "Name", selectedCategory);
+        }
+
+
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                // Hata varsa, kategori listesini tekrar yükleyip sayfayý göster
-                await OnGetAsync();
+                // Model geçerli deðilse, sayfanýn tekrar yüklenmesi için kategori listesini doldurmamýz gerekir.
+                await LoadCategorySelectListAsync();
+                // Kategorilerin tam listesini de yeniden yükleyelim ki sayfa boþ görünmesin
+                Categories = await _context.Categories.Include(c => c.ParentCategory).ToListAsync();
                 return Page();
             }
 
-            var category = new Category
+            // DEÐÝÞTÝRÝLDÝ: NewCategory.ParentCategoryId'nin 0 gelmesi durumunu null'a çeviriyoruz.
+            // HTML'deki <select> listesinde "Ana Kategori" seçeneðinin deðeri 0 veya boþ string ise,
+            // bu onun bir üst kategorisi olmadýðýný gösterir. Veritabanýnda bu alaný "null" olarak kaydetmeliyiz.
+            if (NewCategory.ParentCategoryId == 0)
             {
-                Name = NewCategory.Name,
-                Description = NewCategory.Description
-            };
-
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = $"'{category.Name}' kategorisi baþarýyla eklendi.";
-            return RedirectToPage();
-        }
-
-        public async Task<IActionResult> OnPostDeleteAsync(int id)
-        {
-            var category = await _context.Categories.Include(c => c.Products).FirstOrDefaultAsync(c => c.Id == id);
-
-            if (category == null)
-            {
-                return NotFound();
+                NewCategory.ParentCategoryId = null;
             }
 
-            // ÖNEMLÝ KONTROL: Kategori içinde ürün varsa silmeyi engelle!
-            if (category.Products.Any())
-            {
-                TempData["ErrorMessage"] = $"'{category.Name}' kategorisi içinde ürünler bulunduðu için silinemez. Lütfen önce bu kategorideki ürünleri baþka bir kategoriye taþýyýn veya silin.";
-                return RedirectToPage();
-            }
-
-            _context.Categories.Remove(category);
+            _context.Categories.Add(NewCategory);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = $"'{category.Name}' kategorisi baþarýyla silindi.";
-            return RedirectToPage();
+            return RedirectToPage("./ManageCategories");
         }
     }
 }
