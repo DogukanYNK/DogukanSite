@@ -4,25 +4,62 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-<ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
-    <li class="nav-item">
-        <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
-    </li>
-    <li class="nav-item">
-        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })">
-            <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>
-        </form>
+    var currentUser = await UserManager.GetUserAsync(User);
+    var userFirstName = currentUser?.FirstName ?? "Hesabım";
+
+    @* Giriş yapmış kullanıcı için dropdown menüsü *@
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center user-avatar-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Hesabım">
+            <i class="fas fa-user-circle fs-5"></i>
+            <span class="ms-2 d-none d-lg-inline">@userFirstName</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a class="dropdown-item" asp-page="/Account/Dashboard">
+                    <i class="fas fa-user-cog fa-fw me-2"></i>Hesabım
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" asp-page="/Order/History">
+                    <i class="fas fa-receipt fa-fw me-2"></i>Siparişlerim
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" asp-page="/Products/Favorites">
+                    <i class="fas fa-heart fa-fw me-2"></i>Favorilerim
+                </a>
+            </li>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item" asp-page="/Admin/Index">
+                        <i class="fas fa-user-shield fa-fw me-2"></i>Admin Paneli
+                    </a>
+                </li>
+            }
+
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <form class="mb-0" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" method="post">
+                    <button type="submit" class="dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt fa-fw me-2"></i>Çıkış Yap
+                    </button>
+                </form>
+            </li>
+        </ul>
     </li>
 }
 else
 {
+    @* Giriş yapmamış kullanıcı için butonlar *@
     <li class="nav-item">
-        <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        <a class="nav-link" asp-page="/Account/Login">Giriş Yap</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+    <li class="nav-item ms-2">
+        <a class="btn btn-primary btn-sm" asp-page="/Account/Register">Kayıt Ol</a>
     </li>
 }
-</ul>

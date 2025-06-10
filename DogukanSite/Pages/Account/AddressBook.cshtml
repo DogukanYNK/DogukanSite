@@ -1,0 +1,151 @@
+﻿@page
+@model DogukanSite.Pages.Account.AddressBookModel
+@{
+    Layout = "_AccountLayout";
+    ViewData["Title"] = "Adres Defterim";
+}
+
+<partial name="_ProfileNav" />
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @Model.StatusMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Kayıtlı Adreslerim</h4>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addressModal" onclick="clearModal()">
+        <i class="fas fa-plus me-2"></i>Yeni Adres Ekle
+    </button>
+</div>
+
+<div class="row g-4">
+    @if (Model.Addresses.Any())
+    {
+        @foreach (var address in Model.Addresses)
+        {
+            <div class="col-lg-6">
+                <div class="card h-100 @(address.IsDefaultShipping || address.IsDefaultBilling ? "border-primary" : "") shadow-sm">
+                    <div class="card-header bg-light d-flex justify-content-between">
+                        <h5 class="mb-0">@address.AddressTitle</h5>
+                        <div>
+                            @if (address.IsDefaultShipping)
+                            {
+                                <span class="badge bg-success me-1">Teslimat</span>
+                            }
+                            @if (address.IsDefaultBilling)
+                            {
+                                <span class="badge bg-info">Fatura</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-1 fw-bold">@address.ContactName</p>
+                        <p class="mb-1 text-muted">@address.Street</p>
+                        <p class="mb-0 text-muted">@address.City, @address.State @address.PostalCode</p>
+                        <p class="mb-0 text-muted">@address.Country</p>
+                    </div>
+                    <div class="card-footer bg-white d-flex justify-content-end gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="editAddress(@Json.Serialize(address))" data-bs-toggle="modal" data-bs-target="#addressModal">Düzenle</button>
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@address.Id" onsubmit="return confirm('Bu adresi silmek istediğinizden emin misiniz?')" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted">Kayıtlı adresiniz bulunmamaktadır.</p>
+    }
+</div>
+
+<div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" id="address-form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addressModalLabel">Adres Bilgileri</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" asp-for="Address.Id" />
+                    <input type="hidden" asp-for="Address.Country" value="Türkiye" />
+                    <div class="form-floating mb-3">
+                        <input asp-for="Address.AddressTitle" class="form-control" placeholder="Adres Başlığı" required />
+                        <label asp-for="Address.AddressTitle">Adres Başlığı (Örn: Ev Adresim)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Address.ContactName" class="form-control" placeholder="Ad Soyad" required />
+                        <label asp-for="Address.ContactName">Ad Soyad</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Address.Street" class="form-control" placeholder="Sokak, Mahalle, Kapı No" required />
+                        <label asp-for="Address.Street">Sokak, Mahalle, Kapı No</label>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md">
+                            <div class="form-floating mb-3">
+                                <input asp-for="Address.State" class="form-control" placeholder="İlçe/Semt" required />
+                                <label asp-for="Address.State">İlçe/Semt</label>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-floating mb-3">
+                                <input asp-for="Address.City" class="form-control" placeholder="Şehir" required />
+                                <label asp-for="Address.City">Şehir</label>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-floating mb-3">
+                                <input asp-for="Address.PostalCode" class="form-control" placeholder="Posta Kodu" required />
+                                <label asp-for="Address.PostalCode">Posta Kodu</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" role="switch" asp-for="Address.IsDefaultShipping">
+                        <label class="form-check-label" asp-for="Address.IsDefaultShipping">Varsayılan Teslimat Adresi Yap</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" asp-for="Address.IsDefaultBilling">
+                        <label class="form-check-label" asp-for="Address.IsDefaultBilling">Varsayılan Fatura Adresi Yap</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function editAddress(address) {
+            document.getElementById('addressModalLabel').innerText = 'Adresi Düzenle';
+            document.getElementById('Address_Id').value = address.id;
+            document.getElementById('Address_AddressTitle').value = address.addressTitle;
+            document.getElementById('Address_ContactName').value = address.contactName;
+            document.getElementById('Address_Street').value = address.street;
+            document.getElementById('Address_City').value = address.city;
+            document.getElementById('Address_State').value = address.state;
+            document.getElementById('Address_PostalCode').value = address.postalCode;
+            document.getElementById('Address_Country').value = address.country;
+            document.getElementById('Address_IsDefaultShipping').checked = address.isDefaultShipping;
+            document.getElementById('Address_IsDefaultBilling').checked = address.isDefaultBilling;
+        }
+
+        function clearModal() {
+            document.getElementById('addressModalLabel').innerText = 'Yeni Adres Ekle';
+            document.getElementById('Address_Id').value = 0;
+            document.getElementById('address-form').reset();
+        }
+    </script>
+}

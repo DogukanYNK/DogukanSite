@@ -2,94 +2,62 @@
 @model DogukanSite.Pages.Account.EmailManagementPageModel
 @{
     ViewData["Title"] = "E-posta Yönetimi";
-    Layout = "_AuthLayout";
+    Layout = "_AccountLayout";
 }
 
-<div class="container my-lg-5 my-4">
-    <div class="page-header text-center mb-4">
-        <h1 class="page-title display-5">@ViewData["Title"]</h1>
-    </div>
+@* GÜVENLİK SEKME MENÜSÜ *@
+<partial name="_SecurityNav" />
 
-    <div class="row justify-content-center">
-        <div class="col-lg-10 col-xl-9">
-            <div class="card shadow-sm border-0 rounded-lg">
-                <div class="card-body p-4 p-md-5">
-                    <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="list-group dashboard-nav">
-                                <a asp-page="/Account/Dashboard" class="list-group-item list-group-item-action">
-                                    <i class="fas fa-arrow-left me-2"></i>Hesabıma Dön
-                                </a>
-                                <a asp-page="/Account/EditProfile" class="list-group-item list-group-item-action">
-                                    <i class="fas fa-user-edit me-2"></i>Profilimi Düzenle
-                                </a>
-                                <a asp-page="/Account/ChangePasswordPage" class="list-group-item list-group-item-action">
-                                    <i class="fas fa-key me-2"></i>Şifre Değiştir
-                                </a>
-                                <a asp-page="/Account/EmailManagementPage" class="list-group-item list-group-item-action active">
-                                    @* Bu sayfa aktif *@
-                                    <i class="fas fa-envelope me-2"></i>E-posta Yönetimi
-                                </a>
-                                @* Diğer özel yönetim sayfalarınıza linkler *@
-                            </div>
-                        </div>
+<div class="card shadow-sm">
+    <div class="card-body p-4">
 
-                        <div class="col-md-8">
-                            @if (!string.IsNullOrEmpty(Model.StatusMessage))
-                            {
-                                var statusMessageClass = Model.StatusMessage.StartsWith("Hata:") ? "danger" : "success";
-                                <div class="alert alert-@statusMessageClass alert-dismissible fade show" role="alert">
-                                    @Model.StatusMessage
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            }
-
-                            <h4 class="mb-3">Mevcut E-posta Adresiniz</h4>
-                            <hr class="my-3">
-
-                            @if (Model.IsEmailConfirmed)
-                            {
-                                <div class="form-floating mb-3">
-                                    <input asp-for="CurrentEmail" class="form-control" placeholder="Mevcut E-posta" readonly />
-                                    <label asp-for="CurrentEmail"><i class="fas fa-envelope-open-text me-2"></i></label>
-                                    <span class="form-text text-success ms-1"><i class="fas fa-check-circle"></i> Onaylanmış</span>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="form-floating mb-3">
-                                    <input asp-for="CurrentEmail" class="form-control" placeholder="Mevcut E-posta" readonly />
-                                    <label asp-for="CurrentEmail"><i class="fas fa-envelope me-2"></i></label>
-                                </div>
-                                <form id="send-verification-form" method="post" asp-page-handler="SendVerificationEmail">
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary mb-3">
-                                        <i class="fas fa-paper-plane me-1"></i>Doğrulama E-postasını Tekrar Gönder
-                                    </button>
-                                </form>
-                                <p class="small text-warning"><i class="fas fa-exclamation-triangle"></i> E-posta adresiniz henüz onaylanmamış. Bazı site özelliklerini kullanmak için e-postanızı onaylamanız gerekebilir.</p>
-                            }
-
-                            <h4 class="mb-3 mt-4">E-posta Adresini Değiştir</h4>
-                            <hr class="my-3">
-                            <form id="change-email-form" method="post" asp-page-handler="ChangeEmail">
-                                <div asp-validation-summary="ModelOnly" class="alert alert-danger text-start" role="alert"></div>
-                                <div class="form-floating mb-3">
-                                    <input asp-for="Input.NewEmail" class="form-control" placeholder="Yeni E-posta Adresiniz" aria-required="true" />
-                                    <label asp-for="Input.NewEmail"><i class="fas fa-at me-2"></i></label>
-                                    <span asp-validation-for="Input.NewEmail" class="text-danger small"></span>
-                                </div>
-                                <div class="d-grid mt-4">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-2"></i>Yeni E-postayı Kaydet ve Onay Maili Gönder
-                                    </button>
-                                </div>
-                            </form>
-
-                        </div>
-                    </div>
-                </div>
+        @if (!string.IsNullOrEmpty(Model.StatusMessage))
+        {
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                @Model.StatusMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
             </div>
+        }
+
+        <h5 class="mb-3">Mevcut E-posta Adresiniz</h5>
+        <div class="d-flex align-items-center">
+            <div class="form-floating flex-grow-1">
+                <input asp-for="CurrentEmail" class="form-control" placeholder="Mevcut E-posta" readonly />
+                <label asp-for="CurrentEmail">Mevcut E-posta</label>
+            </div>
+            @if (Model.IsEmailConfirmed)
+            {
+                <span class="badge bg-success ms-2 p-2"><i class="fas fa-check-circle me-1"></i>Onaylanmış</span>
+            }
+            else
+            {
+                <span class="badge bg-warning text-dark ms-2 p-2"><i class="fas fa-exclamation-triangle me-1"></i>Onaylanmamış</span>
+            }
         </div>
+        @if (!Model.IsEmailConfirmed)
+        {
+            <form id="send-verification-form" method="post" asp-page-handler="SendVerificationEmail" class="mt-2">
+                <button type="submit" class="btn btn-sm btn-link p-0">
+                    Doğrulama e-postasını tekrar gönder
+                </button>
+            </form>
+        }
+
+        <hr class="my-4">
+
+        <h5 class="mb-3">E-posta Adresini Değiştir</h5>
+        <form id="change-email-form" method="post" asp-page-handler="ChangeEmail">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.NewEmail" class="form-control" autocomplete="email" placeholder="Lütfen yeni e-posta adresinizi girin." />
+                <label asp-for="Input.NewEmail"></label>
+                <span asp-validation-for="Input.NewEmail" class="text-danger small ms-2"></span>
+            </div>
+            <button id="change-email-button" type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-save me-2"></i>E-postayı Değiştir
+            </button>
+        </form>
+
     </div>
 </div>
 

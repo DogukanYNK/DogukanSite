@@ -2,66 +2,66 @@
 @model DogukanSite.Pages.Account.EnableAuthenticatorPageModel
 @{
     ViewData["Title"] = "Doğrulama Uygulaması Kurulumu";
-    Layout = "_AuthLayout";
+    Layout = "_AuthLayout"; // Sade bir layout kullanmak doğru bir seçim.
 }
 
-<div class="container my-lg-5 my-4">
-    <div class="page-header text-center mb-4">
-        <h1 class="page-title display-6">@ViewData["Title"]</h1> @* display-6 daha uygun olabilir *@
-    </div>
-
+<div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8 col-xl-7">
+        <div class="col-lg-8">
             <div class="card shadow-sm border-0 rounded-lg">
                 <div class="card-body p-4 p-md-5">
+
+                    <h3 class="card-title text-center mb-4">@ViewData["Title"]</h3>
+
                     @if (!string.IsNullOrEmpty(Model.StatusMessage))
                     {
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            @Model.StatusMessage
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                        <div class="alert alert-info" role="alert">@Model.StatusMessage</div>
                     }
 
-                    <p class="lead">Doğrulama uygulamanızı kurmak için aşağıdaki adımları izleyin:</p>
-                    <ol class="list-group list-group-numbered mb-4">
-                        <li class="list-group-item">
-                            Microsoft Authenticator, Google Authenticator veya Authy gibi iki aşamalı doğrulama (2FA) uygulamasını telefonunuza indirin.
-                        </li>
-                        <li class="list-group-item">
-                            Uygulamada yeni bir hesap ekleyin ve aşağıdaki QR kodunu taratın veya kurulum anahtarını manuel olarak girin.
-                            <div class="text-center my-3">
-                                <div id="qrCode" class="d-inline-block p-2 border rounded"></div>
-                                <div id="qrCodeData" data-url="@Model.AuthenticatorUri" style="display: none;"></div>
+                    <p>Doğrulama uygulamanızı kurmak için aşağıdaki adımları izleyin:</p>
+
+                    <ol class="list-group list-group-numbered">
+                        <li class="list-group-item d-flex flex-column justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Uygulamayı İndirin</div>
+                                Microsoft Authenticator veya Google Authenticator gibi bir 2FA uygulamasını telefonunuza indirin.
                             </div>
-                            <p class="text-center">
-                                <small class="text-muted">Kurulum Anahtarı (Manuel Giriş İçin):</small><br />
-                                <strong class="fs-5 font-monospace">@Model.SharedKey</strong>
-                            </p>
                         </li>
-                        <li class="list-group-item">
-                            QR kodunu tarattıktan veya anahtarı girdikten sonra, doğrulama uygulamanız size 6 haneli bir kod üretecektir. Bu kodu aşağıdaki alana girerek kurulumu tamamlayın.
+                        <li class="list-group-item d-flex flex-column justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Kodu Taratın veya Girin</div>
+                                Uygulamada yeni bir hesap ekleyin ve aşağıdaki QR kodunu taratın.
+                                <div class="text-center my-3">
+                                    <div id="qrCode" class="d-inline-block p-2 border rounded bg-white"></div>
+                                    <div id="qrCodeData" data-url="@Model.AuthenticatorUri" style="display: none;"></div>
+                                </div>
+                                Veya kurulum anahtarını manuel olarak girin:
+                                <div class="alert alert-secondary text-center font-monospace fs-5 py-2 mt-2">@Model.SharedKey</div>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex flex-column justify-content-between align-items-start">
+                            <div class="ms-2 me-auto w-100">
+                                <div class="fw-bold">Kodu Doğrulayın</div>
+                                Uygulamanızda görünen 6 haneli kodu aşağıdaki alana girerek kurulumu tamamlayın.
+                                <form method="post" class="mt-2">
+                                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.VerificationCode" class="form-control" autocomplete="off" placeholder="Doğrulama Kodu" />
+                                        <label asp-for="Input.VerificationCode"></label>
+                                        <span asp-validation-for="Input.VerificationCode" class="text-danger small ms-2"></span>
+                                    </div>
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                                        <a asp-page="./TwoFactorAuthenticationPage" class="btn btn-outline-secondary">
+                                            <i class="fas fa-arrow-left me-2"></i>Vazgeç
+                                        </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-check-circle me-2"></i>Doğrula ve Etkinleştir
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </li>
                     </ol>
-
-                    <h4 class="mb-3">Doğrulama Kodu</h4>
-                    <hr class="my-3">
-                    <form method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger text-start" role="alert"></div>
-                        <div class="form-floating mb-3">
-                            <input asp-for="Input.VerificationCode" class="form-control" autocomplete="off" placeholder="Doğrulama Kodu" />
-                            <label asp-for="Input.VerificationCode"><i class="fas fa-shield-check me-2"></i></label>
-                            <span asp-validation-for="Input.VerificationCode" class="text-danger small"></span>
-                        </div>
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-between align-items-center">
-                            <a asp-page="./TwoFactorAuthenticationPage" class="btn btn-outline-secondary mb-2 mb-md-0">
-                                <i class="fas fa-arrow-left me-2"></i>Vazgeç ve Geri Dön
-                            </a>
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-check-circle me-2"></i>Doğrula ve Etkinleştir
-                            </button>
-                        </div>
-                    </form>
-
                 </div>
             </div>
         </div>
@@ -70,30 +70,12 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script type="text/javascript">
-        $(document).ready(function () {
-            var qrCodeDataElement = document.getElementById('qrCodeData');
-            if (qrCodeDataElement) {
-                var uri = qrCodeDataElement.getAttribute('data-url');
-                if (uri) {
-                    new QRCode(document.getElementById("qrCode"), {
-                        text: uri,
-                        width: 200,  // QR kod genişliği
-                        height: 200, // QR kod yüksekliği
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
-                    console.log("QR Code URI:", uri);
-                } else {
-                    console.error("QR Code data-url attribute is empty or not found.");
-                     $('#qrCode').html('<p class="text-danger small">QR Kodu yüklenirken bir sorun oluştu. Lütfen sayfayı yenileyin.</p>');
-                }
-            } else {
-                 console.error("qrCodeData element not found.");
-                 $('#qrCode').html('<p class="text-danger small">QR Kodu için veri bulunamadı.</p>');
-            }
+        new QRCode(document.getElementById("qrCode"), {
+            text: document.getElementById("qrCodeData").getAttribute("data-url"),
+            width: 150,
+            height: 150
         });
     </script>
 }

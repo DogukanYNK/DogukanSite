@@ -6,14 +6,9 @@ namespace DogukanSite.Models
     public class Order
     {
         public int Id { get; set; }
-
-        // Düzeltme: UserId artık nullable. Misafir siparişlerinde bu alan boş olacak.
         public string? UserId { get; set; }
-
-        // Düzeltme: Yeni alan. Misafir siparişinin e-postasını saklamak için.
         [EmailAddress]
         public string? GuestEmail { get; set; }
-
         public DateTime OrderDate { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
@@ -22,6 +17,10 @@ namespace DogukanSite.Models
         public string? ShippingProvider { get; set; }
         public string? TrackingNumber { get; set; }
         public string ShippingContactName { get; set; }
+
+        // --- YENİ EKLENEN ALAN ---
+        public string ShippingPhoneNumber { get; set; }
+
         public string ShippingStreet { get; set; }
         public string ShippingCity { get; set; }
         public string ShippingState { get; set; }

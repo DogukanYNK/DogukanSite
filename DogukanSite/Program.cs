@@ -10,6 +10,8 @@ builder.Services.AddTransient<IEmailSender, EmailSender>(); // Veya Scoped/Singl
 // Diğer servislerin hemen altına ekleyebilirsiniz.
 builder.Services.AddScoped<ICartService, CartService>();
 
+builder.Services.AddScoped<IOrderService, OrderService>();
+
 // 1. Veritabanı bağlantısı
 builder.Services.AddDbContext<DogukanSiteContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));

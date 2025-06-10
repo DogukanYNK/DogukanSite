@@ -1,72 +1,58 @@
-using DogukanSite.Models; // ApplicationUser için
-using Microsoft.AspNetCore.Authorization; // [Authorize] attribute'u için
+// ===== DogukanSite/Pages/Account/Dashboard.cshtml.cs =====
+
+using DogukanSite.Data;
+using DogukanSite.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel.DataAnnotations; // Display attribute'u için
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DogukanSite.Pages.Account
 {
-    [Authorize] // Bu sayfanýn sadece giriþ yapmýþ kullanýcýlar tarafýndan eriþilebilir olmasýný saðlar
+    [Authorize]
     public class DashboardModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager; // Çýkýþ yapmak için
+        private readonly DogukanSiteContext _context; // Son sipariþleri çekmek için eklendi
 
         public DashboardModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            DogukanSiteContext context) // DI ile context eklendi
         {
             _userManager = userManager;
-            _signInManager = signInManager;
+            _context = context;
         }
 
-        public UserInfoViewModel UserInfo { get; set; }
-
-        public class UserInfoViewModel
-        {
-            public string UserId { get; set; }
-            public string Email { get; set; }
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string FullName => $"{FirstName} {LastName}".Trim();
-            public string PhoneNumber { get; set; }
-            // Eklemek istediðiniz diðer bilgiler
-        }
-
+        // Kullanýcý bilgilerini ve son sipariþleri taþýyacak Model
+        public string UserFullName { get; set; }
+        public List<Models.Order> RecentOrders { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                // Bu durum normalde [Authorize] attribute'u nedeniyle oluþmaz
-                // ama bir güvence olarak eklenebilir.
                 return NotFound($"Kullanýcý ID '{_userManager.GetUserId(User)}' ile bulunamadý.");
             }
 
-            UserInfo = new UserInfoViewModel
-            {
-                UserId = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber
-                // Diðer ApplicationUser özelliklerini buraya ekleyebilirsiniz
-            };
+            UserFullName = $"{user.FirstName} {user.LastName}".Trim();
 
-            ViewData["Title"] = "Hesabým";
+            // Kullanýcýnýn son 3 sipariþini veritabanýndan çekelim
+            RecentOrders = await _context.Orders
+                                         .Where(o => o.UserId == user.Id)
+                                         .OrderByDescending(o => o.OrderDate)
+                                         .Take(3)
+                                         .ToListAsync();
+
+            // Aktif menü öðesini doðru þekilde ayarlayalým
+            ViewData["ActivePage"] = "Dashboard";
+            ViewData["Title"] = "Hesap Panelim";
+
             return Page();
-        }
-
-        // Çýkýþ yapma iþlemi için (Layout'ta zaten vardý ama burada da olabilir)
-        public async Task<IActionResult> OnPostLogoutAsync()
-        {
-            await _signInManager.SignOutAsync();
-            // Ýsteðe baðlý: Loglama
-            // _logger.LogInformation("Kullanýcý çýkýþ yaptý.");
-            return RedirectToPage("/Index"); // Ana sayfaya yönlendir
         }
     }
 }

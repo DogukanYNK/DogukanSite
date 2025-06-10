@@ -5,51 +5,64 @@
     Layout = "_AdminLayout";
 }
 
-<div class="container-fluid px-4">
-    <h1 class="mt-4">@ViewData["Title"]: @Model.Category.Name</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a asp-page="/Admin/Index">Yönetim Paneli</a></li>
-        <li class="breadcrumb-item"><a asp-page="/Admin/ManageCategories">Kategorileri Yönet</a></li>
-        <li class="breadcrumb-item active">Düzenle</li>
-    </ol>
+<h1 class="mt-4">@ViewData["Title"]: @Model.Category.Name</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a asp-page="/Admin/Index">Yönetim Paneli</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Admin/ManageCategories">Kategorileri Yönet</a></li>
+    <li class="breadcrumb-item active">Düzenle</li>
+</ol>
 
-    <div class="card">
-        <div class="card-header">
-            Kategori Bilgilerini Güncelle
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <form method="post">
-                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
-                        <input type="hidden" asp-for="Category.Id" />
+<div class="card shadow-sm">
+    <div class="card-header">
+        <i class="fas fa-edit me-1"></i>Kategori Bilgilerini Güncelle
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <form method="post">
+                    <div asp-validation-summary="All" class="text-danger mb-3 small"></div>
+                    <input type="hidden" asp-for="Category.Id" />
 
-                        <div class="form-floating mb-3">
-                            <input asp-for="Category.Name" class="form-control" placeholder="Kategori Adı" />
-                            <label asp-for="Category.Name"></label>
-                            <span asp-validation-for="Category.Name" class="text-danger"></span>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input asp-for="Category.Name" class="form-control" placeholder="Kategori Adı" />
+                                <label asp-for="Category.Name"></label>
+                            </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select asp-for="Category.ParentCategoryId" asp-items="Model.CategorySelectList" class="form-select">
+                                    <option value="">-- Ana Kategori --</option>
+                                </select>
+                                <label asp-for="Category.ParentCategoryId">Üst Kategori</label>
+                            </div>
+                        </div>
+                    </div>
 
-                        <div class="form-floating mb-3">
-                            <textarea asp-for="Category.Description" class="form-control" placeholder="Açıklama" style="height: 100px;"></textarea>
-                            <label asp-for="Category.Description"></label>
-                            <span asp-validation-for="Category.Description" class="text-danger"></span>
-                        </div>
+                    <div class="form-floating mb-3">
+                        <textarea asp-for="Category.Description" class="form-control" placeholder="Açıklama" style="height: 100px;"></textarea>
+                        <label asp-for="Category.Description"></label>
+                    </div>
 
-                        <div class="form-floating mb-3">
-                            <select asp-for="Category.ParentCategoryId" asp-items="Model.CategorySelectList" class="form-select">
-                                <option value="0">-- Ana Kategori (Üst Kategorisi Yok) --</option>
-                            </select>
-                            <label asp-for="Category.ParentCategoryId">Üst Kategori</label>
-                        </div>
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>Değişiklikleri Kaydet
-                            </button>
-                            <a asp-page="./ManageCategories" class="btn btn-secondary">İptal</a>
-                        </div>
-                    </form>
-                </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Category.ImageUrl" class="form-control" placeholder="Görsel URL" />
+                        <label asp-for="Category.ImageUrl"></label>
+                        <div class="form-text">Ana sayfada görünecek kategori görselinin URL adresi.</div>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" asp-for="Category.IsFeatured">
+                        <label class="form-check-label" asp-for="Category.IsFeatured">Ana Sayfada Öne Çıkar</label>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Değişiklikleri Kaydet
+                        </button>
+                        <a asp-page="./ManageCategories" class="btn btn-secondary">İptal</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

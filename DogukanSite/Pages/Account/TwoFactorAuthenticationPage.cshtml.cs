@@ -1,4 +1,3 @@
-// Pages/Account/TwoFactorAuthenticationPage.cshtml.cs
 using DogukanSite.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -26,16 +25,17 @@ namespace DogukanSite.Pages.Account
             _logger = logger;
         }
 
-        public bool HasAuthenticator { get; set; } // Authenticator uygulamasý kurulmuþ mu?
+        public bool HasAuthenticator { get; set; }
         public bool Is2faEnabled { get; set; }
-        public bool IsMachineRemembered { get; set; } // Bu tarayýcý 2FA için hatýrlanýyor mu?
+        public bool IsMachineRemembered { get; set; }
         public int RecoveryCodesLeft { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }
 
+        // ----- EKSÝK OLAN VE ÞÝMDÝ EKLENEN SATIR BURASI -----
         [TempData]
-        public string[] RecoveryCodes { get; set; } // Yeni üretilen kurtarma kodlarýný göstermek için
+        public string[] RecoveryCodes { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -48,26 +48,36 @@ namespace DogukanSite.Pages.Account
             Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
             IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user);
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user);
+            HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null;
 
-            // HasAuthenticator, genellikle kullanýcýnýn bir authenticator key'i olup olmadýðýna bakar.
-            // Identity'nin varsayýlan akýþýnda, authenticator key ayarlanýr ve sonra 2FA etkinleþtirilir.
-            var authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
-            HasAuthenticator = !string.IsNullOrEmpty(authenticatorKey);
-
-
-            // Eðer TempData'dan gelen kurtarma kodlarý varsa, RecoveryCodesLeft'i ona göre ayarla
-            // (çünkü yeni kodlar üretildiðinde eski kodlar geçersiz olur).
-            if (TempData["RecoveryCodesGenerated"] != null && (bool)TempData["RecoveryCodesGenerated"] == true && TempData["RecoveryCodes"] != null)
-            {
-                RecoveryCodesLeft = ((string[])TempData["RecoveryCodes"])?.Length ?? 0;
-                // TempData'daki RecoveryCodes zaten view'a aktarýlacak.
-            }
-
+            ViewData["Title"] = "Ýki Aþamalý Doðrulama (2FA)";
+            ViewData["ActivePage"] = "Security";
+            ViewData["ActiveSecurityPage"] = "TwoFactorAuth";
 
             return Page();
         }
+        public async Task<IActionResult> OnPostEnable2faAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Kullanýcý ID '{_userManager.GetUserId(User)}' bulunamadý.");
+            }
 
-        public async Task<IActionResult> OnPostForgetClientAsync()
+            // Sadece 2FA'yý etkinleþtir, çünkü kurulum zaten mevcut.
+            var result = await _userManager.SetTwoFactorEnabledAsync(user, true);
+            if (!result.Succeeded)
+            {
+                StatusMessage = "Hata: Ýki aþamalý doðrulama etkinleþtirilirken bir sorun oluþtu.";
+                return RedirectToPage();
+            }
+
+            _logger.LogInformation("Kullanýcý ({UserId}) 2FA'yý yeniden etkinleþtirdi.", user.Id);
+            StatusMessage = "Ýki aþamalý doðrulama yeniden etkinleþtirildi.";
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostForgetClient()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -76,7 +86,7 @@ namespace DogukanSite.Pages.Account
             }
 
             await _signInManager.ForgetTwoFactorClientAsync();
-            StatusMessage = "Bu tarayýcýnýn iki aþamalý doðrulama için hatýrlanmasý kaldýrýldý. Bir sonraki giriþinizde doðrulama kodu istenecektir.";
+            StatusMessage = "Bu tarayýcýnýn iki aþamalý doðrulama için hatýrlanmasý kaldýrýldý.";
             _logger.LogInformation("Kullanýcý ({UserId}) için 2FA tarayýcý hatýrlamasý kaldýrýldý.", user.Id);
             return RedirectToPage();
         }

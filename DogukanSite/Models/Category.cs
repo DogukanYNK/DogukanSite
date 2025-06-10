@@ -16,6 +16,13 @@ namespace DogukanSite.Models
 
         public int? ParentCategoryId { get; set; }
 
+        [Display(Name = "Öne Çıkan")]
+        public bool IsFeatured { get; set; } = false;
+
+        [StringLength(500)]
+        [Display(Name = "Kategori Görsel URL")]
+        public string? ImageUrl { get; set; }
+
         // DEĞİŞTİRİLDİ: ParentCategory'nin null olabileceğini belirtmek için '?' eklendi.
         public virtual Category? ParentCategory { get; set; }
 

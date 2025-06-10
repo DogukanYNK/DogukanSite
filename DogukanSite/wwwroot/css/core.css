@@ -1,12 +1,12 @@
 ﻿:root {
-    /* RENK PALETİ (Sizin tanımlamalarınız korundu) */
+    /* RENK PALETİ */
     --brand-primary: #007bff;
     --brand-secondary: #6f42c1;
     --brand-success: #28a745;
     --brand-danger: #dc3545;
     --brand-light: #f8f9fa;
     --brand-dark: #212529;
-    /* TEMEL DEĞİŞKENLER (Sizin tanımlamalarınız korundu) */
+    /* TEMEL DEĞİŞKENLER */
     --text-base: var(--brand-dark);
     --text-muted: #6c757d;
     --link-color: var(--brand-primary);
@@ -26,19 +26,16 @@
     --box-shadow-md: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
     --box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.1);
     --content-max-width: 1320px;
-    /* --- İYİLEŞTİRME: BOOTSTRAP RGB DEĞİŞKENLERİ --- */
-    /* Bu değişkenler, Bootstrap'in focus halkası gibi özelliklerinin 
-       sizin marka renklerinizle doğru çalışmasını sağlar. */
+    /* BOOTSTRAP RGB DEĞİŞKENLERİ */
     --bs-primary-rgb: 0, 123, 255;
     --bs-secondary-rgb: 111, 66, 193;
     --bs-success-rgb: 40, 167, 69;
     --bs-danger-rgb: 220, 53, 69;
-    --bs-warning-rgb: 255, 193, 7; /* Örnek olarak eklendi */
+    --bs-warning-rgb: 255, 193, 7;
     --bs-dark-rgb: 33, 37, 41;
 }
 
-
-/* --- Global & Temel Stiller (Sizin kodunuz korundu) --- */
+/* --- Global & Temel Stiller --- */
 html {
     scroll-behavior: smooth;
     font-size: 100%;
@@ -69,23 +66,37 @@ a {
         color: var(--link-hover-color);
     }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     color: var(--text-base);
 }
 
-/* Bu kuralınız korundu */
 .bg-primary {
     background-color: var(--brand-primary) !important;
 }
 
+/* --- Genel Amaçlı Başlıklar --- */
+.section-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--text-base);
+    text-align: center;
+    position: relative;
+    padding-bottom: 0.75rem;
+    margin-bottom: 2.5rem;
+}
 
-/* --- Genel Buton Stilleri (Sizin kodunuz korundu ve zenginleştirildi) --- */
+    .section-title::after {
+        content: "";
+        display: block;
+        width: 70px;
+        height: 3px;
+        background-color: var(--brand-primary);
+        margin: 0.75rem auto 0;
+        border-radius: 2px;
+    }
+
+/* --- Genel Buton Stilleri --- */
 .btn {
     border-radius: var(--border-radius-md);
     padding: 0.6rem 1.25rem;
@@ -98,7 +109,7 @@ h6 {
 }
 
     .btn:hover {
-        transform: translateY(-2px); /* Önerimdeki -2px daha belirgin bir efekt verir */
+        transform: translateY(-2px);
         box-shadow: var(--box-shadow-md);
     }
 
@@ -123,7 +134,6 @@ h6 {
     color: white;
 }
 
-    /* Sizin focus ve hover tanımlarınız korunuyor */
     .btn-primary:hover,
     .btn-primary:focus {
         background-color: color-mix(in srgb, var(--brand-primary) 85%, black);
@@ -153,7 +163,33 @@ h6 {
         box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.5);
     }
 
-/* --- Form Elemanları (Sizin kodunuz korundu) --- */
+/* --- Etiketler (Badges) --- */
+.badge {
+    display: inline-block;
+    padding: 0.5em 0.75em;
+    font-size: 0.85em;
+    font-weight: 500;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: var(--border-radius-md);
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: var(--brand-light);
+    border: 1px solid var(--border-color);
+}
+
+    .badge:hover,
+    .badge:focus {
+        background-color: var(--brand-primary);
+        color: white;
+        border-color: var(--brand-primary);
+        outline: none;
+    }
+
+/* --- Form Elemanları --- */
 .form-label {
     font-weight: 500;
     margin-bottom: 0.3rem;
@@ -197,10 +233,51 @@ h6 {
         width: 16px;
     }
 
-/* --- YENİ EKLENEN İYİLEŞTİRME (OPSİYONEL) --- */
-/* Bu, sitenin genelinde bir kart yapısı kullanıyorsanız tutarlılık sağlar */
+/* --- Kart Yapısı --- */
 .card {
     border-radius: var(--border-radius-md);
     border: 1px solid var(--border-color);
     box-shadow: var(--box-shadow-sm);
+}
+
+
+/* ==========================================================================
+   YENİ EKLENEN BÖLÜM: SAYFALAMA (PAGINATION)
+   - Bu bölüm product.css'ten buraya taşındı.
+   ========================================================================== */
+.pagination .page-item.active .page-link {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: white;
+    box-shadow: var(--box-shadow-sm);
+    z-index: 3;
+}
+
+.pagination .page-link {
+    color: var(--brand-primary);
+    border-radius: var(--border-radius-sm) !important;
+    margin: 0 2px;
+    border-color: var(--border-color);
+    transition: all 0.2s ease;
+}
+
+    .pagination .page-link:hover,
+    .pagination .page-link:focus {
+        background-color: var(--brand-light);
+        color: var(--link-hover-color);
+        border-color: var(--border-color-strong);
+        z-index: 2;
+        box-shadow: var(--box-shadow-sm);
+        outline: none;
+    }
+
+    .pagination .page-link:focus {
+        box-shadow: var(--box-shadow-sm), 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
+    }
+
+.pagination .page-item.disabled .page-link {
+    color: var(--text-muted);
+    background-color: transparent;
+    border-color: var(--border-color);
+    box-shadow: none;
 }

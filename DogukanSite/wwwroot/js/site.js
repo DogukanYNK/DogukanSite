@@ -18,17 +18,14 @@ $(document).ready(function () {
     if (scrollTopBtn) {
         window.onscroll = function () {
             if (document.body.scrollTop > 150 || document.documentElement.scrollTop > 150) {
-                scrollTopBtn.style.visibility = "visible";
-                scrollTopBtn.style.opacity = "1";
+                // Doğrudan stil vermek yerine sadece class ekle
+                scrollTopBtn.classList.add("visible");
             } else {
-                scrollTopBtn.style.opacity = "0";
-                setTimeout(function () {
-                    if (scrollTopBtn.style.opacity === "0") {
-                        scrollTopBtn.style.visibility = "hidden";
-                    }
-                }, 300);
+                // Sadece class'ı kaldır
+                scrollTopBtn.classList.remove("visible");
             }
         };
+        // Tıklama olayı aynı kalabilir
         scrollTopBtn.addEventListener('click', function () {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });

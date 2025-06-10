@@ -4,11 +4,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DogukanSite.Pages.Order
 {
+    // Bu sayfanýn sadece giriþ yapmýþ kullanýcýlar tarafýndan eriþilmesi daha güvenli olabilir.
+    // Misafir sipariþ detayý için ayrý bir sayfa veya token bazlý bir mekanizma düþünülebilir.
+    // Þimdilik [Authorize] ekliyoruz.
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class DetailsModel : PageModel
     {
         private readonly DogukanSiteContext _context;
@@ -24,13 +27,11 @@ namespace DogukanSite.Pages.Order
 
         public async Task<IActionResult> OnGetAsync(int orderId)
         {
-            // Sipariþi; kullanýcýsý, sipariþ kalemleri ve bu kalemlerin ürün bilgileriyle birlikte çekiyoruz.
-            // Bu, en performanslý veri çekme yöntemidir.
             Order = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.Product)
-                        .ThenInclude(p => p.Category) // Kategori adýný göstermek için bunu da ekledik.
+                        .ThenInclude(p => p.Category)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (Order == null)
@@ -38,21 +39,16 @@ namespace DogukanSite.Pages.Order
                 return NotFound();
             }
 
-            // --- GÜVENLÝK DEÐÝÞÝKLÝÐÝ ---
-            // Bu sipariþin mevcut kullanýcýya ait olup olmadýðýný veya kullanýcýnýn Admin olup olmadýðýný kontrol et.
             var currentUserId = _userManager.GetUserId(User);
-            bool isGuestOrder = string.IsNullOrEmpty(Order.UserId);
-
-            // Misafir sipariþleri þimdilik sadece ID ile eriþilebilir, daha sonra e-posta linki ile güvenli hale getirilebilir.
-            // Eðer sipariþ bir kullanýcýya aitse ve o kullanýcý mevcut kullanýcý deðilse (ve admin de deðilse), eriþimi engelle.
-            if (!isGuestOrder && Order.UserId != currentUserId && !User.IsInRole("Admin"))
+            if (Order.UserId != currentUserId && !User.IsInRole("Admin"))
             {
-                // Kullanýcý baþkasýnýn sipariþini görmeye çalýþýyor.
-                return Forbid();
+                return Forbid(); // Kullanýcý baþkasýnýn sipariþini görmeye çalýþýyor.
             }
-            // --- DEÐÝÞÝKLÝK SONU ---
 
             ViewData["Title"] = $"Sipariþ Detayý: #{Order.Id}";
+            // Sol menüde "Sipariþlerim" linkini aktif yapmak için
+            ViewData["ActivePage"] = "OrderHistory";
+
             return Page();
         }
     }

@@ -1,38 +1,9 @@
-﻿/* === SİZİN MEVCUT KODUNUZ (OLDUĞU GİBİ KORUNDU) === */
+﻿/* ===================================================================
+   1. KENAR ÇUBUĞU & FİLTRELEME (SIDEBAR & FILTERS)
+=================================================================== */
 
-/* === Products/Index Sayfası Sidebar ve Filtre Stilleri === */
 .products-sidebar {
-}
-
-@media (max-width: 991.98px) {
-    .products-sidebar .sticky-top {
-        position: static !important;
-    }
-
-    .products-sidebar {
-        background-color: var(--background-content);
-        border-radius: var(--border-radius-md);
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-        box-shadow: var(--box-shadow-sm);
-    }
-
-        .products-sidebar .sidebar-widget {
-            margin-bottom: 1.5rem;
-            padding: 0;
-            background-color: transparent;
-            border-radius: 0;
-            box-shadow: none;
-        }
-
-            .products-sidebar .sidebar-widget:last-child {
-                margin-bottom: 0;
-            }
-
-        .products-sidebar .sidebar-widget-title {
-            font-size: 1rem;
-            margin-bottom: 0.75rem;
-        }
+    /* Bu sınıf, masaüstünde sol sütunu saran ana konteynerdir. */
 }
 
 .sidebar-widget {
@@ -53,6 +24,7 @@
     display: inline-block;
 }
 
+/* --- Kategori Filtre Listesi --- */
 .category-filter-list-v2 {
     list-style: none;
     padding-left: 0;
@@ -60,6 +32,13 @@
 
     .category-filter-list-v2 li {
         margin-bottom: 0.3rem;
+    }
+
+    .category-filter-list-v2 ul {
+        list-style: none;
+        padding-left: 1.25rem; /* Alt kategorilere soldan girinti ver */
+        margin-top: 0.5rem;
+        border-left: 1px solid #e9ecef; /* Hiyerarşiyi belli eden sol çizgi */
     }
 
     .category-filter-list-v2 .category-link {
@@ -107,6 +86,7 @@
                 opacity: 1;
             }
 
+    /* Kategori listesi için kaydırma çubuğu */
     .category-filter-list-v2.has-scrollbar {
         max-height: 350px;
         overflow-y: auto;
@@ -130,6 +110,60 @@
                 background: var(--text-muted);
             }
 
+    /* Bu stilleri dosyanızdaki "Kategori Filtre Listesi" bölümüne ekleyebilirsiniz */
+
+    /* Alt kategori listelerini başlangıçta gizle */
+    .category-filter-list-v2 .sub-category-list {
+        display: none;
+        padding-left: 1rem;
+        margin-left: 0.75rem;
+        border-left: 1px solid #e9ecef;
+        margin-top: 0.5rem;
+    }
+
+/* Kategori satırı için genel stil */
+.category-item-row {
+    padding: 0.3rem 0;
+    border-radius: var(--bs-border-radius-sm);
+    transition: background-color 0.2s ease;
+}
+
+    .category-item-row:hover {
+        background-color: var(--bs-secondary-bg);
+    }
+
+/* Kategori linki için stil */
+.category-link {
+    flex-grow: 1;
+    text-decoration: none;
+    color: var(--bs-secondary-color);
+}
+
+    .category-link.active, .category-link.active:hover {
+        color: var(--bs-primary);
+        font-weight: 600;
+    }
+
+    .category-link.no-children {
+        padding-left: 1.75rem; /* İkon olmayanlara girinti ver */
+    }
+
+/* Aç/Kapat ikonu için stiller */
+.expander-icon {
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    color: #6c757d;
+}
+
+    .expander-icon i {
+        transition: transform 0.2s ease-in-out;
+    }
+
+.open .expander-icon i {
+    transform: rotate(90deg);
+}
+
+/* --- Sıralama Formu --- */
 .filter-sort-form .form-select-sm {
     font-size: 0.9rem;
     border: 1px solid var(--border-color-strong);
@@ -142,115 +176,55 @@
     }
 
 
-.pagination .page-item.active .page-link {
-    background-color: var(--brand-primary);
-    border-color: var(--brand-primary);
-    color: white;
-    box-shadow: var(--box-shadow-sm);
-    z-index: 3;
-}
-
-.pagination .page-link {
-    color: var(--brand-primary);
-    border-radius: var( --border-radius-sm ) !important;
-    margin: 0 2px;
-    border-color: var(--border-color);
-    transition: all 0.2s ease;
-}
-
-    .pagination .page-link:hover,
-    .pagination .page-link:focus {
-        background-color: var(--brand-light);
-        color: var(--link-hover-color);
-        border-color: var(--border-color-strong);
-        z-index: 2;
-        box-shadow: var(--box-shadow-sm);
-        outline: none;
-    }
-
-    .pagination .page-link:focus {
-        box-shadow: var(--box-shadow-sm), 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
-    }
-
-.pagination .page-item.disabled .page-link {
-    color: var(--text-muted);
-    background-color: transparent;
-    border-color: var(--border-color);
-    box-shadow: none;
-}
-
-#productFiltersOffcanvas .offcanvas-body {
-    padding: 1rem;
-}
-
-    #productFiltersOffcanvas .offcanvas-body .sidebar-widget {
-        margin-bottom: 1.5rem;
-    }
-
-    #productFiltersOffcanvas .offcanvas-body .sidebar-widget-title {
-        font-size: 1rem;
-        margin-bottom: 0.75rem;
-    }
-
-@media (max-width: 991.98px) {
-    #productFiltersOffcanvas .category-filter-list-v2.has-scrollbar {
-        max-height: calc( 100vh - 250px );
-    }
-}
+/* ===================================================================
+   2. ÜRÜN KARTI (_ProductCardPartial)
+=================================================================== */
 
 
-/* =================================================================
-   YENİ EKLENEN BÖLÜM - ÜRÜN KARTI STİLLERİ
-================================================================= */
-
+/* --- Ürün Kartları --- */
 .product-card {
-    position: relative;
     background-color: var(--background-content);
-    transition: all 0.3s ease-in-out;
-    border-radius: var(--border-radius-md);
-    overflow: hidden;
     border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    overflow: hidden; /* Resim veya hover efektlerinin taşmaması için */
+    transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ebeveyn bir grid/flex yapısında eşit yükseklik için */
+    width: 100%;
+    // Genellikle Bootstrap col-* sınıfları ile yönetilir */ position: relative; /* İçerideki absolute pozisyonlu elemanlar için */
 }
 
     .product-card:hover {
         transform: translateY(-5px);
-        box-shadow: var(--box-shadow-md);
+        box-shadow: var(--box-shadow-lg);
     }
 
-    .product-card .product-card-hover-actions {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.98);
-        transform: translateY(100%);
-        transition: transform 0.3s ease;
-        visibility: hidden;
-        border-top: 1px solid var(--border-color);
+.product-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* 1:1 Aspect Ratio. Değiştirmek için bu değeri ayarlayın (örn: 75% -> 4:3) */
+    background-color: var( --brand-light ); /* Resim yüklenene kadar veya transparan resimler için */
+    overflow: hidden; /* İçindeki resmin taşmaması için */
+}
+
+    .product-image-wrapper .product-link-disabled {
+        cursor: default;
     }
 
-    .product-card:hover .product-card-hover-actions {
-        transform: translateY(0);
-        visibility: visible;
-    }
-
-.favorite-icon {
+.product-image {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 10;
-    background-color: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(2px);
-    border-radius: 50%;
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    padding: 0;
-    border: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* veya 'cover', ürün görsellerinin tipine göre */
+    padding: 10px; /* Resim çevresinde boşluk */
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.03); /* Hafif zoom efekti */
 }
 
 .product-badge {
@@ -265,3 +239,282 @@
     border-radius: var(--border-radius-sm);
     text-transform: uppercase;
 }
+
+.product-card .card-body {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* İçeriği dikeyde yayar, butonu en alta iter */
+    /* transition: opacity 0.3s ease-out; // Çok gerekli değil gibi, isteğe bağlı */
+}
+
+.product-card .product-category {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+/* Bootstrap .card-title ile çakışmaması için dikkat, gerekirse daha özel bir sınıf kullanın. */
+.product-card .card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-base);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    /* Çok satırlı ellipsis için (tarayıcı desteğini kontrol edin) */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Kaç satır gösterileceği */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: calc(1.3em * 2); /* İki satır yüksekliği kadar minimum yer */
+}
+
+    .product-card .card-title a {
+        color: inherit; /* .card-title rengini alır */
+    }
+
+        .product-card .card-title a:hover {
+            color: var(--brand-primary);
+        }
+
+.product-card .product-price {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--brand-primary);
+    margin-bottom: 0.75rem;
+}
+
+.product-card .old-price {
+    text-decoration: line-through;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-left: 8px;
+}
+
+.product-card .add-to-cart-btn {
+    margin-top: auto; /* .card-body flex-grow:1 sayesinde butonu en alta iter */
+    width: 100%;
+    font-size: 0.875rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.product-card .favorite-icon {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10; /* Diğer kart içeriğinin üzerinde */
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none; /* veya 1px solid var(--border-color) */
+    color: var(--text-muted);
+    border-radius: 50%; /* Tam daire */
+    width: 32px;
+    height: 32px;
+    display: flex; /* İkonu tam ortalamak için */
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem; /* İkon boyutu */
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+    .product-card .favorite-icon:hover {
+        color: var(--brand-danger);
+        background-color: white; /* Daha belirgin hover */
+        transform: scale(1.1);
+    }
+
+    .product-card .favorite-icon.is-favorite {
+        color: var(--brand-danger);
+        /* background-color: white; // İsteğe bağlı: hover ile aynı arka plan */
+    }
+
+        /* FontAwesome dolu kalp ikonu için (Pro kullanıyorsanız .fas .fa-heart) */
+        .product-card .favorite-icon.is-favorite .fa-heart:before {
+            content: "\f004"; /* FontAwesome Free solid heart */
+            font-weight: 900; /* Solid ikon için */
+        }
+
+/* Ürün Kartı Hover Aksiyonları */
+.product-card-hover-actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.95); /* Hafif transparan beyaz */
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    transform: translateY(100%); /* Başlangıçta kartın altında gizli */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0.3s ease-out; /* visibility eklendi */
+    opacity: 0;
+    visibility: hidden;
+    z-index: 5; /* Ürün resmi vb. altında, kartın üzerinde */
+}
+
+.product-card:hover .product-card-hover-actions {
+    transform: translateY(0); /* Hover'da yukarı kayarak görünür */
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Bu sınıf .form-control'den gelen bazı stilleri eziyor. !important'lar kaldırıldı. Lütfen test edin. */
+.product-card-hover-actions .quantity-input.form-control {
+    text-align: center;
+    /* vertical-align: middle; // Input için genellikle çok etkisi olmaz */
+    padding: 0.6rem 0rem; /* Üst-alt padding, yan padding yok */
+    flex: 0 0 35px; /* Flex item olarak genişliği 35px, büyümesin, küçülmesin */
+    -moz-appearance: textfield; /* Firefox sayı input oklarını gizle */
+    appearance: textfield; /* Standart sayı input oklarını gizle */
+}
+
+    .product-card-hover-actions
+    .quantity-input.form-control::-webkit-outer-spin-button,
+    .product-card-hover-actions
+    .quantity-input.form-control::-webkit-inner-spin-button {
+        -webkit-appearance: none; /* Webkit (Chrome, Safari, Edge) sayı input oklarını gizle */
+        margin: 0; /* Bazen kalan boşluğu alır */
+    }
+/* Bu seçici yukarıdaki ile birleştirilebilir veya daha özel bir amacı varsa ayrılabilir. */
+.add-to-cart-form-hover .quantity-input {
+    width: 50px;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 0.25rem 0.2rem; /* Daha küçük padding */
+}
+
+.add-to-cart-form-hover .quantity-decrease,
+.add-to-cart-form-hover .quantity-increase {
+    /* Bunlar .btn veya .btn-sm olabilir */
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.add-to-cart-btn-hover {
+    /* Bu da bir .btn veya .btn-sm varyantı olabilir */
+    font-size: 0.85rem;
+    padding: 0.4rem 0.5rem;
+}
+/* Adet Güncelleme Kontrolleri - Modern Görünüm */
+.quantity-controls .quantity-btn-ajax {
+    background-color: var(--brand-light);
+    border: 1px solid var(--border-color-strong);
+    color: var(--text-base); /* Daha belirgin ikon rengi */
+    width: 38px; /* Kare butonlar */
+    height: 38px;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.9rem; /* İkonun boyutu için değil, genel font */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    padding: 0; /* İkon tam ortalansın */
+}
+
+    .quantity-controls .quantity-btn-ajax:hover,
+    .quantity-controls .quantity-btn-ajax:focus {
+        background-color: var(--brand-primary);
+        color: white;
+        border-color: var(--brand-primary);
+        outline: none;
+        box-shadow: none;
+    }
+
+    .quantity-controls .quantity-btn-ajax:disabled {
+        background-color: #e9ecef; /* Bootstrap disabled rengi */
+        border-color: var(--border-color);
+        color: var(--text-muted);
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+
+    .quantity-controls .quantity-btn-ajax i {
+        font-size: 0.8em; /* Buton içindeki ikon boyutu */
+    }
+
+.quantity-controls .quantity-input-ajax.form-control-sm {
+    font-weight: 600;
+    color: var(--text-base);
+    max-width: 55px; /* Biraz daha geniş olabilir */
+    height: 38px; /* Butonlarla aynı yükseklik */
+    border: 1px solid var(--border-color-strong);
+    box-shadow: none !important; /* Focus shadow'u kaldır (isteğe bağlı) */
+    padding-top: 0.375rem; /* Dikey ortalama için */
+    padding-bottom: 0.375rem;
+    text-align: center;
+    margin-left: 0.25rem; /* Butonla input arası boşluk */
+    margin-right: 0.25rem; /* Butonla input arası boşluk */
+    border-radius: var(--border-radius-sm); /* Ayrı görünmeleri için */
+    -moz-appearance: textfield; /* Firefox okları gizle */
+    appearance: textfield; /* Standart okları gizle */
+}
+
+    .quantity-controls
+    .quantity-input-ajax.form-control-sm::-webkit-outer-spin-button,
+    .quantity-controls
+    .quantity-input-ajax.form-control-sm::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+.quantity-controls .quantity-input-ajax:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15) !important; /* Daha soft focus */
+}
+
+
+/* ===================================================================
+   3. RESPONSIVE & MOBİL FİLTRE (OFFCANVAS)
+=================================================================== */
+
+@media (max-width: 991.98px) {
+    .products-sidebar .sticky-top {
+        position: static !important;
+    }
+
+    .products-sidebar {
+        /* Bu bölüm responsive için, masaüstünde görünmez */
+        background-color: var(--background-content);
+        border-radius: var(--border-radius-md);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--box-shadow-sm);
+    }
+
+        .products-sidebar .sidebar-widget {
+            margin-bottom: 1.5rem;
+            padding: 0;
+            background-color: transparent;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+            .products-sidebar .sidebar-widget:last-child {
+                margin-bottom: 0;
+            }
+
+        .products-sidebar .sidebar-widget-title {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+    #productFiltersOffcanvas .category-filter-list-v2.has-scrollbar {
+        max-height: calc( 100vh - 250px );
+    }
+}
+
+
+#productFiltersOffcanvas .offcanvas-body {
+    padding: 1rem;
+}
+
+    #productFiltersOffcanvas .offcanvas-body .sidebar-widget {
+        margin-bottom: 1.5rem;
+    }
+
+    #productFiltersOffcanvas .offcanvas-body .sidebar-widget-title {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }

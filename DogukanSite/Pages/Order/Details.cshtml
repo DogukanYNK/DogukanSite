@@ -1,121 +1,98 @@
 ﻿@page "{orderId:int}"
 @model DogukanSite.Pages.Order.DetailsModel
 @using DogukanSite.Models
+
 @{
     ViewData["Title"] = $"Sipariş Detayı: #{Model.Order.Id}";
-    Layout = "_Layout"; // Veya kendi layout'unuz
+    Layout = "_Layout"; // Hesap yönetimi layout'u kullanılıyor
 }
 
-@if (Model.Order != null)
-{
-    <div class="container my-5">
-        <div class="page-header text-center mb-4">
-            <h1 class="page-title display-6">Sipariş Detayınız</h1>
-            <p class="lead text-muted">Siparişinizle ilgili tüm bilgilere buradan ulaşabilirsiniz.</p>
-        </div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/cart-order.css" asp-append-version="true" />
+}
 
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light py-3">
-                        <h5 class="mb-0"><i class="fas fa-box-open me-2 text-primary"></i>Sipariş Edilen Ürünler</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Ürün</th>
-                                        <th class="text-center">Adet</th>
-                                        <th class="text-end">Birim Fiyat</th>
-                                        <th class="text-end">Toplam</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model.Order.OrderItems)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center p-2">
-                                                    <img src="@(string.IsNullOrEmpty(item.Product?.ImageUrl) ? "/images/placeholder.png" : item.Product.ImageUrl)" alt="@item.Product?.Name" class="img-fluid rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
-                                                    <div>
-                                                        <a class="fw-semibold text-dark text-decoration-none">@item.Product?.Name</a>
-                                                        @if (item.Product?.Category != null)
-                                                        {
-                                                            <small class="d-block text-muted">@item.Product.Category.Name</small>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">@item.Quantity</td>
-                                            <td class="text-end">@item.PriceAtTimeOfPurchase.ToString("C")</td>
-                                            <td class="text-end fw-semibold">@((item.PriceAtTimeOfPurchase * item.Quantity).ToString("C"))</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Sipariş Detayı</h3>
+    <a asp-page="/Order/History" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-2"></i>Tüm Siparişlere Dön
+    </a>
+</div>
+
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light py-3">
+                <h5 class="mb-0"><i class="fas fa-box-open me-2 text-primary"></i>Sipariş Edilen Ürünler</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <tbody>
+                            @foreach (var item in Model.Order.OrderItems)
+                            {
+                                <tr>
+                                    <td class="p-3">
+                                        <div class="d-flex align-items-center">
+                                            <img src="@(string.IsNullOrEmpty(item.Product?.ImageUrl) ? "/images/placeholder.png" : item.Product.ImageUrl)" alt="@item.Product?.Name" class="order-item-thumbnail me-3">
+                                            <div>
+                                                <a class="fw-semibold text-dark text-decoration-none">@item.Product?.Name</a>
+                                                <small class="d-block text-muted">@item.Quantity x @item.PriceAtTimeOfPurchase.ToString("C")</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end p-3 fw-semibold">@((item.PriceAtTimeOfPurchase * item.Quantity).ToString("C"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
+        </div>
 
-            <div class="col-lg-4">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-light py-3">
-                        <h5 class="mb-0"><i class="fas fa-info-circle me-2 text-primary"></i>Sipariş Bilgileri</h5>
-                    </div>
-                    <div class="card-body">
-                        <dl class="row mb-0">
-                            <dt class="col-5">Sipariş No:</dt>
-                            <dd class="col-7 fw-semibold text-primary">#@Model.Order.Id</dd>
-
-                            <dt class="col-5">Sipariş Tarihi:</dt>
-                            <dd class="col-7">@Model.Order.OrderDate.ToString("dd MMM yyyy, HH:mm")</dd>
-
-                            <dt class="col-5">Durum:</dt>
-                            <dd class="col-7">
-                                <span class="badge rounded-pill status-badge status-@Model.Order.Status.ToString().ToLower()">
-                                    @Model.Order.Status
-                                </span>
-                            </dd>
-
-                            <dt class="col-5">Toplam Tutar:</dt>
-                            <dd class="col-7 fw-bold fs-5 text-primary">@Model.Order.TotalAmount.ToString("C")</dd>
-                        </dl>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light py-3">
-                        <h5 class="mb-0"><i class="fas fa-truck me-2 text-primary"></i>Teslimat Adresi</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-1 fw-semibold">@Model.Order.ShippingContactName</p>
-                        <address class="mb-1 not-italic">
-                            @Model.Order.ShippingStreet<br>
-                            @Model.Order.ShippingPostalCode @Model.Order.ShippingCity<br>
-                            @Model.Order.ShippingState, @Model.Order.ShippingCountry
-                        </address>
-                        @if (Model.Order.User != null)
-                        {
-                            <p class="mb-0"><i class="fas fa-envelope me-1 text-muted"></i> @Model.Order.User.Email</p>
-                        }
-                        else if (!string.IsNullOrEmpty(Model.Order.GuestEmail))
-                        {
-                            <p class="mb-0"><i class="fas fa-envelope me-1 text-muted"></i> @Model.Order.GuestEmail</p>
-                        }
-                    </div>
-                </div>
-                <div class="mt-4 d-grid">
-                    <a asp-page="/Index" class="btn btn-primary">
-                        <i class="fas fa-home me-2"></i>Ana Sayfaya Dön
-                    </a>
-                </div>
+        <div class="card shadow-sm">
+            <div class="card-header bg-light py-3">
+                <h5 class="mb-0"><i class="fas fa-truck me-2 text-primary"></i>Teslimat Adresi</h5>
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-1 fw-semibold">@Model.Order.ShippingContactName</p>
+                <address class="mb-0 text-muted" style="font-style: normal;">
+                    @Model.Order.ShippingStreet<br>
+                    @Model.Order.ShippingPostalCode @Model.Order.ShippingCity, @Model.Order.ShippingState
+                </address>
             </div>
         </div>
     </div>
-}
-else
-{
-    <div class="alert alert-danger text-center">Sipariş bulunamadı.</div>
-}
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm sticky-lg-top">
+            <div class="card-header bg-light py-3">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2 text-primary"></i>Sipariş Özeti</h5>
+            </div>
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-6">Sipariş No:</dt>
+                    <dd class="col-6 text-end fw-semibold text-primary">#@Model.Order.Id.ToString("D6")</dd>
+
+                    <dt class="col-6">Sipariş Tarihi:</dt>
+                    <dd class="col-6 text-end">@Model.Order.OrderDate.ToString("dd.MM.yyyy")</dd>
+
+                    <dt class="col-6">Sipariş Durumu:</dt>
+                    <dd class="col-6 text-end">
+                        <span class="badge rounded-pill status-badge status-@Model.Order.Status.ToString().ToLower()">
+                            @Model.Order.Status
+                        </span>
+                    </dd>
+                </dl>
+                <hr />
+                <ul class="list-unstyled mb-0">
+                    @* Buraya ara toplam, kargo gibi detaylar eklenebilir *@
+                    <li class="d-flex justify-content-between fw-bold fs-5">
+                        <span>Toplam Tutar:</span>
+                        <span class="text-primary">@Model.Order.TotalAmount.ToString("C")</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

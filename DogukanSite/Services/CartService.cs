@@ -175,7 +175,12 @@ namespace DogukanSite.Services
             if (string.IsNullOrWhiteSpace(couponCode)) { HttpContext.Session.Remove("AppliedCoupon"); } else { HttpContext.Session.SetString("AppliedCoupon", couponCode); }
             return await GetCartViewModelAsync();
         }
-
+        public async Task<CartViewModel> RemoveCouponAsync()
+        {
+            _logger.LogInformation("Uygulanan kupon kaldırılıyor.");
+            HttpContext.Session.Remove("AppliedCoupon");
+            return await GetCartViewModelAsync();
+        }
         private async Task<CartItem> FindCartItemByIdAsync(int cartItemId)
         {
             string userId = GetCurrentUserId();

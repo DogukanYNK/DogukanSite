@@ -2,79 +2,38 @@
 @model DogukanSite.Pages.Account.GenerateRecoveryCodesPageModel
 @{
     ViewData["Title"] = "Yeni Kurtarma Kodları Oluştur";
-    Layout = "_AuthLayout";
+    Layout = "_AuthLayout"; // Sade layout doğru bir seçim.
 }
 
-<div class="container my-lg-5 my-4">
-    <div class="page-header text-center mb-4">
-        <h1 class="page-title display-6">@ViewData["Title"]</h1>
-    </div>
-
+<div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8 col-xl-7">
-            <div class="card shadow-sm border-0 rounded-lg">
-                <div class="card-body p-4 p-md-5">
-                    <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="list-group dashboard-nav">
-                                <a asp-page="/Account/TwoFactorAuthenticationPage" class="list-group-item list-group-item-action">
-                                    <i class="fas fa-arrow-left me-2"></i>2FA Ayarlarına Dön
-                                </a>
-                                @* Bu sayfada diğer navigasyon linkleri genellikle gereksizdir,
-                                   kullanıcıyı mevcut işleme odaklamak daha iyidir. *@
-                            </div>
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-sm border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Emin misiniz?
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <p class="lead">
+                        Yeni kurtarma kodları oluşturmak, daha önce kaydettiğiniz tüm eski kodları <strong>geçersiz kılacaktır.</strong>
+                    </p>
+                    <p>
+                        Telefonunuza veya doğrulama uygulamanıza erişiminizi kaybederseniz, hesabınıza erişmek için bu yeni kurtarma kodlarına ihtiyacınız olacaktır. Lütfen yeni kodları güvenli bir yere kaydedin.
+                    </p>
+                    <hr />
+                    <form method="post">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-page="./TwoFactorAuthenticationPage" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>İptal Et ve Geri Dön
+                            </a>
+                            <button class="btn btn-danger" type="submit">
+                                <i class="fas fa-sync-alt me-2"></i>Evet, Yeni Kodları Oluştur
+                            </button>
                         </div>
-
-                        <div class="col-md-8">
-                            @* StatusMessage genellikle işlem sonrası TwoFactorAuthenticationPage'de gösterilecek,
-                               ama OnGet'te bir hata olursa burada da görünebilir. *@
-                            @if (!string.IsNullOrEmpty(Model.StatusMessage))
-                            {
-                                <div class="alert alert-danger" role="alert">
-                                    @Model.StatusMessage
-                                </div>
-                            }
-
-                            @if (Model.Is2faEnabled) // Bu kontrol OnGet'te set ediliyor
-                            {
-                                <div class="alert alert-warning text-center">
-                                    <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Dikkat!</h4>
-                                    <p>Yeni kurtarma kodları oluşturmak, mevcut tüm eski kurtarma kodlarınızı geçersiz kılacaktır.</p>
-                                    <p>Eğer telefonunuza veya doğrulama uygulamanıza erişiminizi kaybederseniz, hesabınıza erişmek için bu kurtarma kodlarına ihtiyacınız olacaktır.</p>
-                                    @if (Model.CurrentRecoveryCodesLeft > 0)
-                                    {
-                                        <p class="mb-0">Şu anda <strong class="text-dark">@Model.CurrentRecoveryCodesLeft adet</strong> kullanılabilir kurtarma kodunuz bulunmaktadır.</p>
-                                    }
-                                    else
-                                    {
-                                        <p class="mb-0 fw-bold text-danger">Şu anda hiç kullanılabilir kurtarma kodunuz bulunmuyor!</p>
-                                    }
-                                    <hr>
-                                    <p class="mb-0">Devam etmek istediğinizden emin misiniz?</p>
-                                </div>
-
-                                <form method="post" class="mt-4">
-                                    <div class="d-grid">
-                                        <button class="btn btn-danger btn-lg" type="submit">
-                                            <i class="fas fa-sync-alt me-2"></i>Evet, Yeni Kurtarma Kodları Oluştur
-                                        </button>
-                                    </div>
-                                </form>
-                            }
-                            else if (string.IsNullOrEmpty(Model.StatusMessage)) // Eğer 2FA etkin değilse ve özel bir StatusMessage yoksa
-                            {
-                                <div class="alert alert-info text-center">
-                                    İki aşamalı doğrulama etkin olmadığı için kurtarma kodu üretemezsiniz.
-                                </div>
-                            }
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-@* Bu sayfa için özel bir script gerekmiyor gibi görünüyor. *@
-}

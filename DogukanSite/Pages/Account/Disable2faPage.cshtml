@@ -2,55 +2,38 @@
 @model DogukanSite.Pages.Account.Disable2faPageModel
 @{
     ViewData["Title"] = "İki Aşamalı Doğrulamayı Devre Dışı Bırak";
-    Layout = "_AuthLayout";
+    Layout = "_AuthLayout"; // Sade bir layout kullanmak doğru bir seçim.
 }
 
-<div class="container my-lg-5 my-4">
-    <div class="page-header text-center mb-4">
-        <h1 class="page-title display-6">@ViewData["Title"]</h1>
-    </div>
-
+<div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8 col-xl-7">
-            <div class="card shadow-sm border-0 rounded-lg">
-                <div class="card-body p-4 p-md-5">
-                    <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="list-group dashboard-nav">
-                                <a asp-page="/Account/TwoFactorAuthenticationPage" class="list-group-item list-group-item-action">
-                                    <i class="fas fa-arrow-left me-2"></i>2FA Ayarlarına Dön
-                                </a>
-                                @* İsteğe bağlı olarak diğer dashboard linkleri de eklenebilir *@
-                            </div>
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Emin misiniz?
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <p class="lead">
+                        Bu işlem, iki aşamalı doğrulamayı (2FA) devre dışı bırakacak ve <strong>hesap güvenliğinizi önemli ölçüde azaltacaktır.</strong>
+                    </p>
+                    <p>
+                        Devam etmek istediğinizden eminseniz, aşağıdaki butona tıklayın.
+                    </p>
+                    <hr />
+                    <form method="post" class="mt-4">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-page="./TwoFactorAuthenticationPage" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>İptal Et ve Geri Dön
+                            </a>
+                            <button class="btn btn-danger" type="submit">
+                                <i class="fas fa-trash-alt me-2"></i>Evet, 2FA'yı Devre Dışı Bırak
+                            </button>
                         </div>
-
-                        <div class="col-md-8">
-                            @* StatusMessage burada gösterilmiyor çünkü işlem sonrası TwoFactorAuthenticationPage'e yönlendiriyoruz,
-                                StatusMessage o sayfada gösterilecek. Eğer bu sayfada özel bir mesaj göstermek isterseniz
-                                PageModel'dan ayrı bir property ile set edebilirsiniz. *@
-
-                            <div class="alert alert-warning text-center" role="alert">
-                                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Uyarı!</h4>
-                                <p>İki aşamalı doğrulamayı (2FA) devre dışı bırakmak, hesap güvenliğinizi önemli ölçüde azaltacaktır.</p>
-                                <hr>
-                                <p class="mb-0">Bu işlemi yapmak istediğinizden emin misiniz?</p>
-                            </div>
-
-                            <form method="post" class="mt-4">
-                                <div class="d-grid">
-                                    <button class="btn btn-danger btn-lg" type="submit">
-                                        <i class="fas fa-times-circle me-2"></i>Evet, 2FA'yı Devre Dışı Bırak
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" /> @* Bu sayfada form validasyonu yok ama standart olarak eklenebilir *@
-}

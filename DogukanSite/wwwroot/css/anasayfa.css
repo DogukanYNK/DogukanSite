@@ -1,4 +1,88 @@
-﻿/* --- Ana Sayfa Stilleri --- */
+﻿/* =================================================================
+   ANASAYFA.CSS - ZARİF VE MİNİMALİST STİLLER
+   ================================================================= */
+
+/* =================================================================
+   ÖNE ÇIKAN KATEGORİ KARTLARI (anasayfa.css)
+================================================================= */
+
+.category-card {
+    display: block;
+    border-radius: var(--border-radius-lg); /* Kartın kendi köşelerini yuvarlat */
+    overflow: hidden; /* İçerideki elemanların (resim, başlık) taşmasını engelle */
+    position: relative; /* İçerideki başlığı konumlandırmak için */
+    text-decoration: none;
+    box-shadow: var(--box-shadow-md);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+    .category-card:hover {
+        transform: translateY(-8px); /* Üzerine gelince kart hafifçe yukarı çıksın */
+        box-shadow: var(--box-shadow-lg);
+    }
+
+.category-card-image-wrapper {
+    width: 100%;
+    /* 4:3 aspect ratio için, yüksekliği değiştirmek isterseniz bu değeri değiştirin */
+    padding-top: 75%;
+    position: relative;
+    background-color: var(--brand-light); /* Resim yüklenene kadar görünen arka plan */
+}
+
+    .category-card-image-wrapper img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Resmi kırparak alanı doldurur, daha dolgun bir görünüm verir */
+        transition: transform 0.4s ease;
+    }
+
+/* --- Kart Hover Efektleri --- */
+
+.category-card:hover .category-card-image-wrapper img {
+    transform: scale(1.05); /* Resim hafifçe büyüsün */
+}
+
+/* Resmin üzerine gelen karartı efekti */
+.category-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 50%); /* Aşağıdan yukarıya yumuşak bir gölge */
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.category-card:hover::after {
+    opacity: 0.8;
+}
+
+/* --- Kategori Başlığı --- */
+.category-card-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 1.25rem;
+    color: white; /* Başlık rengi beyaz */
+    font-weight: 700;
+    font-size: 1.2rem;
+    width: 100%;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* Metne hafif gölge */
+    transition: transform 0.3s ease;
+    z-index: 2; /* Karartı efektinin üzerinde dursun */
+}
+
+.category-card:hover .category-card-title {
+    transform: translateY(-5px); /* Başlık da hafifçe yukarı çıksın */
+}
+
+
+/* --- Ana Sayfa Stilleri --- */
 .hero-section .display-4 {
     /* Bootstrap display sınıfı için ek stil */
     margin-bottom: 0.5rem; /* Varsayılanı ezebilir */
@@ -14,126 +98,6 @@
 .section-see-all-btn {
     /* "Tümünü Gör" butonu için özel stil (eğer .btn değilse) */
     font-weight: 600;
-    /* color: var(--link-color); // Link gibi görünmesi için */
-    /* text-decoration: underline; // Link gibi görünmesi için */
+    color: var(--link-color); /*// Link gibi görünmesi için */
+    /*text-decoration: underline; // Link gibi görünmesi için */
 }
-
-
-
-
-
-
-
-
-.category-card {
-    /* Kategori kartı linki için genel sarmalayıcı */
-    display: block; /* Linkin tüm alanı kaplaması için */
-    transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
-    border-radius: var(--border-radius-md);
-    overflow: hidden; /* Resim veya içindeki .card taşmasın diye */
-    color: var(--text-base); /* İçindeki metinler için varsayılan renk */
-}
-
-    .category-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--box-shadow-lg);
-        color: var( --brand-primary ); /* Hover'da içindeki metinler de renk değiştirebilir */
-    }
-
-    .category-card .card {
-        /* İçindeki Bootstrap card elemanı için (eğer kullanılıyorsa) */
-        border: none; /* Dış .category-card zaten kenarlık/gölge alıyor */
-        background-color: transparent; /* Dış wrapper'ın arkaplanını alsın */
-        /* transition: none; // Eğer .card'ın kendi transition'ı varsa ve istenmiyorsa */
-    }
-
-.category-card-image {
-    width: 100%;
-    height: 200px; /* Sabit yükseklik */
-    object-fit: cover; /* Resmi kapla ve kırp */
-    transition: transform 0.3s ease;
-    /* border-radius: var(--border-radius-md) var(--border-radius-md) 0 0; // Sadece üst köşeler (eğer kartın altı metin ise) */
-}
-
-.category-card:hover .category-card-image {
-    transform: scale(1.05); /* Hafif zoom */
-}
-
-.category-card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    /* color: inherit; // .category-card'dan rengi miras alır */
-    padding: 1rem; /* Resimden sonra başlık geliyorsa padding */
-    transition: color 0.2s ease; /* Ana '.category-card:hover' zaten rengi değiştirebilir */
-}
-
-.category-card:hover .category-card-title {
-    /* color: var(--brand-primary); // Zaten .category-card:hover genelinde tanımlı */
-}
-
-
-/* =================================================================
-   ANASAYFA.CSS - ZARİF VE MİNİMALİST STİLLER
-   ================================================================= */
-
-/* --- Öne Çıkan Kategori Kartları --- */
-.category-card {
-    display: block;
-    color: var(--text-base);
-    transition: color 0.3s ease;
-}
-
-.category-card-image-wrapper {
-    position: relative; /* İçindeki overlay'i konumlandırmak için */
-    border-radius: var(--border-radius-lg); /* Resim köşelerini yuvarlat */
-    overflow: hidden; /* Köşelerden taşanları gizle */
-    box-shadow: var(--box-shadow-md);
-    transition: box-shadow 0.3s ease;
-}
-
-    .category-card-image-wrapper img {
-        display: block;
-        width: 100%;
-        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Yumuşak bir zoom efekti için */
-    }
-
-    /* Üzerine gelindiğinde resmin üstüne gelecek olan katman */
-    .category-card-image-wrapper::after {
-        content: ''; /* Yazı yerine sadece karartı efekti */
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.2); /* Hafif siyah bir katman */
-        opacity: 0; /* Normalde görünmez */
-        transition: opacity 0.4s ease;
-    }
-
-.category-card-title {
-    font-weight: 600;
-    transition: color 0.3s ease;
-}
-
-/* --- HOVER EFEKTLERİ --- */
-
-.category-card:hover .category-card-image-wrapper {
-    box-shadow: var(--box-shadow-lg); /* Daha belirgin gölge */
-}
-
-    .category-card:hover .category-card-image-wrapper img {
-        transform: scale(1.05); /* Resim hafifçe büyüsün */
-    }
-
-    .category-card:hover .category-card-image-wrapper::after {
-        opacity: 1; /* Siyah katman görünür olsun */
-    }
-
-.category-card:hover .category-card-title {
-    color: var(--brand-primary); /* Başlık maviye dönsün */
-}
-
-
-
-
-

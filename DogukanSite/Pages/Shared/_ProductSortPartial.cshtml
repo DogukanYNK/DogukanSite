@@ -1,0 +1,11 @@
+﻿@model DogukanSite.Pages.Products.IndexModel
+
+<form id="productSortForm" class="filter-sort-form d-flex align-items-center">
+    <label for="sortBySelect" class="form-label text-muted small me-2 mb-0">Sırala:</label>
+    <select name="sortBy" id="sortBySelect" class="form-select form-select-sm ajax-sort-select" style="width: auto; min-width: 180px;">
+        <option value="newest" selected="@(Model.SortBy == "newest")">En Yeniler</option>
+        <option value="priceAsc" selected="@(Model.SortBy == "priceAsc")">Fiyat: Artan</option>
+        <option value="priceDesc" selected="@(Model.SortBy == "priceDesc")">Fiyat: Azalan</option>
+        <option value="nameAsc" selected="@(Model.SortBy == "nameAsc")">Ad: A-Z</option>
+    </select>
+</form>

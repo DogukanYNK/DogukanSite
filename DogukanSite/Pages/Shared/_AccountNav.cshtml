@@ -1,0 +1,19 @@
+﻿@{
+    // Aktif sayfa grubunu (Profile, Security vb.) buradan kontrol ediyoruz.
+    var activePage = ViewData["ActivePage"] as string;
+}
+
+<div class="list-group account-nav">
+    <a asp-page="/Account/Dashboard" class="list-group-item list-group-item-action @(activePage == "Dashboard" ? "active" : "")">
+        <i class="fas fa-tachometer-alt fa-fw me-2"></i>Hesap Paneli
+    </a>
+    <a asp-page="/Order/History" class="list-group-item list-group-item-action @(activePage == "OrderHistory" ? "active" : "")">
+        <i class="fas fa-receipt fa-fw me-2"></i>Siparişlerim
+    </a>
+    <a asp-page="/Account/EditProfile" class="list-group-item list-group-item-action @(activePage == "Profile" ? "active" : "")">
+        <i class="fas fa-user-cog fa-fw me-2"></i>Profil Ayarları
+    </a>
+    <a asp-page="/Account/ChangePasswordPage" class="list-group-item list-group-item-action @(activePage == "Security" ? "active" : "")">
+        <i class="fas fa-shield-alt fa-fw me-2"></i>Güvenlik Ayarları
+    </a>
+</div>

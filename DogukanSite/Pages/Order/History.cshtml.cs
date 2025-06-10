@@ -8,12 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DogukanSite.Pages.Order
 {
-    [Authorize] // Sadece giriþ yapmýþ kullanýcýlar eriþebilir
+    [Authorize]
     public class HistoryModel : PageModel
     {
         private readonly DogukanSiteContext _context;
@@ -27,43 +26,42 @@ namespace DogukanSite.Pages.Order
 
         public List<OrderViewModel> Orders { get; set; }
 
-        // Sipariþleri arayüzde daha iyi göstermek için bir ViewModel
         public class OrderViewModel
         {
             public int OrderId { get; set; }
             public DateTime OrderDate { get; set; }
-            public decimal TotalAmount { get; set; } // Düzeltildi: OrderTotal -> TotalAmount
-            public string Status { get; set; }      // Düzeltildi: OrderStatus -> Status
+            public decimal TotalAmount { get; set; }
+            public string Status { get; set; }
             public int ItemCount { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var userId = _userManager.GetUserId(User); // Bu yöntem daha güvenilirdir.
+            var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
             {
-                // [Authorize] etiketi sayesinde bu normalde gerçekleþmez.
                 return Challenge();
             }
 
-            // Düzeltme: .Include(o => o.Items) -> .Include(o => o.OrderItems)
             var userOrders = await _context.Orders
                                            .Where(o => o.UserId == userId)
-                                           .Include(o => o.OrderItems) // Sipariþteki ürün sayýsýný almak için
-                                           .OrderByDescending(o => o.OrderDate) // En yeni sipariþler üste
+                                           .Include(o => o.OrderItems)
+                                           .OrderByDescending(o => o.OrderDate)
                                            .ToListAsync();
 
-            // Düzeltme: ViewModel'e atama yaparken yeni modeldeki doðru alan adlarý kullanýldý.
             Orders = userOrders.Select(o => new OrderViewModel
             {
                 OrderId = o.Id,
                 OrderDate = o.OrderDate,
-                TotalAmount = o.TotalAmount,         // OrderTotal -> TotalAmount
-                Status = o.Status.ToString(),        // OrderStatus (string) -> Status (enum), metne çevrildi
-                ItemCount = o.OrderItems.Sum(i => i.Quantity) // Items -> OrderItems
+                TotalAmount = o.TotalAmount,
+                Status = o.Status.ToString(),
+                ItemCount = o.OrderItems.Sum(i => i.Quantity)
             }).ToList();
 
+            // --- DEÐÝÞÝKLÝK: ViewData atamasý buraya taþýndý ---
             ViewData["Title"] = "Sipariþ Geçmiþim";
+            ViewData["ActivePage"] = "OrderHistory";
+
             return Page();
         }
     }

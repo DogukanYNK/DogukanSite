@@ -21,29 +21,44 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/DogukanSite.styles.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/css/core.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/mainlayout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/cart-order.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="checkout-layout-active">
 
-    @if (!hideHeaderFooter) // Header'ı sadece hideHeaderFooter true DEĞİLSE göster
+    @if (!hideHeaderFooter)
     {
         <header class="checkout-header-simple">
-            <div class="container">
+            @* --- DEĞİŞİKLİK: Header yapısı güncellendi --- *@
+            <div class="container d-flex justify-content-between align-items-center">
                 <a asp-page="/Index" class="store-name-link">DogukanStore</a>
-                <span class="secure-checkout-text ms-2 ms-md-3">
+                <span class="secure-checkout-text">
                     <i class="fas fa-lock fa-sm"></i> Güvenli Ödeme
                 </span>
             </div>
         </header>
     }
 
-    @* Eğer header yoksa, ana içeriğin üst boşluğunu ayarlamak gerekebilir *@
-    <main role="main" class="checkout-main-content" style="@(hideHeaderFooter ? "padding-top: 0;" : "")">
-        @RenderBody()
+    @if (IsSectionDefined("CheckoutSteps"))
+    {
+        <div class="checkout-steps-container">
+            <div class="container">
+                @await RenderSectionAsync("CheckoutSteps", required: false)
+            </div>
+        </div>
+    }
+
+    <main role="main" class="checkout-main-content">
+        @* RenderBody artık direkt container içinde olacak *@
+        <div class="container">
+            @RenderBody()
+        </div>
     </main>
 
-    @if (!hideHeaderFooter) // Footer'ı sadece hideHeaderFooter true DEĞİLSE göster
+    @if (!hideHeaderFooter)
     {
         <footer class="checkout-footer-simple">
             <div class="container">
@@ -56,9 +71,6 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
-    @await RenderSectionAsync("ValidationScripts", required: false)
 </body>
 </html>

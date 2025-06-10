@@ -1,0 +1,22 @@
+﻿@{
+    var activePage = ViewData["ActiveSecurityPage"] as string;
+}
+
+@* // "nav-fill" sınıfı eklendi // *@
+<ul class="nav nav-pills nav-fill border-bottom mb-4">
+    <li class="nav-item">
+        <a class="nav-link @(activePage == "ChangePassword" ? "active" : "")" asp-page="/Account/ChangePasswordPage">
+            <i class="fas fa-key me-1"></i> Şifre
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(activePage == "EmailManagement" ? "active" : "")" asp-page="/Account/EmailManagementPage">
+            <i class="fas fa-envelope me-1"></i> E-posta
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(activePage == "TwoFactorAuth" ? "active" : "")" asp-page="/Account/TwoFactorAuthenticationPage">
+            <i class="fas fa-shield-alt me-1"></i> İki Aşamalı Doğrulama
+        </a>
+    </li>
+</ul>

@@ -1,139 +1,132 @@
 ﻿@page
 @model DogukanSite.Pages.Order.CreateModel
 @{
-    ViewData["Title"] = "Teslimat Bilgileri";
-    Layout = "_Layout"; // Veya kendi checkout layout'unuz
+    ViewData["Title"] = "Sipariş Bilgileri";
+    Layout = "_CheckoutLayout";
 }
 
-<div class="container py-5">
-    <div class="page-header text-center mb-4">
-        <h1 class="page-title display-6">@ViewData["Title"]</h1>
-    </div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/cart-order.css" asp-append-version="true" />
+}
 
-    @if (Model.CartItems == null || !Model.CartItems.Any())
-    {
-        <div class="alert alert-warning text-center">
-            Sipariş verebilmek için sepetinizde ürün bulunmalıdır.
-            <a asp-page="/Products/Index" class="alert-link ms-2">Alışverişe Başla</a>
-        </div>
-    }
-    else
-    {
-        <form method="post">
-            <div class="row g-lg-5 g-4">
-                <div class="col-lg-7">
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header bg-light py-3">
-                            <h5 class="mb-0"><i class="fas fa-user-edit me-2 text-primary"></i>Alıcı Bilgileri</h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+@section CheckoutSteps {
+    <ul class="nav nav-pills nav-fill checkout-steps">
+        <li class="nav-item"><a class="nav-link active"><i class="fas fa-map-marked-alt"></i> Adres Bilgileri</a></li>
+        <li class="nav-item"><a class="nav-link disabled"><i class="fas fa-credit-card"></i> Ödeme Yöntemi</a></li>
+        <li class="nav-item"><a class="nav-link disabled"><i class="fas fa-check-circle"></i> Sipariş Onayı</a></li>
+    </ul>
+}
 
-                            <div class="row g-3">
-                                <div class="col-md-12">
-                                    <label asp-for="OrderInput.ContactName" class="form-label"></label>
-                                    <input asp-for="OrderInput.ContactName" class="form-control form-control-lg" />
-                                    <span asp-validation-for="OrderInput.ContactName" class="text-danger small"></span>
-                                </div>
-                                <div class="col-md-6">
-                                    <label asp-for="OrderInput.Email" class="form-label"></label>
-                                    <input asp-for="OrderInput.Email" type="email" class="form-control form-control-lg" />
-                                    <span asp-validation-for="OrderInput.Email" class="text-danger small"></span>
-                                </div>
-                                <div class="col-md-6">
-                                    <label asp-for="OrderInput.PhoneNumber" class="form-label"></label>
-                                    <input asp-for="OrderInput.PhoneNumber" type="tel" class="form-control form-control-lg" placeholder="Örn: 5xxxxxxxxx" />
-                                    <span asp-validation-for="OrderInput.PhoneNumber" class="text-danger small"></span>
-                                </div>
+<form method="post">
+    <div class="row g-lg-5 g-4">
+        <div class="col-lg-7">
+            @if (User.Identity.IsAuthenticated && Model.UserAddresses.Any())
+            {
+                <h4 class="mb-3">Teslimat Adresi Seçin</h4>
+                <div id="addressSelection" class="row g-3 mb-4">
+                    @foreach (var address in Model.UserAddresses)
+                    {
+                        <div class="col-md-6">
+                            <div class="address-card">
+                                <input class="form-check-input" type="radio" name="OrderInput.SelectedAddressId" id="address-@address.Id" value="@address.Id" checked="@(Model.OrderInput.SelectedAddressId == address.Id)" />
+                                <label class="form-check-label w-100" for="address-@address.Id">
+                                    <strong class="d-block"><i class="fas fa-map-pin me-2"></i>@address.AddressTitle</strong>
+                                    <span class="d-block text-muted small">@address.ContactName</span>
+                                    <span class="d-block text-muted small">@address.Street, @address.State, @address.City</span>
+                                </label>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-light py-3">
-                            <h5 class="mb-0"><i class="fas fa-shipping-fast me-2 text-primary"></i>Teslimat Adresi</h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <div class="mb-3">
-                                <label asp-for="OrderInput.Street" class="form-label"></label>
-                                <textarea asp-for="OrderInput.Street" class="form-control form-control-lg" rows="3" placeholder="Mahalle, Cadde, Sokak, Bina No, Daire No"></textarea>
-                                <span asp-validation-for="OrderInput.Street" class="text-danger small"></span>
-                            </div>
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label asp-for="OrderInput.City" class="form-label"></label>
-                                    <input asp-for="OrderInput.City" class="form-control form-control-lg" />
-                                    <span asp-validation-for="OrderInput.City" class="text-danger small"></span>
-                                </div>
-                                <div class="col-md-4">
-                                    <label asp-for="OrderInput.State" class="form-label"></label>
-                                    <input asp-for="OrderInput.State" class="form-control form-control-lg" />
-                                    <span asp-validation-for="OrderInput.State" class="text-danger small"></span>
-                                </div>
-                                <div class="col-md-4">
-                                    <label asp-for="OrderInput.PostalCode" class="form-label"></label>
-                                    <input asp-for="OrderInput.PostalCode" class="form-control form-control-lg" />
-                                    <span asp-validation-for="OrderInput.PostalCode" class="text-danger small"></span>
-                                </div>
-                            </div>
-                            <div class="mt-3">
-                                <label asp-for="OrderInput.OrderNotes" class="form-label"></label>
-                                <textarea asp-for="OrderInput.OrderNotes" class="form-control" rows="2" placeholder="Satıcıya iletmek istediğiniz bir not varsa..."></textarea>
-                                <span asp-validation-for="OrderInput.OrderNotes" class="text-danger small"></span>
-                            </div>
+                    }
+                    <div class="col-md-6">
+                        <div class="address-card">
+                            <input class="form-check-input" type="radio" name="OrderInput.SelectedAddressId" id="address-new" value="0" checked="@(Model.OrderInput.SelectedAddressId == 0)" />
+                            <label class="form-check-label w-100" for="address-new">
+                                <strong class="d-block text-success"><i class="fas fa-plus-circle me-2"></i>Yeni Adres Gir</strong>
+                                <span class="d-block text-muted small">Farklı bir teslimat adresi kullan.</span>
+                            </label>
                         </div>
                     </div>
                 </div>
+            }
 
-                <div class="col-lg-5">
-                    <div class="order-summary-container bg-white p-3 p-md-4 shadow-sm rounded-3 sticky-lg-top">
-                        <h4 class="mb-3 border-bottom pb-2">Siparişiniz</h4>
-                        @if (Model.CartItems != null)
-                        {
-                            foreach (var item in Model.CartItems)
-                            {
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div class="d-flex">
-                                        <img src="@(string.IsNullOrEmpty(item.ProductImageUrl) ? "/images/placeholder.png" : item.ProductImageUrl)" alt="@item.ProductName" class="me-2" style="width: 50px; height: 50px; border-radius: 4px; object-fit: cover;">
-                                        <div>
-                                            <small class="d-block fw-semibold">@item.ProductName</small>
-                                            <small class="text-muted">@item.Quantity x @item.UnitPrice.ToString("C")</small>
-                                        </div>
-                                    </div>
-                                    <small class="fw-semibold">@item.TotalPrice.ToString("C")</small>
-                                </div>
-                            }
-                        }
-                        <hr class="my-3">
-                        <ul class="list-unstyled mb-3">
-                            <li class="d-flex justify-content-between py-1">
-                                <small>Ara Toplam</small>
-                                <small>@Model.Subtotal.ToString("C")</small>
-                            </li>
-                            <li class="d-flex justify-content-between py-1">
-                                <small>Kargo Ücreti</small>
-                                <small>@(Model.ShippingCost > 0 ? Model.ShippingCost.ToString("C") : "Ücretsiz")</small>
-                            </li>
-                            <li class="d-flex justify-content-between py-2 fw-bold border-top mt-2">
-                                <span>Genel Toplam</span>
-                                <span>@Model.Total.ToString("C")</span>
-                            </li>
-                        </ul>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-credit-card me-2"></i>Ödemeye Devam Et
-                            </button>
-                        </div>
-                        <div class="text-center small text-muted mt-3">
-                            <i class="fas fa-lock me-1"></i> Bilgileriniz SSL ile korunmaktadır.
-                        </div>
+            <div id="newAddressForm" class="card shadow-sm" style="@(User.Identity.IsAuthenticated && Model.UserAddresses.Any() && Model.OrderInput.SelectedAddressId != 0 ? "display:none;" : "")">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0">
+                        @(User.Identity.IsAuthenticated && Model.UserAddresses.Any() ? "Yeni Teslimat Adresi" : "Teslimat Bilgileri")
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    <div class="row g-3">
+                        <div class="col-12 form-floating"><input class="form-control" asp-for="OrderInput.ContactName" placeholder="Ad Soyad" /><label asp-for="OrderInput.ContactName"></label><span asp-validation-for="OrderInput.ContactName" class="text-danger small ms-2"></span></div>
+                        <div class="col-md-6 form-floating"><input class="form-control" asp-for="OrderInput.Email" placeholder="E-posta" /><label asp-for="OrderInput.Email"></label><span asp-validation-for="OrderInput.Email" class="text-danger small ms-2"></span></div>
+                        <div class="col-md-6 form-floating"><input class="form-control" asp-for="OrderInput.PhoneNumber" placeholder="Telefon" /><label asp-for="OrderInput.PhoneNumber"></label><span asp-validation-for="OrderInput.PhoneNumber" class="text-danger small ms-2"></span></div>
+                        <div class="col-12 form-floating"><textarea class="form-control" asp-for="OrderInput.Street" placeholder="Açık Adres" style="height: 100px"></textarea><label asp-for="OrderInput.Street"></label><span asp-validation-for="OrderInput.Street" class="text-danger small ms-2"></span></div>
+                        <div class="col-md-6 form-floating"><input class="form-control" asp-for="OrderInput.State" placeholder="İlçe/Semt" /><label asp-for="OrderInput.State"></label><span asp-validation-for="OrderInput.State" class="text-danger small ms-2"></span></div>
+                        <div class="col-md-6 form-floating"><input class="form-control" asp-for="OrderInput.City" placeholder="Şehir" /><label asp-for="OrderInput.City"></label><span asp-validation-for="OrderInput.City" class="text-danger small ms-2"></span></div>
+                        <div class="col-12 form-floating"><input class="form-control" asp-for="OrderInput.PostalCode" placeholder="Posta Kodu" /><label asp-for="OrderInput.PostalCode"></label><span asp-validation-for="OrderInput.PostalCode" class="text-danger small ms-2"></span></div>
+                        <div class="col-12 form-floating"><textarea class="form-control" asp-for="OrderInput.OrderNotes" placeholder="Sipariş Notu (isteğe bağlı)"></textarea><label asp-for="OrderInput.OrderNotes"></label></div>
                     </div>
                 </div>
             </div>
-        </form>
-    }
-</div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="sticky-lg-top">
+                <div class="order-summary-container bg-white p-3 p-md-4 shadow-sm rounded-3">
+                    <h4 class="mb-3">Siparişiniz</h4>
+                    @if (Model.Cart.Items.Any())
+                    {
+                        @* --- DEĞİŞİKLİK BURADA BAŞLIYOR --- *@
+                        foreach (var item in Model.Cart.Items)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center">
+                                    <img src="@(string.IsNullOrEmpty(item.ProductImageUrl) ? "/images/placeholder.png" : item.ProductImageUrl)"
+                                         alt="@item.ProductName"
+                                         class="order-item-thumbnail me-3" />
+                                    <div>
+                                        <div class="fw-semibold">@item.ProductName</div>
+                                        <div class="text-muted small">@item.Quantity x @item.UnitPrice.ToString("C")</div>
+                                    </div>
+                                </div>
+                                <div class="fw-semibold">@item.TotalPrice.ToString("C")</div>
+                            </div>
+                        }
+                        @* --- DEĞİŞİKLİK BURADA BİTİYOR --- *@
+                    }
+
+                    <hr class="my-3">
+
+                    <ul class="list-unstyled mb-0">
+                        <li class="d-flex justify-content-between py-1"><small>Ara Toplam</small><small>@Model.Cart.Subtotal.ToString("C")</small></li>
+                        @if (Model.Cart.DiscountAmount > 0)
+                        {
+                            <li class="d-flex justify-content-between py-1 text-success"><small>Kupon İndirimi (@Model.Cart.AppliedCouponCode)</small><small>-@Model.Cart.DiscountAmount.ToString("C")</small></li>
+                        }
+                        <li class="d-flex justify-content-between py-1"><small>Kargo Ücreti</small><small>@(Model.Cart.ShippingCost > 0 ? Model.Cart.ShippingCost.ToString("C") : "Ücretsiz")</small></li>
+                        <li class="d-flex justify-content-between py-2 fw-bold border-top mt-2 fs-5"><span>Toplam</span><span class="text-primary">@Model.Cart.Total.ToString("C")</span></li>
+                    </ul>
+                </div>
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Ödemeye Devam Et</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            $('input[name="OrderInput.SelectedAddressId"]').change(function() {
+                if ($(this).val() == '0') {
+                    $('#newAddressForm').slideDown(300);
+                } else {
+                    $('#newAddressForm').slideUp(300);
+                }
+            });
+        });
+    </script>
 }

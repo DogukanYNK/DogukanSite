@@ -1,28 +1,16 @@
-﻿/* === SİZİN MEVCUT KODUNUZ (TAMAMI OLDUĞU GİBİ KORUNDU) === */
+﻿/* ===================================================================
+   SEPET SAYFASI (CART/INDEX)
+=================================================================== */
 
-/* === Sepet Sayfası (Cart/Index) Stil İyileştirmeleri === */
 .cart-page .page-title {
     font-weight: 700;
     margin-bottom: 2rem;
 }
 
-#cartActionStatusMessages .alert,
-#couponMessageContainer .alert {
-    border-radius: var(--border-radius-md);
-    font-weight: 500;
-}
-
-.cart-items-container {
-    background-color: var(--background-content);
-    border-radius: var(--border-radius-lg);
-    padding: 1.5rem;
-    box-shadow: var(--box-shadow-sm);
-}
-
 .cart-item {
     padding-bottom: 1.5rem;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color-light, #f0f0f0);
+    border-bottom: 1px solid #dee2e6;
 }
 
     .cart-item:last-child {
@@ -35,8 +23,8 @@
     width: 90px;
     height: 90px;
     object-fit: cover;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
     transition: opacity 0.2s ease-in-out;
 }
 
@@ -46,367 +34,233 @@
 
 .cart-item-title a {
     font-weight: 600;
-    color: var(--text-base);
+    color: #212529;
     font-size: 1.05rem;
     transition: color 0.2s ease;
 }
 
     .cart-item-title a:hover {
-        color: var(--brand-primary);
-        text-decoration: none;
+        color: #0d6efd;
     }
-
-.cart-item-price .unit-price-display {
-    font-weight: 500;
-    color: var(--text-muted);
-}
-
-.cart-item .stock-error-message {
-    font-size: 0.8rem;
-    font-weight: 500;
-}
 
 .cart-item .item-total-price {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--brand-primary);
+    color: #0d6efd;
 }
 
 .remove-item-btn-ajax {
     font-size: 0.85rem;
     font-weight: 500;
-    color: var(--brand-danger) !important;
-    padding: 0.25rem 0.5rem;
-    border-radius: var(--border-radius-sm);
-    transition: background-color 0.2s ease, color 0.2s ease;
-    background-color: transparent;
+    color: #dc3545 !important;
+    transition: background-color 0.2s ease;
 }
 
-    .remove-item-btn-ajax:hover,
-    .remove-item-btn-ajax:focus {
-        background-color: rgba( var(--bs-danger-rgb), 0.07 );
+    .remove-item-btn-ajax:hover {
+        background-color: rgba(220, 53, 69, 0.1);
         text-decoration: none;
-        outline: none;
-    }
-
-    .remove-item-btn-ajax i {
-        font-size: 0.9em;
     }
 
 .order-summary-container {
-    top: var( --sticky-sidebar-top-offset, 100px );
-    border-radius: var(--border-radius-lg);
-    background-color: var(--background-content);
+    top: 100px;
+    border-radius: 0.375rem;
+    background-color: #f8f9fa;
     padding: 1.5rem;
-    box-shadow: var(--box-shadow-sm);
+    border: 1px solid #dee2e6;
 }
 
     .order-summary-container h4 {
         font-weight: 600;
-        color: var(--text-base);
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid #ced4da;
         padding-bottom: 0.75rem;
         margin-bottom: 1rem !important;
     }
 
     .order-summary-container .list-group-item {
         background-color: transparent;
-        border-color: var(--border-color-light);
+        border-color: #dee2e6;
         padding-left: 0;
         padding-right: 0;
-        border-left: none;
-        border-right: none;
     }
 
-        .order-summary-container .list-group-item:first-child {
-            border-top: none;
+        .order-summary-container .list-group-item.grand-total-row {
+            border-top: 2px solid #212529 !important;
+            margin-top: 0.75rem !important;
+            padding-top: 1rem !important;
+            font-size: 1.2rem;
         }
 
-        .order-summary-container .list-group-item span:first-child {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .order-summary-container .list-group-item span:last-child {
-            font-weight: 600;
-            color: var(--text-base);
-        }
-
-    .order-summary-container li#discountRow span:last-child {
-        color: var(--brand-success) !important;
+    .order-summary-container .grand-total-row span {
+        font-weight: 700;
     }
 
-    .order-summary-container .list-group-item.grand-total-row {
-        border-top: 2px solid var(--text-base) !important;
-        margin-top: 0.75rem !important;
-        padding-top: 1rem !important;
-        font-size: 1.2rem;
+.coupon-form .form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.empty-cart-action-btn {
+    padding: 0.6rem 1.3rem;
+    font-weight: 500;
+}
+
+    .empty-cart-action-btn i.fas {
+        margin-right: 0.6rem;
     }
 
-        .order-summary-container .list-group-item.grand-total-row span {
-            color: var(--brand-primary);
-            font-weight: 700;
-        }
-
-    .order-summary-container .summary-cart-item-img {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: var(--border-radius-sm);
-        border: 1px solid var(--border-color-light);
-    }
+/* ===================================================================
+   SİPARİŞ GEÇMİŞİ VE DETAY SAYFALARI (ORDER/HISTORY, ORDER/DETAILS)
+=================================================================== */
 
 .order-item-thumbnail {
     width: 60px;
     height: 60px;
     object-fit: cover;
+    border-radius: 0.25rem;
 }
 
-.order-history-table th {
-    font-weight: 600;
-    white-space: nowrap;
-    vertical-align: middle;
-}
-
+.order-history-table th,
 .order-history-table td {
     vertical-align: middle;
 }
 
-.order-history-table .badge {
-    font-size: 0.825em;
-    padding: 0.45em 0.75em;
-}
-
-.coupon-form .form-label {
-    font-weight: 500;
-    margin-bottom: 0.35rem;
-    font-size: 0.875rem;
-    color: var(--text-muted);
-}
-
-.coupon-form .form-control {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-right: none;
-    font-size: 0.9rem;
-}
-
-    .coupon-form .form-control:focus {
-        border-color: var(--brand-primary);
-        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
-    }
-
-.coupon-form .btn-outline-secondary {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    border-color: var(--border-color-strong);
-    background-color: var(--brand-light);
-    color: var(--text-muted);
-    font-weight: 500;
-    font-size: 0.9rem;
-    padding-top: 0.375rem;
-    padding-bottom: 0.375rem;
-}
-
-    .coupon-form .btn-outline-secondary:hover,
-    .coupon-form .btn-outline-secondary:focus {
-        background-color: var(--brand-secondary);
-        color: white;
-        border-color: var(--brand-secondary);
-    }
-
-.empty-cart-message i {
-}
-
-.empty-cart-message h3 {
-}
-
-.empty-cart-action-btn {
-    padding: 0.6rem 1.3rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    letter-spacing: 0.025em;
-    line-height: 1.5;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-    .empty-cart-action-btn i.fas {
-        font-size: 0.9em;
-        margin-right: 0.6rem;
-    }
-
-    .empty-cart-action-btn.btn-outline-primary i.fas {
-    }
-
-    .empty-cart-action-btn.btn-outline-primary:hover i.fas {
-    }
-
-@media (max-width: 767.98px) {
-    .cart-item .row {
-        align-items: flex-start;
-    }
-
-    .cart-item-image-col {
-        margin-bottom: 0.75rem;
-        display: flex;
-        justify-content: center;
-    }
-
-    .cart-item-details-col {
-        text-align: center;
-    }
-
-    .cart-item-actions-col {
-        text-align: center !important;
-        width: 100%;
-        margin-top: 0.75rem !important;
-    }
-
-        .cart-item-actions-col .item-total-price {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-    .order-summary-container.sticky-lg-top {
-        position: static !important;
-        margin-top: 2rem;
-    }
-}
-
-.checkout-steps-container {
-    background-color: var(--background-content);
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    z-index: 1020;
-}
-
-.checkout-steps .nav-link {
-    color: var(--text-muted);
-    font-weight: 500;
-    border-bottom: 3px solid transparent;
-    border-radius: 0;
-    padding: 0.8rem 1rem;
-    font-size: 0.9rem;
-    transition: color 0.2s, border-color 0.2s;
-    text-align: center;
-    flex-grow: 1;
-}
-
-    .checkout-steps .nav-link.active {
-        color: var(--brand-primary);
-        background-color: transparent !important;
-        border-bottom-color: var(--brand-primary);
-    }
-
-    .checkout-steps .nav-link.disabled {
-        color: #adb5bd;
-        pointer-events: none;
-    }
-
-    .checkout-steps .nav-link i {
-        display: block;
-        font-size: 1.3rem;
-        margin-bottom: 0.3rem;
-    }
-
-.card-header h5 {
+.status-badge {
+    font-size: 0.8em;
+    padding: 0.5em 0.8em;
+    color: white;
     font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: 0;
 }
 
-.card-header i {
-    font-size: 1rem;
-    margin-right: 0.5rem;
+    .status-badge.status-pending {
+        background-color: #ffc107;
+        color: #333;
+    }
+
+    .status-badge.status-processing {
+        background-color: #0dcaf0;
+    }
+
+    .status-badge.status-shipped {
+        background-color: #0d6efd;
+    }
+
+    .status-badge.status-delivered {
+        background-color: #198754;
+    }
+
+    .status-badge.status-cancelled {
+        background-color: #dc3545;
+    }
+
+    .status-badge.status-returned {
+        background-color: #6c757d;
+    }
+
+
+/* ===================================================================
+   SİPARİŞ VERME / ÖDEME ADIMLARI (ORDER/CREATE)
+=================================================================== */
+
+/* Checkout Adım Göstergesi */
+.checkout-steps.nav-pills .nav-link {
+    color: #6c757d; /* Pasif adımın rengi */
+    font-weight: 500;
+    border-radius: 0; /* Pills'in yuvarlak kenarlarını sıfırla */
+    border-bottom: 3px solid transparent; /* Pasif adımın alt çizgisi şeffaf */
+    transition: all 0.2s ease;
 }
 
-.order-success-page .card {
-    text-align: left;
+    /* Aktif Adım İçin Bootstrap'in Stilini Ezme */
+    .checkout-steps.nav-pills .nav-link.active,
+    .checkout-steps.nav-pills .show > .nav-link {
+        color: #0d6efd; /* Aktif metin rengi */
+        background-color: transparent; /* Bootstrap'in mavi arka planını KALDIR */
+        border-bottom-color: #0d6efd; /* Sadece alt çizgiyi renklendir */
+    }
+
+    /* Fare ile üzerine gelince */
+    .checkout-steps.nav-pills .nav-link:not(.active):hover {
+        color: #495057;
+    }
+
+/* Adım ikonları */
+.checkout-steps .nav-link i {
+    display: block;
+    font-size: 1.3rem;
+    margin-bottom: 0.3rem;
 }
+
+/* --- YENİ EKLENEN BÖLÜM: Checkout Adres Seçim Kartları --- */
+.address-card {
+    position: relative;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    padding: 1rem;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    height: 100%;
+}
+
+    .address-card:hover {
+        border-color: var(--bs-primary);
+        background-color: var(--bs-primary-bg-subtle);
+    }
+
+    .address-card .form-check-input {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 1.5em;
+        height: 1.5em;
+    }
+
+.address-option:has(input:checked) .address-card {
+    border-color: var(--bs-primary);
+    border-width: 2px;
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.15);
+}
+
+/* --- YENİ EKLENEN BÖLÜM --- */
+/* Checkout - Adres Seçim Kartları */
+.address-card {
+    position: relative;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    padding: 1rem;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    height: 100%;
+}
+
+    .address-card:hover {
+        border-color: var(--bs-primary);
+        background-color: var(--bs-primary-bg-subtle);
+    }
+
+    .address-card .form-check-input {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 1.5em;
+        height: 1.5em;
+    }
+
+.address-option:has(input:checked) .address-card {
+    border-color: var(--bs-primary);
+    border-width: 2px;
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.15);
+}
+/* --- YENİ EKLENEN BÖLÜM SONU --- */
+
+
+/* ===================================================================
+   SİPARİŞ BAŞARILI SAYFASI (ORDER/SUCCESS)
+=================================================================== */
 
 .order-success-page .card-title i {
-    color: var(--brand-success);
-    margin-right: 0.5rem;
+    color: #198754;
 }
 
-body.checkout-layout-active {
-    background-color: var(--background-body);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-.checkout-header-simple {
-    padding: 1rem 0;
-    background-color: var( --background-content );
-    border-bottom: 1px solid var(--border-color);
-    text-align: center;
-}
-
-    .checkout-header-simple .store-name-link {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: var(--brand-primary);
-        text-decoration: none;
-    }
-
-    .checkout-header-simple .secure-checkout-text {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-    }
-
-.checkout-main-content {
-    flex-grow: 1;
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-}
-
-.checkout-footer-simple {
-    text-align: center;
-    padding: 1.5rem 0;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    border-top: 1px solid var(--border-color);
-    background-color: var( --background-content );
-}
-
-.success-icon-container {
-}
-
-.order-success-summary .card-title {
-}
-
-@keyframes bounceInSuccess {
-    0% {
-        opacity: 0;
-        transform: scale(0.3) translateY(-50px);
-    }
-
-    50% {
-        opacity: 0.9;
-        transform: scale(1.1);
-    }
-
-    80% {
-        opacity: 1;
-        transform: scale(0.89);
-    }
-
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-
-/* =================================================================
-   YENİ EKLENEN BÖLÜM - SADECE BU KISIM EKLENMİŞTİR
-================================================================= */
-
-/* Sipariş Başarı Sayfası İkon Animasyonu */
 .success-icon-container .fa-check-circle {
     animation: success-icon-pop 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
@@ -424,75 +278,79 @@ body.checkout-layout-active {
 }
 
 
-/*
-.empty-cart-message i,
-.empty-cart-icon {
-    font-size: 3.5rem;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
+/* ===================================================================
+   RESPONSIVE (MOBİL UYUMLULUK)
+=================================================================== */
+
+@media (max-width: 991.98px) {
+    .order-summary-container.sticky-lg-top {
+        position: static !important;
+    }
 }
 
-.empty-cart-message h3 {
-    font-weight: 600;
-    color: var(--text-base);
-    margin-bottom: 0.5rem;
-}
-
-.empty-cart-message p {
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-}
-
-@media (max-width: 575.98px) {
-    .cart-item .row > div[class*="col-"] {
-        margin-bottom: 0.75rem;
+@media (max-width: 767.98px) {
+    .cart-item .row {
         text-align: center;
     }
 
-        .cart-item .row > div[class*="col-"]:last-child {
-            margin-bottom: 0;
-        }
-
-    .cart-item .col-auto.cart-item-image-col {
-        width: 100%;
-    }
-
-    .cart-item-image-link img {
-        width: 80px;
-        height: 80px;
-    }
-
-    .cart-item-title a {
-        font-size: 1rem;
-    }
-
-    .cart-item-details .quantity-controls {
+    .cart-item .quantity-controls {
         justify-content: center;
-        margin-top: 0.5rem;
-        margin-bottom: 0.5rem;
     }
 
-    .cart-item .col.cart-item-pricing-col {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    .cart-item .text-md-end {
+        text-align: center !important;
+    }
+}
+
+/* Bu bloğu dosyanızın en sonuna ekleyebilirsiniz veya mevcutları güncelleyebilirsiniz */
+
+/* ===================================================================
+   CHECKOUT LAYOUT STİLLERİ
+=================================================================== */
+
+body.checkout-layout-active {
+    background-color: #f4f7f9; /* Sayfa arkası için hafif bir renk */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.checkout-header-simple {
+    padding: 1rem 0;
+    background-color: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+}
+
+    .checkout-header-simple .store-name-link {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--bs-primary);
+        text-decoration: none;
     }
 
-    .cart-item-total-price {
-        margin-bottom: 0.5rem;
+    .checkout-header-simple .secure-checkout-text {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #6c757d;
     }
 
-    .remove-item-btn-ajax {
-        display: inline-block;
-    }
+.checkout-steps-container {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.5rem 0;
+}
 
-    .order-summary-container.sticky-lg-top {
-        position: static !important;
-        margin-top: 2rem;
-        box-shadow: none;
-        border-top: 1px solid var(--border-color);
-        padding-top: 1.5rem;
-        border-radius: 0;
-        background-color: var(--background-body);
-    }
-}*/
+.checkout-main-content {
+    flex-grow: 1;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+}
+
+.checkout-footer-simple {
+    text-align: center;
+    padding: 1.5rem 0;
+    font-size: 0.85rem;
+    color: #6c757d;
+    border-top: 1px solid #dee2e6;
+    background-color: #ffffff;
+}

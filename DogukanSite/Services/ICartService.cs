@@ -9,6 +9,8 @@ namespace DogukanSite.Services
         Task<CartViewModel> UpdateItemQuantityAsync(int cartItemId, int quantity);
         Task<CartViewModel> RemoveItemAsync(int cartItemId);
         Task<CartViewModel> ApplyCouponAsync(string couponCode);
+        Task<CartViewModel> RemoveCouponAsync();
+
         Task<int> GetCartItemCountAsync();
         Task MergeCartsOnLoginAsync();
     }

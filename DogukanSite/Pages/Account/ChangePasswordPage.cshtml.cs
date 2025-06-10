@@ -1,16 +1,16 @@
-// Pages/Account/ChangePasswordPage.cshtml.cs
-using DogukanSite.Models; // ApplicationUser için
-using Microsoft.AspNetCore.Authorization; // [Authorize] için
+using DogukanSite.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DogukanSite.Pages.Account
 {
-    [Authorize] // Bu sayfa sadece giriþ yapmýþ kullanýcýlar tarafýndan eriþilebilir olmalý
+    [Authorize]
     public class ChangePasswordPageModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -52,8 +52,6 @@ namespace DogukanSite.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
-        public bool HasPassword { get; set; }
-
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -62,37 +60,31 @@ namespace DogukanSite.Pages.Account
                 return NotFound($"Kullanýcý ID '{_userManager.GetUserId(User)}' bulunamadý.");
             }
 
-            HasPassword = await _userManager.HasPasswordAsync(user);
-            if (!HasPassword)
+            var hasPassword = await _userManager.HasPasswordAsync(user);
+            if (!hasPassword)
             {
-                // Eðer kullanýcý harici bir saðlayýcý ile giriþ yaptýysa ve yerel þifresi yoksa,
-                // þifre belirleme sayfasýna yönlendirilebilir veya bu sayfa devre dýþý býrakýlabilir.
-                // Þimdilik, bu durumda bir mesaj gösterip sayfada kalmasýný saðlayalým.
-                StatusMessage = "Hata: Bu hesap için ayarlanmýþ bir yerel þifre bulunmuyor. Þifre belirlemek için farklý bir yöntem kullanmanýz gerekebilir.";
+                return RedirectToPage("./SetPasswordPage"); // Eðer þifresi yoksa þifre belirleme sayfasýna yönlendir.
             }
 
-            Input = new InputModel(); // Formu boþ baþlat
+            // --- YENÝ YAPI ÝÇÝN GÜNCELLEME ---
+            ViewData["Title"] = "Þifre Deðiþtir";
+            ViewData["ActivePage"] = "Security";
+            ViewData["ActiveSecurityPage"] = "ChangePassword";
+
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return NotFound($"Kullanýcý ID '{_userManager.GetUserId(User)}' bulunamadý.");
-            }
-
-            HasPassword = await _userManager.HasPasswordAsync(user);
-            if (!HasPassword)
-            {
-                StatusMessage = "Hata: Bu hesap için bir þifre ayarlanamaz.";
-                return Page();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return Page();
             }
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, Input.OldPassword, Input.NewPassword);
@@ -102,17 +94,14 @@ namespace DogukanSite.Pages.Account
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
-                _logger.LogWarning("Kullanýcý ({UserId}) þifresini deðiþtirirken hata oluþtu: {Errors}", user.Id, string.Join(", ", changePasswordResult.Errors.Select(e => e.Description)));
-                StatusMessage = "Hata: Þifreniz deðiþtirilirken bir sorun oluþtu. Lütfen girdiðiniz bilgileri kontrol edin.";
                 return Page();
             }
 
-            // Þifre deðiþtirildikten sonra kullanýcýnýn oturumunu yenilemek önemlidir.
             await _signInManager.RefreshSignInAsync(user);
-            _logger.LogInformation("Kullanýcý ({UserId}) þifresini baþarýyla deðiþtirdi.", user.Id);
+            _logger.LogInformation("Kullanýcý þifresini baþarýyla deðiþtirdi.");
             StatusMessage = "Þifreniz baþarýyla deðiþtirildi.";
 
-            return RedirectToPage(); // Ayný sayfaya yönlendirerek TempData mesajýnýn gösterilmesini saðla
+            return RedirectToPage();
         }
     }
 }

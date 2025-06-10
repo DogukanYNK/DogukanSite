@@ -1,0 +1,80 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using DogukanSite.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title logo-text" id="mainOffcanvasLabel">DogukanStore</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Kapat"></button>
+</div>
+<div class="offcanvas-body">
+    <ul class="list-group list-group-flush mb-3 mobile-quick-actions">
+        <li class="list-group-item">
+            <a href="#" class="d-flex align-items-center text-decoration-none" data-bs-toggle="modal" data-bs-target="#searchModal" data-bs-dismiss="offcanvas">
+                <i class="fas fa-search fa-fw me-3"></i>Ara
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a class="d-flex align-items-center text-decoration-none position-relative" asp-page="/Cart/Index">
+                <i class="fas fa-shopping-bag fa-fw me-3"></i>Sepetim
+                <span class="badge rounded-pill bg-primary ms-auto cart-item-count-badge d-none">0</span>
+            </a>
+        </li>
+    </ul>
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        var currentUser = await UserManager.GetUserAsync(User);
+        <h6 class="offcanvas-menu-title">Hesabım</h6>
+        <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item">
+                <a class="d-flex align-items-center text-decoration-none" asp-page="/Account/Dashboard">
+                    <i class="fas fa-user-circle fa-fw me-3"></i>@(currentUser?.FirstName ?? "Hesabım")
+                </a>
+            </li>
+            <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Order/History"><i class="fas fa-receipt fa-fw me-3"></i>Siparişlerim</a></li>
+            <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Products/Favorites"><i class="fas fa-heart fa-fw me-3"></i>Favorilerim</a></li>
+            @if (User.IsInRole("Admin"))
+            {
+                <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Admin/Index"><i class="fas fa-user-shield fa-fw me-3"></i>Admin Paneli</a></li>
+            }
+            <li class="list-group-item">
+                <form asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" method="post" class="d-inline w-100">
+                    <button type="submit" class="btn btn-link text-danger p-0 d-flex align-items-center text-decoration-none w-100">
+                        <i class="fas fa-sign-out-alt fa-fw me-3"></i>Çıkış Yap
+                    </button>
+                </form>
+            </li>
+        </ul>
+    }
+    else
+    {
+        <h6 class="offcanvas-menu-title">Hesap</h6>
+        <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Account/Login"><i class="fas fa-sign-in-alt fa-fw me-3"></i>Giriş Yap</a></li>
+            <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Account/Register"><i class="fas fa-user-plus fa-fw me-3"></i>Kayıt Ol</a></li>
+        </ul>
+    }
+
+    <h6 class="offcanvas-menu-title">Siteyi Keşfet</h6>
+    <ul class="list-group list-group-flush main-mobile-nav">
+        <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Index">Ana Sayfa</a></li>
+        <li class="list-group-item">
+            <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#categoriesOffcanvasCollapse" data-bs-toggle="collapse" role="button">
+                Kategoriler
+            </a>
+            <div class="collapse mt-1" id="categoriesOffcanvasCollapse">
+                <ul class="list-group list-group-flush ps-3">
+                    <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2" asp-page="/Products/Index" asp-route-category="Elektronik">Elektronik</a></li>
+                    <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2" asp-page="/Products/Index" asp-route-category="Giyim">Giyim</a></li>
+                    <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2" asp-page="/Products/Index" asp-route-category="EvDekorasyon">Ev & Dekorasyon</a></li>
+                    <li class="list-group-item border-0 py-1"><hr class="my-1"></li>
+                    <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2" asp-page="/Products/Index">Tüm Ürünler</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Campaigns">Kampanyalar</a></li>
+        <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/NewArrivals">Yeni Gelenler</a></li>
+    </ul>
+</div>

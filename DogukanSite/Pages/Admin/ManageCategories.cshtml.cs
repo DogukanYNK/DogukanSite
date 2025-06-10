@@ -1,12 +1,12 @@
-// using'ler ayný kalacak
 using DogukanSite.Data;
 using DogukanSite.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering; // YENÝ: SelectList için eklendi
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,70 +16,92 @@ namespace DogukanSite.Pages.Admin
     public class ManageCategoriesModel : PageModel
     {
         private readonly DogukanSiteContext _context;
+        public ManageCategoriesModel(DogukanSiteContext context) { _context = context; }
 
-        public ManageCategoriesModel(DogukanSiteContext context)
-        {
-            _context = context;
-        }
-
-        public IList<Category> Categories { get; set; } = new List<Category>();
+        // --- YENÝ: Hiyerarþik yapýyý ve ürün sayýsýný bir arada tutacak ViewModel ---
+        public List<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
 
         [BindProperty]
-        public Category NewCategory { get; set; } = default!;
+        public CategoryInputModel NewCategory { get; set; }
 
-        // YENÝ: Üst kategori seçimi için dropdown listesi
         public SelectList CategorySelectList { get; set; }
+
+        public class CategoryViewModel
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public int ProductCount { get; set; }
+            public int Level { get; set; } // Hiyerarþi seviyesini belirtmek için
+        }
+
+        public class CategoryInputModel
+        {
+            [Required(ErrorMessage = "Kategori adý zorunludur.")]
+            public string Name { get; set; }
+            public string? Description { get; set; }
+            public int? ParentCategoryId { get; set; }
+        }
 
         public async Task OnGetAsync()
         {
-            // Kategorileri yüklerken, alt kategorileri ve üst kategorileri de dahil edelim (Include)
-            // Bu sayede listeleme ekranýnda "Ana Kategori: Giyim" gibi bilgiler gösterebiliriz.
-            Categories = await _context.Categories
-                                       .Include(c => c.ParentCategory) // Üst kategoriyi getir
-                                       .Include(c => c.SubCategories)  // Alt kategorileri saymak vb. için
-                                       .OrderBy(c => c.ParentCategoryId) // Ana kategorileri baþta göster
-                                       .ThenBy(c => c.Name)
-                                       .AsNoTracking()
-                                       .ToListAsync();
+            var allCategories = await _context.Categories
+                .Include(c => c.Products) // Ürün sayýlarýný almak için
+                .OrderBy(c => c.Name)
+                .ToListAsync();
 
-            // YENÝ: Dropdown'ý dolduruyoruz
-            // Kendi kendisinin parent'ý olamayacaðý için listeye boþ bir "Ana Kategori" seçeneði ekliyoruz.
+            // Kategorileri hiyerarþik olarak sýrala ve ViewModel'e dönüþtür
+            Categories = GetHierarchicalCategories(allCategories.Where(c => c.ParentCategoryId == null).ToList(), 0);
+
             await LoadCategorySelectListAsync();
         }
-
-        // YENÝ: Kategori listesini yüklemek için yardýmcý bir metod
-        private async Task LoadCategorySelectListAsync(int? selectedCategory = null)
-        {
-            var categoriesQuery = _context.Categories.OrderBy(c => c.Name).AsNoTracking();
-
-            // "selectedCategory" parametresi düzenleme senaryolarý için, þimdilik null kalabilir.
-            CategorySelectList = new SelectList(await categoriesQuery.ToListAsync(), "Id", "Name", selectedCategory);
-        }
-
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                // Model geçerli deðilse, sayfanýn tekrar yüklenmesi için kategori listesini doldurmamýz gerekir.
-                await LoadCategorySelectListAsync();
-                // Kategorilerin tam listesini de yeniden yükleyelim ki sayfa boþ görünmesin
-                Categories = await _context.Categories.Include(c => c.ParentCategory).ToListAsync();
+                await OnGetAsync(); // Hata durumunda sayfayý yeniden doldur
                 return Page();
             }
 
-            // DEÐÝÞTÝRÝLDÝ: NewCategory.ParentCategoryId'nin 0 gelmesi durumunu null'a çeviriyoruz.
-            // HTML'deki <select> listesinde "Ana Kategori" seçeneðinin deðeri 0 veya boþ string ise,
-            // bu onun bir üst kategorisi olmadýðýný gösterir. Veritabanýnda bu alaný "null" olarak kaydetmeliyiz.
-            if (NewCategory.ParentCategoryId == 0)
+            var category = new Category
             {
-                NewCategory.ParentCategoryId = null;
-            }
+                Name = NewCategory.Name,
+                Description = NewCategory.Description,
+                ParentCategoryId = NewCategory.ParentCategoryId == 0 ? null : NewCategory.ParentCategoryId
+            };
 
-            _context.Categories.Add(NewCategory);
+            _context.Categories.Add(category);
             await _context.SaveChangesAsync();
+            return RedirectToPage();
+        }
 
-            return RedirectToPage("./ManageCategories");
+        // --- YENÝ: Hiyerarþik listeyi oluþturan yardýmcý metot ---
+        private List<CategoryViewModel> GetHierarchicalCategories(List<Category> categories, int level)
+        {
+            var result = new List<CategoryViewModel>();
+            foreach (var cat in categories)
+            {
+                result.Add(new CategoryViewModel
+                {
+                    Id = cat.Id,
+                    Name = cat.Name,
+                    ProductCount = cat.Products.Count,
+                    Level = level
+                });
+                // Alt kategoriler için kendini tekrar çaðýr
+                if (cat.SubCategories != null && cat.SubCategories.Any())
+                {
+                    var orderedSubCategories = cat.SubCategories.OrderBy(sc => sc.Name).ToList();
+                    result.AddRange(GetHierarchicalCategories(orderedSubCategories, level + 1));
+                }
+            }
+            return result;
+        }
+
+        private async Task LoadCategorySelectListAsync()
+        {
+            var categoriesQuery = await _context.Categories.OrderBy(c => c.Name).AsNoTracking().ToListAsync();
+            CategorySelectList = new SelectList(categoriesQuery, "Id", "Name");
         }
     }
 }

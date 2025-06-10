@@ -50,6 +50,12 @@ namespace DogukanSite.Pages.Cart
             var cartViewModel = await _cartService.ApplyCouponAsync(couponCode);
             return new JsonResult(cartViewModel);
         }
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> OnPostRemoveCouponJsonAsync()
+        {
+            var cartViewModel = await _cartService.RemoveCouponAsync();
+            return new JsonResult(cartViewModel);
+        }
     }
 
     // Bu yardýmcý sýnýflar burada veya ayrý bir dosyada olabilir.
@@ -77,4 +83,6 @@ namespace DogukanSite.Pages.Cart
         public decimal TotalPrice => UnitPrice * Quantity;
         public int MaxQuantity { get; set; }
     }
+
+
 }

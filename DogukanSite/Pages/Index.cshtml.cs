@@ -54,36 +54,41 @@ namespace DogukanSite.Pages
             var userId = GetCurrentUserId();
             if (!string.IsNullOrEmpty(userId))
             {
-                UserFavoriteProductIds = (await _context.Favorites
+                UserFavoriteProductIds = await _context.Favorites
                     .AsNoTracking()
-                    .Where(f => f.ApplicationUserId == userId) // DÜZELTÝLDÝ
+                    .Where(f => f.ApplicationUserId == userId)
                     .Select(f => f.ProductId)
-                    .ToListAsync())
-                    .ToHashSet();
+                    .ToHashSetAsync();
+                ViewData["UserFavoriteProductIds"] = UserFavoriteProductIds;
             }
 
             NewArrivals = await _context.Products
+                .AsNoTracking()
                 .Where(p => p.IsNewArrival)
                 .OrderByDescending(p => p.Id)
                 .Take(8)
-                .AsNoTracking()
                 .ToListAsync();
 
             FeaturedProducts = await _context.Products
+                .AsNoTracking()
                 .Where(p => p.IsFeatured)
                 .OrderByDescending(p => p.Id)
                 .Take(4)
-                .AsNoTracking()
                 .ToListAsync();
 
-            // Bu kýsým sabit olduðu için korunabilir.
-            FeaturedCategories = new List<CategoryTeaser>
-            {
-                new CategoryTeaser { Name = "Elektronik", ImageUrl = "/images/categories/electronics.jpg", PageUrl = "/Products/Index?category=Elektronik" },
-                new CategoryTeaser { Name = "Giyim", ImageUrl = "/images/categories/fashion.jpg", PageUrl = "/Products/Index?category=Giyim" },
-                new CategoryTeaser { Name = "Ev & Yaþam", ImageUrl = "/images/categories/home-living.jpg", PageUrl = "/Products/Index?category=EvYasam" },
-                new CategoryTeaser { Name = "Kozmetik", ImageUrl = "/images/categories/cosmetics.jpg", PageUrl = "/Products/Index?category=Kozmetik" }
-            };
+            // Elle oluþturmak yerine, veritabanýndan "Öne Çýkan" olarak iþaretlenmiþ kategorileri çekiyoruz.
+            FeaturedCategories = await _context.Categories
+                .AsNoTracking()
+                .Where(c => c.IsFeatured && !string.IsNullOrEmpty(c.ImageUrl)) // IsFeatured ve resmi olanlarý al
+                .OrderBy(c => c.Name) // Veya bir sýra numarasýna göre
+                .Take(4) // Ana sayfada 4 adet göster
+                .Select(c => new CategoryTeaser
+                {
+                    Name = c.Name,
+                    ImageUrl = c.ImageUrl,
+                    PageUrl = $"/Products/Index?category={c.Name}"
+                })
+                .ToListAsync();
         }
 
         public async Task<JsonResult> OnGetCartCountAsync()

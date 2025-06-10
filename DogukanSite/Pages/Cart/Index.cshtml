@@ -2,7 +2,11 @@
 @model DogukanSite.Pages.Cart.IndexModel
 @{
     ViewData["Title"] = "Alışveriş Sepetim";
-    Layout = "_Layout"; // Veya "_CheckoutLayout" hangisini kullanıyorsanız
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/cart-order.css" asp-append-version="true" />
 }
 
 <div class="container py-4 py-md-5 cart-page">
@@ -10,6 +14,7 @@
         <h1 class="page-title display-5">@ViewData["Title"]</h1>
     </div>
 
+    @* Bildirim mesajları için alanlar *@
     <div id="statusMessageContainer">
         @if (!string.IsNullOrEmpty(Model.StatusMessage))
         {
@@ -42,27 +47,15 @@
                                             <a asp-page="/Products/Details" asp-route-id="@item.ProductId" class="text-decoration-none">@item.ProductName</a>
                                         </h5>
                                         <p class="cart-item-price text-muted small mb-2">Birim Fiyat: <span class="unit-price-display">@item.UnitPrice.ToString("C")</span></p>
-                                        @* --- BU KISIM GÜNCELLENECEK --- *@
                                         <div class="d-flex align-items-center quantity-controls" data-cart-item-id="@item.Id">
-                                            <button type="button" class="btn quantity-btn-ajax quantity-decrease-ajax" aria-label="Azalt">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-
+                                            <button type="button" class="btn quantity-btn-ajax quantity-decrease-ajax" aria-label="Azalt"><i class="fas fa-minus"></i></button>
                                             <input type="number" value="@item.Quantity"
                                                    class="form-control form-control-sm text-center mx-1 quantity-input-ajax"
-                                                   min="1"
-                                                   max="@item.MaxQuantity" @* Stok limiti için max attribute'u eklendi *@
-                                                   data-cart-item-id="@item.Id"
-                                                   aria-label="Adet">
-
-                                            <button type="button" class="btn quantity-btn-ajax quantity-increase-ajax" aria-label="Artır">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
+                                                   min="1" max="@item.MaxQuantity" data-cart-item-id="@item.Id" aria-label="Adet">
+                                            <button type="button" class="btn quantity-btn-ajax quantity-increase-ajax" aria-label="Artır"><i class="fas fa-plus"></i></button>
                                             <span class="ajax-loading-spinner ms-2" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
                                         </div>
-                                        @* Stok uyarı mesajı için yeni bir alan eklendi *@
                                         <small class="text-danger stock-warning-message mt-1 d-block" style="display: none;"></small>
-                                        @* --- GÜNCELLEME BİTİŞİ --- *@
                                     </div>
                                     <div class="col-md-auto text-md-end mt-3 mt-md-0 cart-item-actions-col">
                                         <p class="fw-bold mb-1 item-total-price">@item.TotalPrice.ToString("C")</p>
@@ -94,13 +87,11 @@
                                     Kupon İndirimi
                                     <small id="appliedCouponCodeText" class="text-muted">(@Model.Cart.AppliedCouponCode)</small>
 
-                                    @* --- YENİ EKLENEN KISIM --- *@
+                                    @* Kuponu kaldır butonu eklendi *@
                                     <button type="button" id="removeCouponBtn" class="btn btn-link text-danger p-0 ms-1" title="Kuponu Kaldır" style="text-decoration: none;">
                                         <i class="fas fa-times-circle"></i>
                                     </button>
-                                    @* --- BİTİŞ --- *@
-
-                                </span>>
+                                </span>
                                 <span id="cartDiscount" class="text-success">-@Model.Cart.DiscountAmount.ToString("C")</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -127,9 +118,6 @@
                                 <i class="fas fa-shield-alt me-2"></i>Güvenli Ödemeye Geç
                             </a>
                         </div>
-                        <div class="text-center small text-muted mt-3">
-                            <i class="fas fa-lock me-1"></i> SSL ile güvenli ödeme
-                        </div>
                     </div>
                 </div>
             </div>
@@ -147,9 +135,8 @@
         }
     </div>
 </div>
+
 @section Scripts {
+    @* cart.js dosyanızın bu yeni butonu yönetecek kodu içerdiğinden emin olun *@
     <script src="~/js/cart.js" asp-append-version="true"></script>
-    }
-@section Styles {
-    <link rel="stylesheet" href="~/css/cart-order.css" asp-append-version="true" />
-}
+}   

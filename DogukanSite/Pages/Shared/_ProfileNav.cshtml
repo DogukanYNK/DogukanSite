@@ -1,0 +1,22 @@
+﻿@{
+    var activePage = ViewData["ActiveProfilePage"] as string;
+}
+
+@* // "nav-fill" sınıfı eklendi // *@
+<ul class="nav nav-pills nav-fill border-bottom mb-4">
+    <li class="nav-item">
+        <a class="nav-link @(activePage == "Edit" ? "active" : "")" asp-page="/Account/EditProfile">
+            <i class="fas fa-user-edit me-1"></i> Profil Bilgileri
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(activePage == "PersonalData" ? "active" : "")" asp-page="/Account/PersonalDataPage">
+            <i class="fas fa-database me-1"></i> Kişisel Veriler
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(activePage == "AddressBook" ? "active" : "")" asp-page="/Account/AddressBook">
+            <i class="fas fa-map-marker-alt me-1"></i> Adres Defterim
+        </a>
+    </li>
+</ul>

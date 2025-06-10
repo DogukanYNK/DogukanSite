@@ -1,0 +1,25 @@
+﻿@model IEnumerable<Category>
+
+@foreach (var category in Model)
+{
+    var hasChildren = category.SubCategories != null && category.SubCategories.Any();
+    <li class="@(hasChildren ? "has-children" : "")">
+        <div class="d-flex align-items-center category-item-row">
+            @if (hasChildren)
+            {
+                <span class="expander-icon me-1"><i class="fas fa-caret-right"></i></span>
+            }
+            <a href="#" data-category="@category.Name"
+               class="category-link ajax-filter-link @(ViewData["CurrentCategory"] as string == category.Name ? "active" : "") @(hasChildren ? "" : "no-children")">
+                @category.Name
+            </a>
+        </div>
+
+        @if (hasChildren)
+        {
+            <ul class="list-unstyled ps-3 sub-category-list">
+                <partial name="Shared/_CategoryHierarchyPartial" model="category.SubCategories" view-data="ViewData" />
+            </ul>
+        }
+    </li>
+}

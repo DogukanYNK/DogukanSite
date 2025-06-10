@@ -2,108 +2,71 @@
 @model DogukanSite.Pages.Account.RegisterModel
 @{
     ViewData["Title"] = "Yeni Hesap Oluştur";
-    Layout = "_AuthLayout"; // Minimal layout kullanılıyor
+    Layout = "_AuthLayout";
 }
 
-@* _AuthLayout.cshtml içindeki .auth-container-wrapper dikey ortalama yapıyor.
-    Bu nedenle, aşağıdaki container'daki my-5 (margin top/bottom) sınıfı
-    çok fazla dikey boşluk yaratabilir. Bunu my-3, py-4 gibi bir değere
-    çekebilir veya kartın kendi iç padding'ine güvenebilirsiniz.
-    Şimdilik my-5 olarak bırakıyorum.
-*@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6 col-xl-5">
             <div class="card shadow-lg border-0 rounded-lg">
-                @* CARD HEADER KALDIRILDI *@
                 <div class="card-body p-4 p-md-5">
-                    @* BAŞLIK VE ALT BAŞLIK CARD-BODY İÇİNE TAŞINDI *@
-                    <div class="text-center mb-4 pt-2">
-                        <h3 class="fw-bold text-primary mb-2">@ViewData["Title"]</h3>
-                        <p class="text-muted small">Hızlıca aramıza katılın!</p>
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+                        <h3 class="fw-bold mb-2">@ViewData["Title"]</h3>
+                        <p class="text-muted">Hızlıca aramıza katılın!</p>
                     </div>
 
                     <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger text-start p-2 small" role="alert"></div>
 
-                        @* asp-validation-summary="All": Hem alan bazlı hem de model bazlı tüm hataları burada gösterir.
-                            Eğer alanların altında da <span asp-validation-for="..."> ile hata gösteriyorsanız,
-                            burada "ModelOnly" kullanmak daha az kalabalık bir görünüm sunabilir. Tercihinize bağlıdır.
-                        *@
-                        <div asp-validation-summary="All" class="alert alert-danger mb-3 text-start" role="alert"></div>
-
-                        <div class="row">
+                        <div class="row g-2">
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input asp-for="Input.FirstName" class="form-control" placeholder="Adınız" aria-required="true" />
-                                    <label asp-for="Input.FirstName"><i class="fas fa-user me-2"></i>Adınız</label>
-                                    <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
+                                    <input asp-for="Input.FirstName" class="form-control" placeholder="Adınız" />
+                                    <label asp-for="Input.FirstName"></label>
+                                    <span asp-validation-for="Input.FirstName" class="text-danger small ms-2"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input asp-for="Input.LastName" class="form-control" placeholder="Soyadınız" aria-required="true" />
-                                    <label asp-for="Input.LastName"><i class="fas fa-user-tag me-2"></i>Soyadınız</label>
-                                    <span asp-validation-for="Input.LastName" class="text-danger small"></span>
+                                    <input asp-for="Input.LastName" class="form-control" placeholder="Soyadınız" />
+                                    <label asp-for="Input.LastName"></label>
+                                    <span asp-validation-for="Input.LastName" class="text-danger small ms-2"></span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.Email" class="form-control" placeholder="ornek@eposta.com" autocomplete="email" aria-required="true" />
-                            <label asp-for="Input.Email"><i class="fas fa-envelope me-2"></i>E-posta</label>
-                            <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                            <input asp-for="Input.Email" class="form-control" placeholder="ornek@eposta.com" autocomplete="email" />
+                            <label asp-for="Input.Email"></label>
+                            <span asp-validation-for="Input.Email" class="text-danger small ms-2"></span>
                         </div>
 
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.Password" class="form-control" placeholder="Şifreniz" autocomplete="new-password" aria-required="true" />
-                            <label asp-for="Input.Password"><i class="fas fa-lock me-2"></i>Şifre</label>
-                            <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                            <input asp-for="Input.Password" class="form-control" placeholder="Şifreniz" autocomplete="new-password" />
+                            <label asp-for="Input.Password"></label>
+                            <span asp-validation-for="Input.Password" class="text-danger small ms-2"></span>
                         </div>
 
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Şifrenizi Tekrar Girin" autocomplete="new-password" aria-required="true" />
-                            <label asp-for="Input.ConfirmPassword"><i class="fas fa-redo-alt me-2"></i>Şifreyi Doğrula</label>
-                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                            <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Şifrenizi Tekrar Girin" autocomplete="new-password" />
+                            <label asp-for="Input.ConfirmPassword"></label>
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger small ms-2"></span>
                         </div>
 
-                        <div class="form-check mb-3 text-start">
-                            @* text-start eklendi *@
+                        <div class="form-check mb-3">
                             <input asp-for="Input.AgreeToTerms" class="form-check-input" />
                             <label asp-for="Input.AgreeToTerms" class="form-check-label small">
-                                <a href="/Privacy" target="_blank" class="text-decoration-none">Kullanıcı Sözleşmesi ve Gizlilik Politikasını</a> okudum, kabul ediyorum.
+                                <a href="/Privacy" target="_blank" class="text-decoration-none">Kullanıcı Sözleşmesini</a> okudum ve kabul ediyorum.
                             </label>
                             <span asp-validation-for="Input.AgreeToTerms" class="text-danger d-block small"></span>
                         </div>
 
                         <div class="d-grid mb-3">
-                            <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-user-plus me-2"></i>Hesap Oluştur
-                            </button>
+                            <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg">Hesap Oluştur</button>
                         </div>
 
-                        @if (Model.ExternalLogins?.Count > 0)
-                        {
-                            <div class="text-center mb-3">
-                                <small class="text-muted">veya</small>
-                            </div>
-                            <div class="d-grid gap-2 external-login-buttons">
-                                @foreach (var provider in Model.ExternalLogins)
-                                {
-                                    @* Her bir harici giriş butonu kendi formunu kullanmalı *@
-                                    <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="d-grid">
-                                        <button type="submit" class="btn btn-outline-secondary" name="provider" value="@provider.Name" title="@provider.DisplayName ile kayıt ol">
-                                            <i class="fab fa-@(provider.Name.ToLower()) me-2"></i> @provider.DisplayName ile Kayıt Ol
-                                        </button>
-                                    </form>
-                                }
-                            </div>
-                            <hr class="my-4">
-                        }
-                        else
-                        {
-                            <hr class="my-4"> @* Harici giriş yoksa da bir ayırıcı iyi olabilir *@
-                        }
-
+                        <hr class="my-4">
 
                         <div class="text-center">
                             <p class="mb-0 small">
@@ -112,9 +75,6 @@
                             </p>
                         </div>
                     </form>
-                </div>
-                <div class="card-footer text-center py-3 bg-light border-top-0">
-                    <a asp-page="/Index" class="small text-decoration-none"><i class="fas fa-arrow-left me-1"></i> Ana Sayfaya Dön</a>
                 </div>
             </div>
         </div>

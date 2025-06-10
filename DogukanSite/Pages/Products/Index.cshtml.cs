@@ -1,132 +1,141 @@
 using DogukanSite.Data;
 using DogukanSite.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DogukanSite.Pages.Products
 {
+    public class ProductListViewModel
+    {
+        public List<Product> Products { get; set; }
+        public int TotalCount { get; set; }
+        public int CurrentPage { get; set; }
+        public int PageSize { get; set; }
+        public int TotalPages => (int)System.Math.Ceiling(TotalCount / (double)PageSize);
+        public bool HasPreviousPage => CurrentPage > 1;
+        public bool HasNextPage => CurrentPage < TotalPages;
+    }
+
     public class IndexModel : PageModel
     {
         private readonly DogukanSiteContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ILogger<IndexModel> _logger;
 
-        public IndexModel(
-            DogukanSiteContext context,
-            UserManager<ApplicationUser> userManager,
-            ILogger<IndexModel> logger)
+        public IndexModel(DogukanSiteContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
-            _logger = logger;
         }
 
-        public HashSet<int> UserFavoriteProductIds { get; set; } = new HashSet<int>();
-        public List<Product> Products { get; set; } = new List<Product>();
-        public List<string> AllCategories { get; set; } = new List<string>();
+        public ProductListViewModel ProductList { get; set; } = new();
+        public List<Category> AllCategories { get; set; } = new();
+        public HashSet<int> UserFavoriteProductIds { get; set; } = new();
 
-        [BindProperty(SupportsGet = true)]
-        public string? SearchTerm { get; set; } // Nullable yapýldý
+        [BindProperty(SupportsGet = true)] public string SearchTerm { get; set; }
+        [BindProperty(SupportsGet = true)] public string Category { get; set; }
+        [BindProperty(SupportsGet = true)] public string SortBy { get; set; } = "newest";
+        [BindProperty(SupportsGet = true)] public int Page { get; set; } = 1;
 
-        [BindProperty(SupportsGet = true)]
-        public string? Category { get; set; } // Nullable yapýldý
-
-        [BindProperty(SupportsGet = true)]
-        public string SortBy { get; set; } = "newest"; // Varsayýlan deðer
-
-        [BindProperty(SupportsGet = true)]
-        public int CurrentPage { get; set; } = 1;
-        public int PageSize { get; set; } = 12;
-        public int TotalCount { get; set; }
-        public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
-        public bool HasPreviousPage => CurrentPage > 1;
-        public bool HasNextPage => CurrentPage < TotalPages;
-
-        // Bu metod sayfanýn ilk tam yüklenmesi için kullanýlacak
         public async Task OnGetAsync()
         {
-            await LoadProductsAndCategoriesAsync();
-            ViewData["UserFavoriteProductIds"] = UserFavoriteProductIds;
+            await LoadInitialData();
+            await LoadProductsAsync();
         }
 
-        // Bu metod AJAX istekleri için kullanýlacak ve sadece partial view döndürecek
-        public async Task<PartialViewResult> OnGetLoadProductsPartialAsync(string? searchTerm, string? category, string sortBy, int currentPage)
+        public async Task<PartialViewResult> OnGetLoadProductsPartialAsync()
         {
-            SearchTerm = searchTerm;
-            Category = category;
-            SortBy = sortBy ?? "newest";
-            CurrentPage = currentPage;
-
-            await LoadProductsAndCategoriesAsync();
-            ViewData["UserFavoriteProductIds"] = UserFavoriteProductIds; // Partial view için de ViewData'yý set et
-
-            // _ProductFiltersPartial için AllCategories de gerekebilir,
-            // ama filtreler zaten bu partial içinde olduðu için tekrar yüklemeye gerek yok gibi.
-            // Eðer _ProductListPartial sadece Model.Products ve sayfalama bilgilerini alacaksa,
-            // _ProductListPartial'ýn modelini List<Product> ve sayfalama property'leri içeren bir ViewModel yapabiliriz.
-            // Þimdilik tüm IndexModel'ý gönderiyoruz.
-            return Partial("_ProductListPartial", this);
+            await LoadProductsAsync();
+            return Partial("_ProductListPartial", ProductList);
         }
 
-        // Ürünleri ve kategorileri yükleyen ortak metod
-        private async Task LoadProductsAndCategoriesAsync()
+        private async Task LoadProductsAsync()
         {
             var userId = _userManager.GetUserId(User);
-            if (User.Identity != null && User.Identity.IsAuthenticated && !string.IsNullOrEmpty(userId))
+            if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(userId))
             {
-                UserFavoriteProductIds = (await _context.Favorites
-                                            .Where(f => f.ApplicationUserId == userId)
-                                            .Select(f => f.ProductId)
-                                            .ToListAsync())
-                                            .ToHashSet();
+                UserFavoriteProductIds = await _context.Favorites
+                    .Where(f => f.ApplicationUserId == userId)
+                    .Select(f => f.ProductId)
+                    .ToHashSetAsync();
+                ViewData["UserFavoriteProductIds"] = UserFavoriteProductIds;
             }
 
-            var query = _context.Products.AsQueryable();
+            var query = _context.Products.Include(p => p.Category).AsQueryable();
 
             if (!string.IsNullOrEmpty(SearchTerm))
             {
-                query = query.Where(p => p.Name.ToLower().Contains(SearchTerm.ToLower()) ||
-                                         (p.Description != null && p.Description.ToLower().Contains(SearchTerm.ToLower())));
+                var searchTermLower = SearchTerm.ToLower();
+                query = query.Where(p => p.Name.ToLower().Contains(searchTermLower));
             }
+
+            // --- DEÐÝÞÝKLÝK BURADA BAÞLIYOR ---
             if (!string.IsNullOrEmpty(Category))
             {
-                query = query.Where(p => p.Category.Name.ToLower() == Category.ToLower());
+                List<int> categoryIdsToFilter = await GetCategoryWithAllSubCategoryIdsAsync(Category);
+                if (categoryIdsToFilter.Any())
+                {
+                    query = query.Where(p => categoryIdsToFilter.Contains(p.CategoryId));
+                }
             }
+            // --- DEÐÝÞÝKLÝK SONA ERDÝ ---
 
-            switch (SortBy?.ToLower())
+            query = SortBy?.ToLower() switch
             {
-                case "priceasc": query = query.OrderBy(p => p.Price).ThenBy(p => p.Id); break;
-                case "pricedesc": query = query.OrderByDescending(p => p.Price).ThenBy(p => p.Id); break;
-                case "nameasc": query = query.OrderBy(p => p.Name).ThenBy(p => p.Id); break;
-                case "newest":
-                default: query = query.OrderByDescending(p => p.Id); break;
-            }
+                "priceasc" => query.OrderBy(p => p.Price),
+                "pricedesc" => query.OrderByDescending(p => p.Price),
+                "nameasc" => query.OrderBy(p => p.Name),
+                _ => query.OrderByDescending(p => p.Id),
+            };
 
-            TotalCount = await query.CountAsync();
-            Products = await query
-                             .Skip((CurrentPage - 1) * PageSize)
-                             .Take(PageSize)
-                             .ToListAsync();
+            ProductList.TotalCount = await query.CountAsync();
+            ProductList.PageSize = 12;
+            ProductList.CurrentPage = Page;
+            ProductList.Products = await query
+                .Skip((Page - 1) * ProductList.PageSize)
+                .Take(ProductList.PageSize)
+                .ToListAsync();
 
-            // AllCategories sadece sayfa ilk yüklendiðinde veya filtreler için gerekebilir.
-            // AJAX ile sadece ürün listesi güncelleniyorsa, AllCategories'i her seferinde çekmeye gerek yok.
-            // Ancak _ProductFiltersPartial hem sidebar'da hem offcanvas'ta kullanýldýðý için OnGetAsync'te kalmasý mantýklý.
-            if (AllCategories == null || !AllCategories.Any())
+
+        }
+
+        private async Task LoadInitialData()
+        {
+            AllCategories = await _context.Categories
+                .Include(c => c.SubCategories)
+                .Where(c => c.ParentCategoryId == null)
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+        }
+
+        // --- YENÝ EKLENEN YARDIMCI METOT ---
+        private async Task<List<int>> GetCategoryWithAllSubCategoryIdsAsync(string categoryName)
+        {
+            var allCategories = await _context.Categories.ToListAsync();
+            var startCategory = allCategories.FirstOrDefault(c => c.Name.Equals(categoryName, System.StringComparison.OrdinalIgnoreCase));
+
+            if (startCategory == null) return new List<int>();
+
+            var ids = new List<int>();
+            var queue = new Queue<Category>();
+            queue.Enqueue(startCategory);
+
+            while (queue.Count > 0)
             {
-                // Doðrudan Kategoriler tablosunu sorguluyoruz.
-                // Bu yöntem hem hatayý giderir hem de çok daha performanslýdýr.
-                AllCategories = await _context.Categories
-                                              .OrderBy(c => c.Name) // Kategori adýna göre sýrala
-                                              .Select(c => c.Name)  // Sadece kategori adlarýný al
-                                              .ToListAsync();
+                var current = queue.Dequeue();
+                ids.Add(current.Id);
+
+                var children = allCategories.Where(c => c.ParentCategoryId == current.Id);
+                foreach (var child in children)
+                {
+                    queue.Enqueue(child);
+                }
             }
+            return ids;
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> SignInManager
-@inject Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> UserManager
+﻿@using Microsoft.AspNetCore.Identity
 @using DogukanSite.Models
 
-
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 @functions {
     public string GetAntiXsrfRequestToken()
@@ -10,10 +10,6 @@
         return Xsrf.GetAndStoreTokens(ViewContext.HttpContext).RequestToken;
     }
 }
-@{
-    // Sepet sayısı için C# koduna gerek yok, JS hallediyor.
-}
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -21,16 +17,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="RequestVerificationToken" content="@GetAntiXsrfRequestToken()">
     <title>@ViewData["Title"] - DogukanStore</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="~/css/core.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/mainlayout.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/product.css" asp-append-version="true" />
-@*     <link rel="stylesheet" href="~/DogukanSite.styles.css" asp-append-version="true" /> *@
-
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
@@ -59,39 +55,10 @@
                                 <span class="badge rounded-pill bg-primary position-absolute top-0 start-100 translate-middle d-none cart-item-count-badge">0</span>
                             </a>
                         </li>
-                        @if (SignInManager.IsSignedIn(User))
-                        {
-                            var currentUser = await UserManager.GetUserAsync(User);
-                            <li class="nav-item dropdown ms-2">
-                                <a class="nav-link dropdown-toggle user-avatar-link px-2"
-                                   href="#" id="userDropdownDesktop" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Hesabım">
-                                    <i class="fas fa-user-circle"></i>
-                                    <span class="ms-1">@(currentUser?.FirstName ?? UserManager.GetUserName(User))</span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdownDesktop">
-                                    <li><a class="dropdown-item" asp-page="/Account/Dashboard"><i class="fas fa-tachometer-alt me-2"></i>Hesabım Paneli</a></li>
-                                    <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="fas fa-user-edit me-2"></i>Profil Ayarları</a></li>
-                                    <li><a class="dropdown-item" asp-page="/Order/History"><i class="fas fa-receipt me-2"></i>Siparişlerim</a></li>
-                                    <li><a class="dropdown-item" asp-page="/Account/Favorites"><i class="fas fa-heart me-2"></i>Favorilerim</a></li>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" asp-page="/Admin/Index"><i class="fas fa-user-shield me-2"></i>Admin Paneli</a></li>
-                                    }
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" method="post">
-                                            <button type="submit" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt me-2"></i>Çıkış Yap</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item ms-2"><a class="nav-link px-2" asp-area="Identity" asp-page="/Account/Login">Giriş Yap</a></li>
-                            <li class="nav-item ms-2"><a class="btn btn-outline-primary btn-sm" asp-area="Identity" asp-page="/Account/Register">Kayıt Ol</a></li>
-                        }
+                        <li class="nav-item ms-2">
+                            @* --- DEĞİŞİKLİK: Tüm if/else bloğu bu tek satırla değiştirildi --- *@
+                            <partial name="_LoginPartial" />
+                        </li>
                     </ul>
                 </div>
 
@@ -132,7 +99,6 @@
         <div class="offcanvas-body">
             <ul class="list-group list-group-flush mb-3 mobile-quick-actions">
                 <li class="list-group-item">
-                    @* data-bs-dismiss="offcanvas" kaldırıldı, modal açılınca JS ile kapatılacak *@
                     <a href="#" class="d-flex align-items-center text-decoration-none" data-bs-toggle="modal" data-bs-target="#searchModal">
                         <i class="fas fa-search fa-fw me-3"></i>Ara
                     </a>
@@ -146,62 +112,77 @@
                 @if (SignInManager.IsSignedIn(User))
                 {
                     var currentUser = await UserManager.GetUserAsync(User);
-                    <li class="list-group-item list-group-item-light text-muted small text-uppercase pt-3 pb-1 px-3">
-                        <i class="fas fa-user-circle fa-fw me-2"></i>@(currentUser?.FirstName ?? UserManager.GetUserName(User))
+
+                    @* Kullanıcı bilgilerini gösteren başlık bölümü *@
+                    <li class="list-group-item bg-light">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-user-circle fa-2x text-primary me-3"></i>
+                            <div>
+                                <strong class="d-block">Merhaba, @(currentUser?.FirstName ?? "Kullanıcı")</strong>
+                                <small class="text-muted">Hesabınıza hoş geldiniz</small>
+                            </div>
+                        </div>
                     </li>
 
+                    @* Hesap Yönetimi Linkleri *@
                     <li class="list-group-item">
                         <a class="d-flex align-items-center text-decoration-none" asp-page="/Account/Dashboard">
-                            @* data-bs-dismiss kaldırıldı *@
-                            <i class="fas fa-tachometer-alt fa-fw me-3"></i>Hesabım Paneli
+                            <i class="fas fa-user-cog fa-fw me-3"></i>Hesabım
                         </a>
                     </li>
-                    <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="fas fa-user-edit fa-fw me-3"></i>Profil Ayarları</a></li>
-                    <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Order/History"><i class="fas fa-receipt fa-fw me-3"></i>Siparişlerim</a></li>
-                    <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Account/Favorites"><i class="fas fa-heart fa-fw me-3"></i>Favorilerim</a></li>
+                    <li class="list-group-item">
+                        <a class="d-flex align-items-center text-decoration-none" asp-page="/Order/History">
+                            <i class="fas fa-receipt fa-fw me-3"></i>Siparişlerim
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a class="d-flex align-items-center text-decoration-none" asp-page="/Products/Favorites">
+                            <i class="fas fa-heart fa-fw me-3"></i>Favorilerim
+                        </a>
+                    </li>
                     @if (User.IsInRole("Admin"))
                     {
-                        <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Admin/Index"><i class="fas fa-user-shield fa-fw me-3"></i>Admin Paneli</a></li>
+                        <li class="list-group-item">
+                            <a class="d-flex align-items-center text-decoration-none" asp-page="/Admin/Index">
+                                <i class="fas fa-user-shield fa-fw me-3"></i>Admin Paneli
+                            </a>
+                        </li>
                     }
-                    <li class="list-group-item">
-                        <form asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" method="post" class="d-inline w-100">
-                            <button type="submit" class="btn btn-link text-danger p-0 d-flex align-items-center text-decoration-none w-100">
-                                @* data-bs-dismiss kaldırıldı *@
-                                <i class="fas fa-sign-out-alt fa-fw me-3"></i>Çıkış Yap
+
+                    @* Çıkış Yap Butonu (Ayırıcı ile) *@
+                    <li class="list-group-item p-0">
+                        <hr class="my-2" />
+                        <form asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" method="post" class="d-grid px-2 pb-2">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-sign-out-alt me-2"></i>Güvenli Çıkış Yap
                             </button>
                         </form>
                     </li>
                 }
                 else
                 {
-                    <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-area="Identity" asp-page="/Account/Login"><i class="fas fa-sign-in-alt fa-fw me-3"></i>Giriş Yap</a></li>
-                    <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-area="Identity" asp-page="/Account/Register"><i class="fas fa-user-plus fa-fw me-3"></i>Kayıt Ol</a></li>
+                    @* Giriş yapmamış kullanıcı için linkler (Bu bölüm zaten iyiydi, tutarlılık için ekliyorum) *@
+                    <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Account/Login"><i class="fas fa-sign-in-alt fa-fw me-3"></i>Giriş Yap</a></li>
+                    <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Account/Register"><i class="fas fa-user-plus fa-fw me-3"></i>Kayıt Ol</a></li>
                 }
             </ul>
-
             <hr class="my-2 d-lg-none">
-
             <ul class="list-group list-group-flush main-mobile-nav">
-                <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Index" ? "active" : "")" asp-page="/Index">Ana Sayfa</a></li>
-
+                <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Index">Ana Sayfa</a></li>
                 <li class="list-group-item">
-                    <a class="d-flex align-items-center text-decoration-none dropdown-toggle @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Products/Index" && !string.IsNullOrEmpty(ViewContext.RouteData.Values["category"]?.ToString()) ? "active" : "")"
-                       href="#categoriesOffcanvasCollapse" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="categoriesOffcanvasCollapse">
-                        Kategoriler
-                    </a>
+                    <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#categoriesOffcanvasCollapse" data-bs-toggle="collapse" role="button">Kategoriler</a>
                     <div class="collapse mt-1" id="categoriesOffcanvasCollapse">
                         <ul class="list-group list-group-flush ps-3">
-                            <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2 @(ViewContext.RouteData.Values["category"]?.ToString() == "Elektronik" ? "active" : "")" asp-page="/Products/Index" asp-route-category="Elektronik">Elektronik</a></li>
-                            <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2 @(ViewContext.RouteData.Values["category"]?.ToString() == "Giyim" ? "active" : "")" asp-page="/Products/Index" asp-route-category="Giyim">Giyim</a></li>
-                            <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2 @(ViewContext.RouteData.Values["category"]?.ToString() == "EvDekorasyon" ? "active" : "")" asp-page="/Products/Index" asp-route-category="EvDekorasyon">Ev & Dekorasyon</a></li>
+                            <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2" asp-page="/Products/Index" asp-route-category="Elektronik">Elektronik</a></li>
+                            <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2" asp-page="/Products/Index" asp-route-category="Giyim">Giyim</a></li>
+                            <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2" asp-page="/Products/Index" asp-route-category="EvDekorasyon">Ev & Dekorasyon</a></li>
                             <li class="list-group-item border-0 py-1"><hr class="my-1"></li>
-                            <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2 @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Products/Index" && string.IsNullOrEmpty(ViewContext.RouteData.Values["category"]?.ToString()) ? "active" : "")" asp-page="/Products/Index">Tüm Ürünler</a></li>
+                            <li class="list-group-item border-0 py-1"><a class="d-block text-decoration-none ps-2" asp-page="/Products/Index">Tüm Ürünler</a></li>
                         </ul>
                     </div>
                 </li>
-                <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none @(ViewContext.RouteData.Values["Page"]?.ToString() == "/Campaigns" ? "active" : "")" asp-page="/Campaigns">Kampanyalar</a></li>
-                <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none @(ViewContext.RouteData.Values["Page"]?.ToString() == "/NewArrivals" ? "active" : "")" asp-page="/NewArrivals">Yeni Gelenler</a></li>
+                <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/Campaigns">Kampanyalar</a></li>
+                <li class="list-group-item"><a class="d-flex align-items-center text-decoration-none" asp-page="/NewArrivals">Yeni Gelenler</a></li>
             </ul>
         </div>
     </div>
@@ -297,9 +278,8 @@
                     <i class="fas fa-user-lock fa-3x text-primary my-3"></i>
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary">Giriş Yap</a>
-                    <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-secondary ms-2">Kayıt Ol</a>
-                    @* <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button> *@
+                    <a asp-page="/Account/Login" class="btn btn-primary">Giriş Yap</a>
+                    <a asp-page="/Account/Register" class="btn btn-outline-secondary ms-2">Kayıt Ol</a>
                 </div>
             </div>
         </div>
@@ -311,10 +291,7 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    
-    @* --- YENİ YAPI --- *@
     <script src="~/js/site.js" asp-append-version="true"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
